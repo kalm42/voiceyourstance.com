@@ -1,12 +1,14 @@
 import React, { Component } from "react"
 import { RouteComponentProps } from "@reach/router"
-import { GeocodeResult } from "../types"
+import { GeocodeResult } from "../../types"
+import LocationDisplay from "./LocationDisplay"
 
 type LocationState = {
   streetAddress: string
   city: string
   state: string
   zipCode: string
+  disabled: boolean
 }
 
 export class Location extends Component<RouteComponentProps, LocationState> {
@@ -19,6 +21,7 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       city: "",
       state: "",
       zipCode: "",
+      disabled: false,
     }
     this.controller = new AbortController()
   }
@@ -33,13 +36,13 @@ export class Location extends Component<RouteComponentProps, LocationState> {
     const latlng = `latlng=${cordinates.latitude},${cordinates.longitude}`
     const key = `key=${googleKey}`
     const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?${latlng}&${key}`)
-    console.log(url)
     const { signal } = this.controller
 
+    this.setState({ disabled: true })
     fetch(url, { signal })
       .then((response) => response.json())
       .then((results) => {
-        debugger
+        this.setState({ disabled: false })
         if (results?.status === "OK") {
           const result = results.results[0]
           return result
@@ -101,56 +104,22 @@ export class Location extends Component<RouteComponentProps, LocationState> {
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = { [event.target.name]: event.target.value } as LocationState
+    const name = ({ [event.target.name]: event.target.value } as unknown) as LocationState
 
     this.setState(name)
   }
 
   render() {
     return (
-      <div>
-        <p>What is your voter registration address?</p>
-        <button onClick={this.getGeoLocation}>Use my current location</button>
-        <form method="post">
-          <input
-            type="text"
-            name="streetAddress"
-            id="street-address"
-            placeholder="1600 Pennsylvania Ave"
-            aria-label="Street address"
-            value={this.state.streetAddress}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="city"
-            id="city"
-            placeholder="Washington"
-            aria-label="City"
-            value={this.state.city}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="state"
-            id="state"
-            placeholder="DC"
-            aria-label="State"
-            value={this.state.state}
-            onChange={this.handleChange}
-          />
-          <input
-            type="text"
-            name="zipCode"
-            id="zipcode"
-            placeholder="20003"
-            aria-label="Zip code"
-            value={this.state.zipCode}
-            onChange={this.handleChange}
-          />
-          <input type="submit" value="Find my representatives" />
-        </form>
-      </div>
+      <LocationDisplay
+        streetAddress={this.state.streetAddress}
+        city={this.state.city}
+        state={this.state.state}
+        zipCode={this.state.zipCode}
+        getGeoLocation={this.getGeoLocation}
+        handleChange={this.handleChange}
+        disabled={this.state.disabled}
+      />
     )
   }
 }
