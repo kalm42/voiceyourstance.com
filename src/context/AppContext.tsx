@@ -3,14 +3,17 @@ import PropTypes from "prop-types"
 import { AuthenticationProvider } from "./Authentication"
 import { RepresentativeProvider } from "./Representatives"
 import { UserProvider } from "./UserContext"
+import { VoiceYourStanceThemeProvider } from "./ThemeContext"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
-    <AuthenticationProvider>
-      <UserProvider>
-        <RepresentativeProvider>{children}</RepresentativeProvider>
-      </UserProvider>
-    </AuthenticationProvider>
+    <VoiceYourStanceThemeProvider>
+      <AuthenticationProvider>
+        <UserProvider>
+          <RepresentativeProvider>{children}</RepresentativeProvider>
+        </UserProvider>
+      </AuthenticationProvider>
+    </VoiceYourStanceThemeProvider>
   )
 }
 
