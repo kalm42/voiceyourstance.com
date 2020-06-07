@@ -1,5 +1,5 @@
 import React from "react"
-import { faFacebookF, faTwitter, faYoutube, faGooglePlusG } from "@fortawesome/free-brands-svg-icons"
+import { faFacebookF, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import styled from "styled-components"
 

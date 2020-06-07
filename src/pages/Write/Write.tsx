@@ -3,6 +3,7 @@ import { Editor, EditorState } from "draft-js"
 import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
 import { Input, PrimaryInputSubmit } from "../../common/elements"
+import { useRepresentatives } from "../../context/Representatives"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -26,8 +27,42 @@ const EditorWrapper = styled.div`
   font-family: ${(props) => props.theme.formalFont};
 `
 
-const Write = (props: RouteComponentProps) => {
+interface Props extends RouteComponentProps {
+  repId?: string
+  addrId?: string
+}
+
+const Write = (props: Props) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+  const representativeContext = useRepresentatives()
+
+  if (!representativeContext || !props.repId || !props.addrId) return null
+
+  const { civicInfo } = representativeContext
+  if (!civicInfo) {
+    return null
+  }
+
+  const reps = []
+
+  for (const office of civicInfo.offices) {
+    const title = office.name
+
+    for (const index of office.officialIndices) {
+      const official = civicInfo.officials[index]
+      const { name, party, address, emails } = official
+      reps.push({ title, name, party, address, emails })
+    }
+  }
+
+  const rep = reps[(props.repId as unknown) as number]
+  const address = rep.address[(props.addrId as unknown) as number]
+
+  const handleMail = () => {
+    // !Take payment
+    // !Save letter to db
+    // !When payment completes successfully mail letter
+  }
 
   return (
     <Wrapper>
@@ -80,10 +115,15 @@ const Write = (props: RouteComponentProps) => {
         </div>
         <div>
           <h2>To</h2>
-          <p>Barack Obama</p>
+          <p>
+            {rep.name} <br /> {rep.title}
+          </p>
           <address>
-            1600 Pennsylvania Ave <br />
-            Washington DC 20003
+            {address.locationName} {address.locationName && <br />}
+            {address.line1} {address.line1 && <br />}
+            {address.line2} {address.line2 && <br />}
+            {address.line3} {address.line3 && <br />}
+            {address.city}, {address.state}, {address.zip}
           </address>
         </div>
       </AddressDetails>

@@ -97,7 +97,7 @@ const Representative = (props: Props) => {
           <p>Click on an address to write a letter to them.</p>
           <AddressCollection>
             {rep.address ? (
-              rep.address.map((addr) => <DisplayAddress address={addr} repId={props.repId} />)
+              rep.address.map((addr, index) => <DisplayAddress address={addr} repId={props.repId} addrId={index} />)
             ) : (
               <p>No addresses provided.</p>
             )}

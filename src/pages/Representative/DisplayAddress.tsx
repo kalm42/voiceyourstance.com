@@ -32,14 +32,15 @@ const AddressLink = styled(Link)`
 interface Props {
   address?: Address
   repId?: string
+  addrId: number
 }
 
 const DisplayAddress = (props: Props) => {
-  const { address, repId } = props
+  const { address, repId, addrId } = props
   if (!address || !repId) return null
 
   return (
-    <AddressLink to={`/reps/${repId}/write`}>
+    <AddressLink to={`/reps/${repId}/write/${addrId}`}>
       <AddressDetails>
         <Feather icon={faFeather} />
         <address>

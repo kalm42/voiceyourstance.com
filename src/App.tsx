@@ -17,7 +17,7 @@ function App() {
             <Location path="/" />
             <Representatives path="/reps" />
             <Representative path="/reps/:repId" />
-            <Write path="/reps/:repId/write" />
+            <Write path="/reps/:repId/write/:addrId" />
             <NotFound default />
           </Router>
         </Layout>
