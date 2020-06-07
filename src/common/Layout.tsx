@@ -25,6 +25,7 @@ const MenuButton = styled(FontAwesomeIcon)`
 const Button = styled.button`
   background: none;
   border: none;
+  cursor: pointer;
 `
 const Menu = styled.ul`
   list-style: none;
@@ -133,8 +134,16 @@ const Layout: FunctionComponent = ({ children }) => {
             <MenuButton icon={faTimes} />
           </Button>
           <Menu>
-            <li>Location</li>
-            <li>Your Representatives</li>
+            <li>
+              <Link to="/" onClick={handleMenuClick}>
+                Location
+              </Link>
+            </li>
+            <li>
+              <Link to="/reps" onClick={handleMenuClick}>
+                Your Representatives
+              </Link>
+            </li>
             <li>Election Information</li>
             <li>Contact Us</li>
             <li>Privacy Policy</li>

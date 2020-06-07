@@ -1,7 +1,8 @@
 import React, { Component } from "react"
-import { RouteComponentProps } from "@reach/router"
+import { RouteComponentProps, navigate } from "@reach/router"
 import { GeocodeResult } from "../../types"
 import LocationDisplay from "./LocationDisplay"
+import { RepresentativeContext } from "../../context/Representatives"
 
 type LocationState = {
   streetAddress: string
@@ -30,7 +31,8 @@ export class Location extends Component<RouteComponentProps, LocationState> {
     this.controller.abort()
   }
 
-  reverseGeocode: PositionCallback = (position: Position) => {
+  reverseGeocode = (position: Position) => {
+    console.log("Received location, ", position)
     const cordinates = position.coords
     const googleKey = process.env.REACT_APP_GOOGLE_API_KEY
     const latlng = `latlng=${cordinates.latitude},${cordinates.longitude}`
@@ -38,10 +40,12 @@ export class Location extends Component<RouteComponentProps, LocationState> {
     const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?${latlng}&${key}`)
     const { signal } = this.controller
 
+    console.log("Fetching reverse geocode")
     this.setState({ disabled: true })
     fetch(url, { signal })
       .then((response) => response.json())
       .then((results) => {
+        console.log("Recevied results: ", results)
         this.setState({ disabled: false })
         if (results?.status === "OK") {
           const result = results.results[0]
@@ -55,6 +59,7 @@ export class Location extends Component<RouteComponentProps, LocationState> {
   }
 
   massageResult = (address: GeocodeResult) => {
+    console.log("Transforming result to match form: ", address)
     let streetNumber = ""
     let route = ""
     let city = ""
@@ -92,21 +97,75 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       state,
       zipCode,
     })
+    console.log("State set")
   }
 
-  handleError: PositionErrorCallback = (error) => {
+  handlePositionError: PositionErrorCallback = (error: PositionError) => {
+    console.log("Handle error")
     // TODO: Report error or do something.
     console.log(error)
   }
 
+  handleError = (error: Error) => {
+    console.log(error)
+  }
+
   getGeoLocation = () => {
-    navigator.geolocation.getCurrentPosition(this.reverseGeocode, this.handleError)
+    console.log("Getting geolocation")
+
+    new Promise((resolve, reject) => {
+      const timerId = window.setTimeout(() => {
+        const err = new Error("Browser did not return a position.")
+        reject(err)
+      }, 5000)
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          window.clearTimeout(timerId)
+          resolve(position)
+        },
+        (error) => {
+          window.clearTimeout(timerId)
+          reject(error)
+        },
+      )
+    })
+      .then((pos) => {
+        this.reverseGeocode(pos as Position)
+      })
+      .catch((error) => this.handlePositionError(error))
   }
 
   handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = ({ [event.target.name]: event.target.value } as unknown) as LocationState
 
     this.setState(name)
+  }
+
+  handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    // ! Validate address fields
+    const { streetAddress, city, state, zipCode } = this.state
+    if (!streetAddress || !city || !state || !zipCode) {
+      // TODO: set error message of some kind
+    }
+    // ! make fetch request
+    const address = {
+      line1: streetAddress,
+      city,
+      state,
+      zip: zipCode,
+    }
+    const reps = this.context
+    reps
+      .getRepresentativesByAddress(address)
+      .then(() => {
+        navigate("/reps")
+      })
+      .catch((error: Error) => this.handleError(error))
+    // ! store result in local storage
+    // ! change page to /reps
   }
 
   render() {
@@ -119,9 +178,11 @@ export class Location extends Component<RouteComponentProps, LocationState> {
         getGeoLocation={this.getGeoLocation}
         handleChange={this.handleChange}
         disabled={this.state.disabled}
+        handleSubmit={this.handleSubmit}
       />
     )
   }
 }
+Location.contextType = RepresentativeContext
 
 export default Location

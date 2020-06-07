@@ -1,52 +1,12 @@
 import React from "react"
 import styled from "styled-components"
+import { Form, Input, PrimaryInputSubmit, SecondaryButton } from "../../common/elements"
 
 const PageContent = styled.div`
   max-width: 800px;
   width: 67vw;
   margin: 0 auto;
 `
-const Form = styled.form`
-  display: grid;
-  grid-gap: 1rem;
-`
-const Input = styled.input`
-  font-size: 1rem;
-  padding: 1rem;
-  border: 1px solid ${(props) => props.theme.accent};
-`
-const PrimaryButton = styled.input`
-  padding: 1rem;
-  background: ${(props) => props.theme.main};
-  color: ${(props) => props.theme.background};
-  border: 0;
-  font-size: 1rem;
-  text-transform: lowercase;
-  transition: all 200ms ease;
-  &:hover {
-    background: ${(props) => props.theme.main_dark};
-  }
-  &:active {
-    transform: scale(0.9);
-  }
-`
-const SecondaryButton = styled.button`
-  padding: 1rem;
-  font-size: 1rem;
-  background: white;
-  border: 2px solid ${(props) => props.theme.main};
-  margin-bottom: 1rem;
-  text-transform: lowercase;
-  transition: all 200ms ease;
-  &:hover {
-    background: ${(props) => props.theme.main_dark};
-    color: ${(props) => props.theme.background};
-  }
-  &:active {
-    transform: scale(0.9);
-  }
-`
-
 interface Props {
   streetAddress: string
   city: string
@@ -55,15 +15,16 @@ interface Props {
   disabled: boolean
   getGeoLocation: () => void
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void
 }
 
 const LocationDisplay = (props: Props) => {
-  const { streetAddress, city, state, zipCode, getGeoLocation, handleChange, disabled } = props
+  const { streetAddress, city, state, zipCode, getGeoLocation, handleChange, handleSubmit, disabled } = props
   return (
     <PageContent>
       <p>What is your voter registration address?</p>
       <SecondaryButton onClick={getGeoLocation}>Use my current location</SecondaryButton>
-      <Form method="post">
+      <Form method="post" onSubmit={handleSubmit}>
         <Input
           type="text"
           name="streetAddress"
@@ -104,7 +65,7 @@ const LocationDisplay = (props: Props) => {
           onChange={handleChange}
           disabled={disabled}
         />
-        <PrimaryButton type="submit" value="Find my representatives" />
+        <PrimaryInputSubmit type="submit" value="Find my representatives" />
       </Form>
     </PageContent>
   )
