@@ -2,8 +2,11 @@ import React, { useState } from "react"
 import { Editor, EditorState } from "draft-js"
 import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
 import { Input, PrimaryInputSubmit } from "../../common/elements"
 import { useRepresentatives } from "../../context/Representatives"
+import CheckoutForm from "./CheckoutForm"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -26,6 +29,11 @@ const EditorWrapper = styled.div`
   padding: 1rem;
   font-family: ${(props) => props.theme.formalFont};
 `
+const key = process.env.REACT_APP_STRIPE_KEY
+if (!key) {
+  throw new Error("No stripe key")
+}
+const stripePromise = loadStripe(key)
 
 interface Props extends RouteComponentProps {
   repId?: string
@@ -60,6 +68,12 @@ const Write = (props: Props) => {
 
   const handleMail = () => {
     // !Take payment
+    // TODO: set backend url via env variables
+    const response = fetch("http://localhost:8000/secret")
+      .then((response) => response.json())
+      .then((data) => {
+        const clientSecret = data.client_secret
+      })
     // !Save letter to db
     // !When payment completes successfully mail letter
   }
@@ -135,6 +149,9 @@ const Write = (props: Props) => {
         />
       </EditorWrapper>
       <PrimaryInputSubmit value="Mail now $5 USD" type="submit" />
+      <Elements stripe={stripePromise}>
+        <CheckoutForm />
+      </Elements>
     </Wrapper>
   )
 }
