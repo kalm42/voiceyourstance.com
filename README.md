@@ -1,4 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Voice Your Stance
+
+A website that makes it amazingly easy to contact your local and federal representatives.
 
 ## Available Scripts
 
