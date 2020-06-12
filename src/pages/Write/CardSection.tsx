@@ -4,9 +4,10 @@ import { CardElement } from "@stripe/react-stripe-js"
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
-      color: "#32325d",
+      color: "#ffffff",
+      fontWeight: "300",
       "::placeholder": {
-        color: "#aab7c4",
+        color: "#d1d7dd",
       },
     },
     invalid: {
@@ -19,7 +20,6 @@ const CARD_ELEMENT_OPTIONS = {
 const CardSection = () => {
   return (
     <label>
-      Card details
       <CardElement options={CARD_ELEMENT_OPTIONS} />
     </label>
   )

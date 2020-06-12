@@ -1,15 +1,15 @@
-import React, { useState } from "react"
-import { Editor, EditorState } from "draft-js"
+import React, { useState, useEffect } from "react"
+import { Editor, EditorState, convertToRaw } from "draft-js"
 import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
-import { Elements } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js"
 import { Input, PrimaryInputSubmit } from "../../common/elements"
 import { useRepresentatives } from "../../context/Representatives"
-import CheckoutForm from "./CheckoutForm"
+import MailDialog from "./MailDialog"
 
 const Wrapper = styled.div`
   padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
 `
 const AddressDetails = styled.div`
   display: grid;
@@ -29,11 +29,20 @@ const EditorWrapper = styled.div`
   padding: 1rem;
   font-family: ${(props) => props.theme.formalFont};
 `
-const key = process.env.REACT_APP_STRIPE_KEY
-if (!key) {
-  throw new Error("No stripe key")
+interface PageWrapperProps {
+  pay: boolean
 }
-const stripePromise = loadStripe(key)
+const PageWrapper = styled.div`
+  transition: all 200ms ease;
+  ${(props: PageWrapperProps) => {
+    if (props.pay) {
+      return `
+        filter: blur(5px) grayscale(50%);
+        transform: scale(0.9);
+      `
+    }
+  }}
+`
 
 interface Props extends RouteComponentProps {
   repId?: string
@@ -42,14 +51,26 @@ interface Props extends RouteComponentProps {
 
 const Write = (props: Props) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+  const [characterCount, setCharacterCount] = useState(5000)
+  const [name, setName] = useState("")
+  const [line1, setLine1] = useState("")
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [zip, setZip] = useState("")
+  const [pay, setPay] = useState(false)
   const representativeContext = useRepresentatives()
+
+  useEffect(() => {
+    const contentState = editorState.getCurrentContent()
+    const content = convertToRaw(contentState)
+    const charCount = content.blocks.reduce((acc, val) => acc + val.text.length, 0)
+    setCharacterCount(5000 - charCount)
+  }, [editorState])
 
   if (!representativeContext || !props.repId || !props.addrId) return null
 
   const { civicInfo } = representativeContext
-  if (!civicInfo) {
-    return null
-  }
+  if (!civicInfo) return null
 
   const reps = []
 
@@ -66,92 +87,105 @@ const Write = (props: Props) => {
   const rep = reps[(props.repId as unknown) as number]
   const address = rep.address[(props.addrId as unknown) as number]
 
-  const handleMail = () => {
-    // !Take payment
-    // TODO: set backend url via env variables
-    const response = fetch("http://localhost:8000/secret")
-      .then((response) => response.json())
-      .then((data) => {
-        const clientSecret = data.client_secret
-      })
-    // !Save letter to db
-    // !When payment completes successfully mail letter
-  }
-
   return (
     <Wrapper>
-      <AddressDetails>
-        <div>
-          <h2>From</h2>
-          <From>
-            <Input type="text" name="name" id="name" placeholder="John Doe" aria-label="Full name" />
-            <Input
-              type="text"
-              name="streetAddress"
-              id="street-address"
-              placeholder="1600 Pennsylvania Ave"
-              aria-label="Street address"
-              // value={streetAddress}
-              // onChange={handleChange}
-              // disabled={disabled}
-            />
-            <Input
-              type="text"
-              name="city"
-              id="city"
-              placeholder="Washington"
-              aria-label="City"
-              // value={city}
-              // onChange={handleChange}
-              // disabled={disabled}
-            />
-            <Input
-              type="text"
-              name="state"
-              id="state"
-              placeholder="DC"
-              aria-label="State"
-              // value={state}
-              // onChange={handleChange}
-              // disabled={disabled}
-            />
-            <Input
-              type="text"
-              name="zipCode"
-              id="zipcode"
-              placeholder="20003"
-              aria-label="Zip code"
-              // value={zipCode}
-              // onChange={handleChange}
-              // disabled={disabled}
-            />
-          </From>
-        </div>
-        <div>
-          <h2>To</h2>
-          <p>
-            {rep.name} <br /> {rep.title}
-          </p>
-          <address>
-            {address.locationName} {address.locationName && <br />}
-            {address.line1} {address.line1 && <br />}
-            {address.line2} {address.line2 && <br />}
-            {address.line3} {address.line3 && <br />}
-            {address.city}, {address.state}, {address.zip}
-          </address>
-        </div>
-      </AddressDetails>
-      <EditorWrapper>
-        <Editor
-          editorState={editorState}
-          onChange={setEditorState}
-          placeholder="Start writing your letter on the next line. Don't worry, this text will go away."
+      <PageWrapper pay={pay}>
+        <AddressDetails>
+          <div>
+            <h2>From</h2>
+            <From>
+              <Input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="John Doe"
+                aria-label="Full name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                disabled={pay}
+              />
+              <Input
+                type="text"
+                name="streetAddress"
+                id="street-address"
+                placeholder="1600 Pennsylvania Ave"
+                aria-label="Street address"
+                value={line1}
+                onChange={(event) => setLine1(event.target.value)}
+                disabled={pay}
+              />
+              <Input
+                type="text"
+                name="city"
+                id="city"
+                placeholder="Washington"
+                aria-label="City"
+                value={city}
+                onChange={(event) => setCity(event.target.value)}
+                disabled={pay}
+              />
+              <Input
+                type="text"
+                name="state"
+                id="state"
+                placeholder="DC"
+                aria-label="State"
+                value={state}
+                onChange={(event) => setState(event.target.value)}
+                disabled={pay}
+              />
+              <Input
+                type="text"
+                name="zipCode"
+                id="zipcode"
+                placeholder="20003"
+                aria-label="Zip code"
+                value={zip}
+                onChange={(event) => setZip(event.target.value)}
+                disabled={pay}
+              />
+            </From>
+          </div>
+          <div>
+            <h2>To</h2>
+            <p>
+              {rep.name} <br /> {rep.title}
+            </p>
+            <address>
+              {address.locationName} {address.locationName && <br />}
+              {address.line1} {address.line1 && <br />}
+              {address.line2} {address.line2 && <br />}
+              {address.line3} {address.line3 && <br />}
+              {address.city}, {address.state}, {address.zip}
+            </address>
+          </div>
+        </AddressDetails>
+        {characterCount < 100 && (
+          <div>
+            <p>You have {characterCount} characters left. There is a 5,000 character limit.</p>
+          </div>
+        )}
+        <EditorWrapper>
+          <Editor
+            editorState={editorState}
+            onChange={setEditorState}
+            placeholder="Start writing your letter on the next line. Don't worry, this text will go away."
+          />
+        </EditorWrapper>
+        <PrimaryInputSubmit
+          value="Mail now $5 USD"
+          type="submit"
+          onClick={() => setPay(!pay)}
+          disabled={characterCount < 1}
         />
-      </EditorWrapper>
-      <PrimaryInputSubmit value="Mail now $5 USD" type="submit" />
-      <Elements stripe={stripePromise}>
-        <CheckoutForm />
-      </Elements>
+      </PageWrapper>
+      {pay && (
+        <MailDialog
+          editorState={editorState}
+          to={{ ...address, name: rep.name }}
+          from={{ name, line1, city, state, zip }}
+        />
+      )}
     </Wrapper>
   )
 }

@@ -4,15 +4,18 @@ import { AuthenticationProvider } from "./Authentication"
 import { RepresentativeProvider } from "./Representatives"
 import { UserProvider } from "./UserContext"
 import { VoiceYourStanceThemeProvider } from "./ThemeContext"
+import ApolloContext from "./ApolloContext"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
     <VoiceYourStanceThemeProvider>
-      <AuthenticationProvider>
-        <UserProvider>
-          <RepresentativeProvider>{children}</RepresentativeProvider>
-        </UserProvider>
-      </AuthenticationProvider>
+      <ApolloContext>
+        <AuthenticationProvider>
+          <UserProvider>
+            <RepresentativeProvider>{children}</RepresentativeProvider>
+          </UserProvider>
+        </AuthenticationProvider>
+      </ApolloContext>
     </VoiceYourStanceThemeProvider>
   )
 }

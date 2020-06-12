@@ -1,8 +1,24 @@
 import React from "react"
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js"
 import CardSection from "./CardSection"
+import styled from "styled-components"
 
-const CheckoutForm = () => {
+const Button = styled.button`
+  padding: 1rem;
+  background: ${(props) => props.theme.main_dark};
+  border: none;
+  margin: 1rem 0 0 0;
+  color: ${(props) => props.theme.background};
+  font-size: 0.9rem;
+  text-transform: lowercase;
+  font-variation-settings: "wght" 600;
+`
+
+interface Props {
+  callback: (id: string) => void
+}
+
+const CheckoutForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
 
@@ -29,14 +45,14 @@ const CheckoutForm = () => {
       // TODO: handle error
     } else {
       if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
-        // TODO handle success
+        props.callback(result.paymentIntent.id)
       }
     }
   }
   return (
     <form onSubmit={handleSubmit}>
       <CardSection />
-      <button disabled={!stripe}>Confirm order</button>
+      <Button disabled={!stripe}>Confirm order</Button>
     </form>
   )
 }
