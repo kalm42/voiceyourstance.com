@@ -8,8 +8,14 @@ import { useRepresentatives } from "../../context/Representatives"
 const Wrapper = styled.div`
   padding: 0 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   grid-gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+`
+const DivisionWrapper = styled.div`
+  display: grid;
+  grid-gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 `
 const RepLink = styled(Link)`
   color: ${(props) => props.theme.text};
@@ -20,6 +26,17 @@ const RepLink = styled(Link)`
     transform: scale(1.02);
   }
 `
+interface Rep {
+  title: string
+  name: string
+  party: string
+}
+interface Div {
+  id: string
+  name: string
+  reps: Rep[]
+}
+type YourReps = Div[]
 
 const Representatives = (props: RouteComponentProps) => {
   const representativeContext = useRepresentatives()
@@ -36,24 +53,47 @@ const Representatives = (props: RouteComponentProps) => {
     return null
   }
 
-  const reps = []
+  const scope: YourReps = []
+  for (const divisionId in civicInfo.divisions) {
+    if (civicInfo.divisions.hasOwnProperty(divisionId)) {
+      const division = civicInfo.divisions[divisionId]
+      const reps: Rep[] = []
 
-  for (const office of civicInfo.offices) {
-    const title = office.name
+      if (division.officeIndices) {
+        division.officeIndices.forEach((officeIndex) => {
+          const office = civicInfo.offices[officeIndex]
+          const title = office.name
 
-    for (const index of office.officialIndices) {
-      const official = civicInfo.officials[index]
-      const { name, party } = official
-      reps.push({ title, name, party })
+          for (const index of office.officialIndices) {
+            const official = civicInfo.officials[index]
+            const { name, party } = official
+            reps.push({ title, name, party })
+          }
+        })
+
+        const department: Div = {
+          id: divisionId,
+          name: division.name,
+          reps,
+        }
+        scope.push(department)
+      }
     }
   }
 
   return (
     <Wrapper>
-      {reps.map((rep, index) => (
-        <RepLink to={`/reps/${index}`}>
-          <Representative {...rep} />
-        </RepLink>
+      {scope.map((division) => (
+        <div key={division.id}>
+          <h2>{division.name}</h2>
+          <DivisionWrapper>
+            {division.reps.map((rep, index) => (
+              <RepLink to={`/reps/${index}`}>
+                <Representative {...rep} />
+              </RepLink>
+            ))}
+          </DivisionWrapper>
+        </div>
       ))}
     </Wrapper>
   )

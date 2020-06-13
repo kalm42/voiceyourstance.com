@@ -172,12 +172,9 @@ const Write = (props: Props) => {
             <p>You have {characterCount} characters left. There is a 5,000 character limit.</p>
           </div>
         )}
+        <h2>Write your letter here</h2>
         <EditorWrapper>
-          <Editor
-            editorState={editorState}
-            onChange={setEditorState}
-            placeholder="Start writing your letter on the next line. Don't worry, this text will go away."
-          />
+          <Editor editorState={editorState} onChange={setEditorState} />
         </EditorWrapper>
         <PrimaryInputSubmit
           value="Mail now $5 USD"

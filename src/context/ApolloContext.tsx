@@ -18,6 +18,13 @@ const typeDefs = gql`
     fromAddressZip: String!
     content: Json!
   }
+  input AddressInput {
+    fromName: String!
+    fromAddressLine1: String!
+    fromAddressCity: String!
+    fromAddressState: String!
+    fromAddressZip: String!
+  }
 `
 
 const uri = process.env.REACT_APP_BACKEND
