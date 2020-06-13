@@ -114,6 +114,7 @@ interface Props {
   editorState: EditorState
   to: Person
   from: Person
+  close: () => void
 }
 
 const MailDialog = (props: Props) => {
@@ -122,8 +123,22 @@ const MailDialog = (props: Props) => {
   const [mailId, setMailId] = useState<null | string>(null)
   const [mailDate, setMailDate] = useState<null | string>(null)
   const [error, setError] = useState<undefined | Error>(undefined)
+  const ref = useRef<HTMLDivElement>(null)
   const [createLetter] = useMutation(CREATE_LETTER)
   const [mailLetter] = useMutation(MAIL_LETTER)
+
+  const handleClick = useCallback(
+    (event: MouseEvent) => {
+      if (!ref.current || !event.target) return
+
+      if (ref.current.contains(event.target as Node)) {
+        return
+      } else {
+        props.close()
+      }
+    },
+    [props],
+  )
 
   useEffect(() => {
     if (!letterId) {

@@ -191,6 +191,7 @@ const Write = (props: Props) => {
           editorState={editorState}
           to={{ ...address, name: rep.name }}
           from={{ name, line1, city, state, zip }}
+          close={() => setPay(false)}
         />
       )}
     </Wrapper>
