@@ -26,7 +26,8 @@ const CheckoutForm = (props: Props) => {
     event.preventDefault()
     if (!stripe || !elements) return
 
-    const clientSecret = await fetch("http://localhost:8000/secret")
+    const uri = process.env.REACT_APP_BACKEND
+    const clientSecret = await fetch(`${uri}/secret`)
       .then((response) => response.json())
       .then((json) => json.client_secret)
 

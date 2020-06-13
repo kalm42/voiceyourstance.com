@@ -21,7 +21,7 @@ const typeDefs = gql`
 `
 
 const uri = process.env.REACT_APP_BACKEND
-const client = new ApolloCient({ uri, typeDefs })
+const client = new ApolloCient({ uri: `${uri}/graphql`, typeDefs })
 
 const ApolloContext: FunctionComponent = ({ children }) => {
   return <ApolloProvider client={client}>{children}</ApolloProvider>
