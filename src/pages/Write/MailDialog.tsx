@@ -8,6 +8,7 @@ import { Address } from "../../types"
 import { useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { format } from "date-fns"
+import ErrorMessage from "../../common/ErrorMessage"
 
 /**
  * GraphQL
@@ -92,13 +93,12 @@ const MailDialog = (props: Props) => {
   const [stripeId, setStripeId] = useState<null | string>(null)
   const [mailId, setMailId] = useState<null | string>(null)
   const [mailDate, setMailDate] = useState<null | string>(null)
+  const [error, setError] = useState<undefined | Error>(undefined)
   const [createLetter] = useMutation(CREATE_LETTER)
   const [mailLetter] = useMutation(MAIL_LETTER)
 
   useEffect(() => {
     if (!letterId) {
-      // TODO save letter set id in state
-      console.log(props.editorState.getCurrentContent())
       const letterState = props.editorState.getCurrentContent()
       const letterJson = convertToRaw(letterState)
       const letter: LetterInput = {
@@ -120,7 +120,7 @@ const MailDialog = (props: Props) => {
         if (res.data?.createLetter?.id) {
           setLetterId(res.data.createLetter.id as string)
         } else {
-          throw new Error("failed to create letter")
+          setError(new Error("failed to create letter"))
         }
       })
     }
@@ -144,21 +144,22 @@ const MailDialog = (props: Props) => {
   useEffect(() => {
     if (!mailId && stripeId) {
       mailLetter({ variables: { letterId, stripeId } }).then((res) => {
-        console.log(res)
         if (res.data.mailLetter.id) {
           setMailId(res.data.mailLetter.id)
           setMailDate(res.data.mailLetter.expectedDeliveryDate)
         } else {
-          throw new Error("failed to mail letter")
+          setError(new Error("failed to mail letter"))
         }
       })
     }
   }, [mailId, stripeId])
 
+  // TODO dialog offset < 500px
   return (
     <Wrapper>
       <H1>Mailing your letter</H1>
       <p>Mailing a letter has never been this easy. 3 simple steps.</p>
+      <ErrorMessage error={error} />
       <ul>
         <li>
           <span>{letterId ? "yes" : "no"}</span>

@@ -1,7 +1,9 @@
-import React from "react"
+import React, { useState } from "react"
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js"
 import CardSection from "./CardSection"
 import styled from "styled-components"
+import ErrorMessage from "../../common/ErrorMessage"
+import { StripeError } from "@stripe/stripe-js"
 
 const Button = styled.button`
   padding: 1rem;
@@ -19,6 +21,7 @@ interface Props {
 }
 
 const CheckoutForm = (props: Props) => {
+  const [error, setError] = useState<undefined | StripeError>(undefined)
   const stripe = useStripe()
   const elements = useElements()
 
@@ -42,8 +45,7 @@ const CheckoutForm = (props: Props) => {
       },
     })
     if (result.error) {
-      console.log(result.error)
-      // TODO: handle error
+      setError(result.error)
     } else {
       if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
         props.callback(result.paymentIntent.id)
@@ -52,6 +54,7 @@ const CheckoutForm = (props: Props) => {
   }
   return (
     <form onSubmit={handleSubmit}>
+      <ErrorMessage error={error} />
       <CardSection />
       <Button disabled={!stripe}>Confirm order</Button>
     </form>

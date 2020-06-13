@@ -1,5 +1,5 @@
 import React from "react"
-import { RouteComponentProps } from "@reach/router"
+import { RouteComponentProps, navigate } from "@reach/router"
 import styled from "styled-components"
 import Representative from "./Representative"
 import { Link } from "@reach/router"
@@ -24,10 +24,15 @@ const RepLink = styled(Link)`
 const Representatives = (props: RouteComponentProps) => {
   const representativeContext = useRepresentatives()
   if (!representativeContext) {
+    const message = encodeURIComponent("Please refresh the page and try again.")
+    navigate(`/?error=${message}`)
     return null
   }
+
   const { civicInfo } = representativeContext
   if (!civicInfo) {
+    const message = encodeURIComponent("There was an error and we did not find any representatives for you.")
+    navigate(`/?error=${message}`)
     return null
   }
 
