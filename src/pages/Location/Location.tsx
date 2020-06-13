@@ -3,6 +3,7 @@ import { RouteComponentProps, navigate } from "@reach/router"
 import { GeocodeResult } from "../../types"
 import LocationDisplay from "./LocationDisplay"
 import { RepresentativeContext } from "../../context/Representatives"
+import ErrorMessage from "../../common/ErrorMessage"
 
 type LocationState = {
   streetAddress: string
@@ -10,6 +11,7 @@ type LocationState = {
   state: string
   zipCode: string
   disabled: boolean
+  error: undefined | Error | PositionError
 }
 
 export class Location extends Component<RouteComponentProps, LocationState> {
@@ -23,6 +25,7 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       state: "",
       zipCode: "",
       disabled: false,
+      error: undefined,
     }
     this.controller = new AbortController()
   }
@@ -32,7 +35,6 @@ export class Location extends Component<RouteComponentProps, LocationState> {
   }
 
   reverseGeocode = (position: Position) => {
-    console.log("Received location, ", position)
     const cordinates = position.coords
     const googleKey = process.env.REACT_APP_GOOGLE_API_KEY
     const latlng = `latlng=${cordinates.latitude},${cordinates.longitude}`
@@ -40,18 +42,16 @@ export class Location extends Component<RouteComponentProps, LocationState> {
     const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?${latlng}&${key}`)
     const { signal } = this.controller
 
-    console.log("Fetching reverse geocode")
     this.setState({ disabled: true })
     fetch(url, { signal })
       .then((response) => response.json())
       .then((results) => {
-        console.log("Recevied results: ", results)
         this.setState({ disabled: false })
         if (results?.status === "OK") {
           const result = results.results[0]
           return result
         } else {
-          throw new Error(results.status)
+          this.setState({ error: new Error(results.status) })
         }
       })
       .then(this.massageResult)
@@ -59,7 +59,6 @@ export class Location extends Component<RouteComponentProps, LocationState> {
   }
 
   massageResult = (address: GeocodeResult) => {
-    console.log("Transforming result to match form: ", address)
     let streetNumber = ""
     let route = ""
     let city = ""
@@ -97,22 +96,17 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       state,
       zipCode,
     })
-    console.log("State set")
   }
 
   handlePositionError: PositionErrorCallback = (error: PositionError) => {
-    console.log("Handle error")
-    // TODO: Report error or do something.
-    console.log(error)
+    this.handleError(error)
   }
 
-  handleError = (error: Error) => {
-    console.log(error)
+  handleError = (error: Error | PositionError) => {
+    this.setState({ error })
   }
 
   getGeoLocation = () => {
-    console.log("Getting geolocation")
-
     new Promise((resolve, reject) => {
       const timerId = window.setTimeout(() => {
         const err = new Error("Browser did not return a position.")
@@ -145,12 +139,12 @@ export class Location extends Component<RouteComponentProps, LocationState> {
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    // ! Validate address fields
     const { streetAddress, city, state, zipCode } = this.state
-    if (!streetAddress || !city || !state || !zipCode) {
-      // TODO: set error message of some kind
+
+    if (!streetAddress.length || !city.length || !state.length || !zipCode.length) {
+      this.handleError(new Error("You must have a complete address."))
     }
-    // ! make fetch request
+
     const address = {
       line1: streetAddress,
       city,
@@ -158,28 +152,45 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       zip: zipCode,
     }
     const reps = this.context
+
     reps
       .getRepresentativesByAddress(address)
       .then(() => {
         navigate("/reps")
       })
       .catch((error: Error) => this.handleError(error))
-    // ! store result in local storage
-    // ! change page to /reps
+  }
+
+  checkForError = () => {
+    if (this.props.location?.search) {
+      const { search } = this.props.location
+      const urlParams = new URLSearchParams(search)
+      const errorMessage = urlParams.get("error")
+      if (errorMessage && errorMessage.length) {
+        this.setState({ error: new Error(decodeURIComponent(errorMessage)) })
+      }
+    }
   }
 
   render() {
+    if (!this.state.error) {
+      this.checkForError()
+    }
+
     return (
-      <LocationDisplay
-        streetAddress={this.state.streetAddress}
-        city={this.state.city}
-        state={this.state.state}
-        zipCode={this.state.zipCode}
-        getGeoLocation={this.getGeoLocation}
-        handleChange={this.handleChange}
-        disabled={this.state.disabled}
-        handleSubmit={this.handleSubmit}
-      />
+      <div>
+        <ErrorMessage error={this.state.error} />
+        <LocationDisplay
+          streetAddress={this.state.streetAddress}
+          city={this.state.city}
+          state={this.state.state}
+          zipCode={this.state.zipCode}
+          getGeoLocation={this.getGeoLocation}
+          handleChange={this.handleChange}
+          disabled={this.state.disabled}
+          handleSubmit={this.handleSubmit}
+        />
+      </div>
     )
   }
 }

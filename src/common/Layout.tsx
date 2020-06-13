@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBars, faEllipsisV, faEnvelope, faTimes } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faEllipsisV, faEnvelope, faTimes, faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Link } from "@reach/router"
 import styled from "styled-components"
@@ -21,6 +21,8 @@ const Header = styled.header`
 `
 const MenuButton = styled(FontAwesomeIcon)`
   color: ${(props) => props.theme.accent};
+  height: 20px !important;
+  width: 20px !important;
 `
 const Button = styled.button`
   background: none;
@@ -28,12 +30,24 @@ const Button = styled.button`
   cursor: pointer;
 `
 const Menu = styled.ul`
-  list-style: none;
-  padding: 0 40px;
-  margin: 0;
+  align-items: center;
   display: grid;
   height: 90vh;
-  align-items: center;
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 40px;
+  max-width: 500px;
+`
+const MenuItem = styled(Link)`
+  display: block;
+  padding: 2rem 1rem;
+  text-decoration: none;
+  transition: all 200ms ease;
+  color: ${(props) => props.theme.text};
+  &:hover {
+    background: ${(props) => props.theme.accent};
+    color: ${(props) => props.theme.background};
+  }
 `
 interface NavProps {
   open: boolean
@@ -112,6 +126,13 @@ const EmailLink = styled.a`
     color: #0072c6;
   }
 `
+const GoldIcon = styled(FontAwesomeIcon)`
+  color: ${(props) => props.theme.accent};
+  transition: all 200ms ease;
+  ${MenuItem}:hover & {
+    color: ${(props) => props.theme.background};
+  }
+`
 
 const Layout: FunctionComponent = ({ children }) => {
   const [open, setOpen] = useState(false)
@@ -119,6 +140,7 @@ const Layout: FunctionComponent = ({ children }) => {
   const handleMenuClick = () => {
     setOpen(!open)
   }
+
   return (
     <div>
       <Header>
@@ -135,16 +157,15 @@ const Layout: FunctionComponent = ({ children }) => {
           </Button>
           <Menu>
             <li>
-              <Link to="/" onClick={handleMenuClick}>
-                Location
-              </Link>
+              <MenuItem to="/" onClick={handleMenuClick}>
+                Location <GoldIcon icon={faCaretRight} />
+              </MenuItem>
             </li>
             <li>
-              <Link to="/reps" onClick={handleMenuClick}>
-                Your Representatives
-              </Link>
+              <MenuItem to="/reps" onClick={handleMenuClick}>
+                Your Representatives <GoldIcon icon={faCaretRight} />
+              </MenuItem>
             </li>
-            <li>Election Information</li>
             <li>Contact Us</li>
             <li>Privacy Policy</li>
           </Menu>
