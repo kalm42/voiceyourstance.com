@@ -87,6 +87,13 @@ const Write = (props: Props) => {
   const rep = reps[(props.repId as unknown) as number]
   const address = rep.address[(props.addrId as unknown) as number]
 
+  const verifyAddressEntered = () => {
+    if (!name.length || !line1.length || !city.length || !state.length || !zip.length) {
+      return false
+    }
+    return true
+  }
+
   return (
     <Wrapper>
       <PageWrapper pay={pay}>
