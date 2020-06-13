@@ -7,13 +7,22 @@ import { StripeError } from "@stripe/stripe-js"
 
 const Button = styled.button`
   padding: 1rem;
-  background: ${(props) => props.theme.main_dark};
+  background: ${(props) => props.theme.main};
   border: none;
-  margin: 1rem 0 0 0;
   color: ${(props) => props.theme.background};
   font-size: 0.9rem;
   text-transform: lowercase;
   font-variation-settings: "wght" 600;
+  cursor: pointer;
+`
+const Form = styled.form`
+  display: grid;
+  grid-gap: 1rem;
+`
+const PaymentWrapper = styled.div`
+  font-size: 1rem;
+  padding: 1rem;
+  border: 1px solid ${(props) => props.theme.accent};
 `
 
 interface Props {
@@ -69,11 +78,13 @@ const CheckoutForm = (props: Props) => {
     }
   }
   return (
-    <form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <ErrorMessage error={error} />
-      <CardSection />
+      <PaymentWrapper>
+        <CardSection />
+      </PaymentWrapper>
       <Button disabled={!stripe}>{loading ? "Processing..." : "Confirm order"}</Button>
-    </form>
+    </Form>
   )
 }
 

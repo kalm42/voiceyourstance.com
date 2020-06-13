@@ -10,8 +10,8 @@ import { gql } from "apollo-boost"
 import { format } from "date-fns"
 import ErrorMessage from "../../common/ErrorMessage"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faSpinner } from "@fortawesome/free-solid-svg-icons"
-import matchCity from "../../common/matchCity"
+import { faSpinner, faVoteYea } from "@fortawesome/free-solid-svg-icons"
+import { Input, PrimaryButton } from "../../common/elements"
 
 /**
  * GraphQL
@@ -31,6 +31,13 @@ const MAIL_LETTER = gql`
     }
   }
 `
+const UPDATE_LETTER = gql`
+  mutation UpdateLetter($letterId: String!, $letter: AddressInput!) {
+    updateLetter(letterId: $letterId, letter: $letter) {
+      id
+    }
+  }
+`
 
 /**
  * Styles
@@ -44,9 +51,12 @@ const Wrapper = styled.div`
   padding: 2rem;
   max-width: 500px;
   border: 1px solid ${(props) => props.theme.accent};
+  max-height: 80vh;
+  overflow-x: scroll;
 
   @media (max-width: 600px) {
-    left: 1.5vw;
+    left: 1vw;
+    top: 5vh;
   }
 `
 const H1 = styled.h1`
@@ -55,8 +65,6 @@ const H1 = styled.h1`
 `
 const PaymentWrapper = styled.div`
   padding: 1rem;
-  border: 1px solid ${(props) => props.theme.accent};
-  background: ${(props) => props.theme.main};
 `
 const StepsList = styled.ul`
   list-style: none;
@@ -79,6 +87,9 @@ const rotate = keyframes`
 const Spinner = styled(FontAwesomeIcon)`
   animation: ${rotate} 750ms linear infinite;
 `
+const GoldIcon = styled(FontAwesomeIcon)`
+  color: ${(props) => props.theme.accent};
+`
 
 /**
  * Stripe Setup
@@ -92,6 +103,12 @@ const stripePromise = loadStripe(key)
 /**
  * Types
  */
+interface GraphQLError {
+  graphQLErrors: object
+  networkError: object
+  message: string
+  extraInfo: undefined
+}
 interface LetterInput {
   toName: string
   toAddressLine1: string
@@ -123,9 +140,16 @@ const MailDialog = (props: Props) => {
   const [mailId, setMailId] = useState<null | string>(null)
   const [mailDate, setMailDate] = useState<null | string>(null)
   const [error, setError] = useState<undefined | Error>(undefined)
+  const [wrongAddress, setWrongAddress] = useState(false)
+  const [name, setName] = useState("")
+  const [line1, setLine1] = useState("")
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [zip, setZip] = useState("")
   const ref = useRef<HTMLDivElement>(null)
   const [createLetter] = useMutation(CREATE_LETTER)
   const [mailLetter] = useMutation(MAIL_LETTER)
+  const [updateLetter] = useMutation(UPDATE_LETTER)
 
   const handleClick = useCallback(
     (event: MouseEvent) => {
@@ -140,55 +164,79 @@ const MailDialog = (props: Props) => {
     [props],
   )
 
-  useEffect(() => {
-    if (!letterId) {
-      // Validate From Address
-      const city = matchCity(props.from.zip)
-      if (!city) {
-        setError(new Error("You entered an invalid zip code."))
-      } else {
-        if (city.state.toUpperCase() !== props.from.state.toUpperCase()) {
-          setError(new Error("The state you entered doesn't match the zip code you provided."))
-        } else if (city.city.toUpperCase() !== props.from.city.toUpperCase()) {
-          setError(
-            new Error(
-              "The city you entered doesn't match the zip code you provided. If you're correct and this check is wrong please contact us using the contact us page.",
-            ),
-          )
-        } else {
-          // Save letter
-          const letterState = props.editorState.getCurrentContent()
-          const letterJson = convertToRaw(letterState)
-          const letter: LetterInput = {
-            content: (letterJson as unknown) as string,
-            fromAddressCity: props.from.city,
-            fromAddressLine1: props.from.line1,
-            fromAddressLine2: "",
-            fromAddressState: props.from.state,
-            fromAddressZip: props.from.zip,
-            fromName: props.from.name,
-            toAddressCity: props.to.city,
-            toAddressLine1: props.to.line1,
-            toAddressLine2: props.to.line2 ? props.to.line2 : "",
-            toAddressState: props.to.state,
-            toAddressZip: props.to.zip,
-            toName: props.to.name,
-          }
-          createLetter({ variables: { letter } })
-            .then((res) => {
-              if (res.data?.createLetter?.id) {
-                setLetterId(res.data.createLetter.id as string)
-              } else {
-                setError(new Error("failed to create letter"))
-              }
-            })
-            .catch(() => setError(new Error("Failed to save the letter. Please try again later.")))
+  const tryAgain = () => {
+    setWrongAddress(false)
+    setError(undefined)
+    updateLetter({
+      variables: {
+        letterId,
+        letter: {
+          fromName: name,
+          fromAddressLine1: line1,
+          fromAddressCity: city,
+          fromAddressState: state,
+          fromAddressZip: zip,
+        },
+      },
+    })
+      .then(() => {
+        mailTheLetter()
+      })
+      .catch((error: GraphQLError) => {
+        setError(new Error("Failed to mail the letter."))
+        if (error.message.includes("from.")) {
+          setWrongAddress(true)
         }
-      }
+      })
+  }
+
+  const mailTheLetter = useCallback(() => {
+    mailLetter({ variables: { letterId, stripeId } })
+      .then((res) => {
+        if (res.data.mailLetter.id) {
+          setMailId(res.data.mailLetter.id)
+          setMailDate(res.data.mailLetter.expectedDeliveryDate)
+        } else {
+          setError(new Error("failed to mail letter"))
+        }
+      })
+      .catch((error: GraphQLError) => {
+        setError(new Error("Failed to mail the letter."))
+        if (error.message.includes("from.")) {
+          setWrongAddress(true)
+        }
+      })
+  }, [letterId, mailLetter, stripeId])
+
+  const saveTheLetter = useCallback(() => {
+    const letterState = props.editorState.getCurrentContent()
+    const letterJson = convertToRaw(letterState)
+    const letter: LetterInput = {
+      content: (letterJson as unknown) as string,
+      fromAddressCity: props.from.city,
+      fromAddressLine1: props.from.line1,
+      fromAddressLine2: "",
+      fromAddressState: props.from.state,
+      fromAddressZip: props.from.zip,
+      fromName: props.from.name,
+      toAddressCity: props.to.city,
+      toAddressLine1: props.to.line1,
+      toAddressLine2: props.to.line2 ? props.to.line2 : "",
+      toAddressState: props.to.state,
+      toAddressZip: props.to.zip,
+      toName: props.to.name,
     }
+    createLetter({ variables: { letter } })
+      .then((res) => {
+        if (res.data?.createLetter?.id) {
+          setLetterId(res.data.createLetter.id as string)
+        } else {
+          setError(new Error("failed to create letter"))
+        }
+      })
+      .catch(() => setError(new Error("Failed to save the letter. Please try again later.")))
   }, [
     createLetter,
-    letterId,
     props.editorState,
     props.from.city,
     props.from.line1,
@@ -204,19 +252,16 @@ const MailDialog = (props: Props) => {
   ])
 
   useEffect(() => {
-    if (!mailId && stripeId) {
-      mailLetter({ variables: { letterId, stripeId } })
-        .then((res) => {
-          if (res.data.mailLetter.id) {
-            setMailId(res.data.mailLetter.id)
-            setMailDate(res.data.mailLetter.expectedDeliveryDate)
-          } else {
-            setError(new Error("failed to mail letter"))
-          }
-        })
-        .catch(() => setError(new Error("Failed to mail the letter.")))
+    if (!letterId) {
+      saveTheLetter()
     }
-  }, [mailId, stripeId, letterId, mailLetter])
+  }, [letterId, saveTheLetter])
+
+  useEffect(() => {
+    if (!mailId && stripeId) {
+      mailTheLetter()
+    }
+  }, [mailId, stripeId, mailTheLetter])
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClick, false)
@@ -225,26 +270,80 @@ const MailDialog = (props: Props) => {
     }
   }, [handleClick])
 
-  // TODO dialog offset < 500px
   return (
     <Wrapper ref={ref}>
       <H1>Mailing your letter</H1>
       <p>Mailing a letter has never been this easy. 3 simple steps.</p>
-      <ErrorMessage error={error} />
       <StepsList>
         <Step>
-          <StepIcon>{letterId ? "yes" : <Spinner icon={faSpinner} />}</StepIcon>
+          <StepIcon>{letterId ? <GoldIcon icon={faVoteYea} /> : <Spinner icon={faSpinner} />}</StepIcon>
           <span>Save letter</span>
         </Step>
         <Step>
-          <StepIcon>{stripeId ? "yes" : <Spinner icon={faSpinner} />}</StepIcon>
+          <StepIcon>{stripeId ? <GoldIcon icon={faVoteYea} /> : <Spinner icon={faSpinner} />}</StepIcon>
           <span>Pay for mailing</span>
         </Step>
         <Step>
-          <StepIcon>{mailId ? "yes" : <Spinner icon={faSpinner} />}</StepIcon>
+          <StepIcon>{mailId ? <GoldIcon icon={faVoteYea} /> : <Spinner icon={faSpinner} />}</StepIcon>
           <span>Mail letter</span>
         </Step>
       </StepsList>
+      <ErrorMessage error={error} />
+      {wrongAddress && (
+        <div>
+          <Input
+            type="text"
+            name="name"
+            id="name"
+            placeholder="John Doe"
+            aria-label="Full name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            // disabled={pay}
+          />
+          <Input
+            type="text"
+            name="streetAddress"
+            id="street-address"
+            placeholder="1600 Pennsylvania Ave"
+            aria-label="Street address"
+            value={line1}
+            onChange={(event) => setLine1(event.target.value)}
+            // disabled={pay}
+          />
+          <Input
+            type="text"
+            name="city"
+            id="city"
+            placeholder="Washington"
+            aria-label="City"
+            value={city}
+            onChange={(event) => setCity(event.target.value)}
+            // disabled={pay}
+          />
+          <Input
+            type="text"
+            name="state"
+            id="state"
+            placeholder="DC"
+            aria-label="State"
+            value={state}
+            onChange={(event) => setState(event.target.value)}
+            // disabled={pay}
+          />
+          <Input
+            type="text"
+            name="zipCode"
+            id="zipcode"
+            placeholder="20003"
+            aria-label="Zip code"
+            value={zip}
+            onChange={(event) => setZip(event.target.value)}
+            // disabled={pay}
+          />
+          <PrimaryButton onClick={tryAgain}>Try Again</PrimaryButton>
+        </div>
+      )}
       {mailDate && (
         <div>
           <h3>Congratulations! Your letter is being printed!</h3>

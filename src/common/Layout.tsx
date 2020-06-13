@@ -166,8 +166,16 @@ const Layout: FunctionComponent = ({ children }) => {
                 Your Representatives <GoldIcon icon={faCaretRight} />
               </MenuItem>
             </li>
-            <li>Contact Us</li>
-            <li>Privacy Policy</li>
+            <li>
+              <MenuItem to="/contact-us" onClick={handleMenuClick}>
+                Contact Us <GoldIcon icon={faCaretRight} />
+              </MenuItem>
+            </li>
+            <li>
+              <MenuItem to="/privacy-policy" onClick={handleMenuClick}>
+                Privacy Policy <GoldIcon icon={faCaretRight} />
+              </MenuItem>
+            </li>
           </Menu>
         </Nav>
       </Header>

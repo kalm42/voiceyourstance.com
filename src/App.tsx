@@ -7,6 +7,8 @@ import Representative from "./pages/Representative"
 import NotFound from "./pages/NotFound"
 import Layout from "./common/Layout"
 import Write from "./pages/Write"
+import ContactUs from "./pages/ContactUs"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Representatives path="/reps" />
             <Representative path="/reps/:repId" />
             <Write path="/reps/:repId/write/:addrId" />
+            <ContactUs path="/contact-us" />
+            <PrivacyPolicy path="/privacy-policy" />
             <NotFound default />
           </Router>
         </Layout>
