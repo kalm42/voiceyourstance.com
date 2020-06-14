@@ -4,6 +4,7 @@ import Representative from "./Representative"
 import { Link, useHistory } from "react-router-dom"
 import { useRepresentatives } from "../../context/Representatives"
 import { useAnalytics } from "../../context/Analytics"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
 const Wrapper = styled.div`
   padding: 0 2rem;
@@ -93,18 +94,20 @@ const Representatives = () => {
 
   return (
     <Wrapper>
-      {scope.map((division) => (
-        <div key={division.id}>
-          <h2>{division.name}</h2>
-          <DivisionWrapper>
-            {division.reps.map((rep, index) => (
-              <RepLink to={`/reps/${index}`} key={index}>
-                <Representative {...rep} />
-              </RepLink>
-            ))}
-          </DivisionWrapper>
-        </div>
-      ))}
+      <ErrorReportingBoundry>
+        {scope.map((division) => (
+          <div key={division.id}>
+            <h2>{division.name}</h2>
+            <DivisionWrapper>
+              {division.reps.map((rep, index) => (
+                <RepLink to={`/reps/${index}`} key={index}>
+                  <Representative {...rep} />
+                </RepLink>
+              ))}
+            </DivisionWrapper>
+          </div>
+        ))}
+      </ErrorReportingBoundry>
     </Wrapper>
   )
 }

@@ -5,6 +5,7 @@ import { useRepresentatives } from "../../context/Representatives"
 import ErrorMessage from "../../common/ErrorMessage"
 import { useLocation, useHistory } from "react-router-dom"
 import { useAnalytics } from "../../context/Analytics"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
 type AcceptableErrors = Error | PositionError
 
@@ -221,17 +222,19 @@ const Location = () => {
 
   return (
     <div>
-      <ErrorMessage error={error} />
-      <LocationDisplay
-        streetAddress={streetAddress}
-        city={city}
-        state={state}
-        zipCode={zipCode}
-        getGeoLocation={getGeoLocation}
-        handleChange={handleChange}
-        disabled={disabled}
-        handleSubmit={handleSubmit}
-      />
+      <ErrorReportingBoundry>
+        <ErrorMessage error={error} />
+        <LocationDisplay
+          streetAddress={streetAddress}
+          city={city}
+          state={state}
+          zipCode={zipCode}
+          getGeoLocation={getGeoLocation}
+          handleChange={handleChange}
+          disabled={disabled}
+          handleSubmit={handleSubmit}
+        />
+      </ErrorReportingBoundry>
     </div>
   )
 }
