@@ -1,6 +1,6 @@
-import React from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
-import { RouteComponentProps } from "@reach/router"
+import { useAnalytics } from "../../context/Analytics"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -8,7 +8,16 @@ const Wrapper = styled.div`
   margin: 0 auto;
 `
 
-const ContactUs = (props: RouteComponentProps) => {
+const ContactUs = () => {
+  const analytics = useAnalytics()
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
+
   return (
     <Wrapper>
       <h1>Contact Us</h1>

@@ -1,7 +1,16 @@
-import React from "react"
-import { RouteComponentProps } from "@reach/router"
+import React, { useEffect } from "react"
+import { useAnalytics } from "../context/Analytics"
 
-const NotFound = (props: RouteComponentProps) => {
+const NotFound = () => {
+  const analytics = useAnalytics()
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
+
   return (
     <div>
       <h1>Error: 404</h1>

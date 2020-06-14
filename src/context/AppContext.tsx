@@ -5,18 +5,21 @@ import { RepresentativeProvider } from "./Representatives"
 import { UserProvider } from "./UserContext"
 import { VoiceYourStanceThemeProvider } from "./ThemeContext"
 import ApolloContext from "./ApolloContext"
+import { AnalyticsProvider } from "./Analytics"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
-    <VoiceYourStanceThemeProvider>
-      <ApolloContext>
-        <AuthenticationProvider>
-          <UserProvider>
-            <RepresentativeProvider>{children}</RepresentativeProvider>
-          </UserProvider>
-        </AuthenticationProvider>
-      </ApolloContext>
-    </VoiceYourStanceThemeProvider>
+    <AnalyticsProvider>
+      <VoiceYourStanceThemeProvider>
+        <ApolloContext>
+          <AuthenticationProvider>
+            <UserProvider>
+              <RepresentativeProvider>{children}</RepresentativeProvider>
+            </UserProvider>
+          </AuthenticationProvider>
+        </ApolloContext>
+      </VoiceYourStanceThemeProvider>
+    </AnalyticsProvider>
   )
 }
 
