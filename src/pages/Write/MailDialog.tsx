@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from "react"
 import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
-import styled, { keyframes } from "styled-components"
 import CheckoutForm from "./CheckoutForm"
 import { EditorState, convertToRaw } from "draft-js"
 import { Address } from "../../types"
@@ -9,10 +8,23 @@ import { useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { format } from "date-fns"
 import ErrorMessage from "../../common/ErrorMessage"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSpinner, faVoteYea } from "@fortawesome/free-solid-svg-icons"
-import { Input, PrimaryButton } from "../../common/elements"
+import { Input, PrimaryButton, SecondaryButton } from "../../common/elements"
 import { useAnalytics } from "../../context/Analytics"
+import lzString from "../../common/lzString"
+import { useLocation } from "react-router-dom"
+import {
+  Wrapper,
+  H1,
+  PaymentWrapper,
+  StepsList,
+  Step,
+  StepIcon,
+  Spinner,
+  GoldIcon,
+  CodeWrapper,
+  Code,
+} from "./MailDialogStyledComponents"
 
 /**
  * GraphQL
@@ -39,59 +51,6 @@ const UPDATE_LETTER = gql`
     }
   }
 `
-
-/**
- * Styles
- */
-const Wrapper = styled.div`
-  position: fixed;
-  top: 10vh;
-  left: calc(50vw - 250px - 2rem);
-  width: 80vw;
-  background: white;
-  padding: 2rem;
-  max-width: 500px;
-  border: 1px solid ${(props) => props.theme.accent};
-  max-height: 80vh;
-  overflow-x: scroll;
-
-  @media (max-width: 600px) {
-    left: 1vw;
-    top: 5vh;
-  }
-`
-const H1 = styled.h1`
-  font-variation-settings: "wght" 600;
-  text-align: center;
-`
-const PaymentWrapper = styled.div`
-  padding: 1rem;
-`
-const StepsList = styled.ul`
-  list-style: none;
-  padding: 1rem;
-`
-const Step = styled.li`
-  padding: 0.5rem;
-`
-const StepIcon = styled.span`
-  padding: 0.7rem;
-`
-const rotate = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-`
-const Spinner = styled(FontAwesomeIcon)`
-  animation: ${rotate} 750ms linear infinite;
-`
-const GoldIcon = styled(FontAwesomeIcon)`
-  color: ${(props) => props.theme.accent};
-`
-
 /**
  * Stripe Setup
  */
@@ -127,6 +86,7 @@ interface LetterInput {
 }
 interface Person extends Address {
   name: string
+  title?: string
 }
 interface Props {
   editorState: EditorState
@@ -147,11 +107,13 @@ const MailDialog = (props: Props) => {
   const [city, setCity] = useState("")
   const [state, setState] = useState("")
   const [zip, setZip] = useState("")
+  const [shareString, setShareString] = useState("")
   const ref = useRef<HTMLDivElement>(null)
   const [createLetter] = useMutation(CREATE_LETTER)
   const [mailLetter] = useMutation(MAIL_LETTER)
   const [updateLetter] = useMutation(UPDATE_LETTER)
   const analytics = useAnalytics()
+  const location = useLocation()
 
   /**
    * Analytics Report Page View
@@ -221,6 +183,7 @@ const MailDialog = (props: Props) => {
   const saveTheLetter = useCallback(() => {
     const letterState = props.editorState.getCurrentContent()
     const letterJson = convertToRaw(letterState)
+
     const letter: LetterInput = {
       content: (letterJson as unknown) as string,
       fromAddressCity: props.from.city,
@@ -263,18 +226,43 @@ const MailDialog = (props: Props) => {
     props.to.zip,
   ])
 
+  /**
+   * If the letter id has not been set then the letter has not been saved.
+   * So save the letter.
+   */
   useEffect(() => {
     if (!letterId) {
       saveTheLetter()
     }
   }, [letterId, saveTheLetter])
 
+  /**
+   * When the stripe id has been set the user has paid, then mail the letter
+   */
   useEffect(() => {
     if (!mailId && stripeId) {
       mailTheLetter()
     }
   }, [mailId, stripeId, mailTheLetter])
 
+  /**
+   * Prepare the share query string
+   */
+  useEffect(() => {
+    const letterState = props.editorState.getCurrentContent()
+    const letterJson = convertToRaw(letterState)
+    const lz = new lzString()
+    const letterTemplate = {
+      editorState: letterJson,
+      to: props.to,
+    }
+    const f = lz.compressToEncodedURIComponent(JSON.stringify(letterTemplate))
+    setShareString(f)
+  }, [props.editorState, props.to])
+
+  /**
+   * Handle click outside close
+   */
   useEffect(() => {
     document.addEventListener("mousedown", handleClick, false)
     return () => {
@@ -353,7 +341,7 @@ const MailDialog = (props: Props) => {
       )}
       {mailDate && (
         <div>
-          <h3>Congratulations! Your letter is being printed!</h3>
+          <h2>Congratulations! Your letter is being printed!</h2>
           <p>The expected delivery date for your letter is {format(new Date(mailDate), "MM/dd/yyyy")}</p>
         </div>
       )}
@@ -363,6 +351,27 @@ const MailDialog = (props: Props) => {
             <CheckoutForm callback={setStripeId} />
           </Elements>
         </PaymentWrapper>
+      )}
+      {shareString.length < 1900 ? (
+        <div>
+          <h2>Share</h2>
+          <p>Share your letter and let other people mail their copy of your letter to {props.to.name} also!</p>
+          <p>Copy this url or click the button to copy it. Paste it into the social media of your choice.</p>
+          <SecondaryButton>Copy URL</SecondaryButton>
+          <CodeWrapper>
+            <Code>
+              https://voiceyourstance.com{location.pathname}?template={shareString}
+            </Code>
+          </CodeWrapper>
+        </div>
+      ) : (
+        <div>
+          <h2>Share</h2>
+          <p>
+            I'm sorry your letter too long for us to make it shareable. If you would like to share it you will have to
+            remove some and try again.
+          </p>
+        </div>
       )}
     </Wrapper>
   )
