@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 import styled from "styled-components"
 import { useAnalytics } from "../../context/Analytics"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -20,17 +21,19 @@ const ContactUs = () => {
 
   return (
     <Wrapper>
-      <h1>Contact Us</h1>
-      <p>
-        We're a small crew with big dreams. Feel free to email Kyle Melton, or Wade Harned for support. This is just a
-        weekend project for us so be patient.
-      </p>
-      <p>
-        <a href="mailto:me@kylemelton.dev">Kyle</a>
-      </p>
-      <p>
-        <a href="mailto:me@kylemelton.dev">Wade</a>
-      </p>
+      <ErrorReportingBoundry>
+        <h1>Contact Us</h1>
+        <p>
+          We're a small crew with big dreams. Feel free to email Kyle Melton, or Wade Harned for support. This is just a
+          weekend project for us so be patient.
+        </p>
+        <p>
+          <a href="mailto:me@kylemelton.dev">Kyle</a>
+        </p>
+        <p>
+          <a href="mailto:me@kylemelton.dev">Wade</a>
+        </p>
+      </ErrorReportingBoundry>
     </Wrapper>
   )
 }

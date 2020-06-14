@@ -8,6 +8,7 @@ import DisplayAddress from "./DisplayAddress"
 import DisplaySocialMedia from "./DisplaySocialMedia"
 import { useParams } from "react-router-dom"
 import { useAnalytics } from "../../context/Analytics"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -82,51 +83,53 @@ const Representative = () => {
   const rep = reps[(repId as unknown) as number]
   return (
     <Wrapper>
-      <ProfileImage>
-        <DefaultProfileImage icon={faUser} />
-      </ProfileImage>
-      <RepNameWrapper>
-        <h1>{rep.name}</h1>
-        <p>
-          {rep.title} - {rep.party}
-        </p>
-      </RepNameWrapper>
-      <div>
-        <h3>Contact Information</h3>
+      <ErrorReportingBoundry>
+        <ProfileImage>
+          <DefaultProfileImage icon={faUser} />
+        </ProfileImage>
+        <RepNameWrapper>
+          <h1>{rep.name}</h1>
+          <p>
+            {rep.title} - {rep.party}
+          </p>
+        </RepNameWrapper>
         <div>
-          <h4>Phone</h4>
-          <PhoneCollection>
-            {rep.phones ? (
-              rep.phones.map((phone) => <DisplayPhone phoneNumber={phone} key={phone} />)
-            ) : (
-              <p>No phone numbers listed.</p>
-            )}
-          </PhoneCollection>
+          <h3>Contact Information</h3>
+          <div>
+            <h4>Phone</h4>
+            <PhoneCollection>
+              {rep.phones ? (
+                rep.phones.map((phone) => <DisplayPhone phoneNumber={phone} key={phone} />)
+              ) : (
+                <p>No phone numbers listed.</p>
+              )}
+            </PhoneCollection>
+          </div>
+          <div>
+            <h4>Address</h4>
+            <p>Click on an address to write a letter to them.</p>
+            <AddressCollection>
+              {rep.address ? (
+                rep.address.map((addr, index) => (
+                  <DisplayAddress address={addr} repId={repId} addrId={index} key={index} />
+                ))
+              ) : (
+                <p>No addresses provided.</p>
+              )}
+            </AddressCollection>
+          </div>
+          <div>
+            <h4>Social Media</h4>
+            <SocialMediaCollection>
+              {rep.channels ? (
+                rep.channels.map((channel) => <DisplaySocialMedia {...channel} key={channel.id} />)
+              ) : (
+                <p>No social media accounts listed.</p>
+              )}
+            </SocialMediaCollection>
+          </div>
         </div>
-        <div>
-          <h4>Address</h4>
-          <p>Click on an address to write a letter to them.</p>
-          <AddressCollection>
-            {rep.address ? (
-              rep.address.map((addr, index) => (
-                <DisplayAddress address={addr} repId={repId} addrId={index} key={index} />
-              ))
-            ) : (
-              <p>No addresses provided.</p>
-            )}
-          </AddressCollection>
-        </div>
-        <div>
-          <h4>Social Media</h4>
-          <SocialMediaCollection>
-            {rep.channels ? (
-              rep.channels.map((channel) => <DisplaySocialMedia {...channel} key={channel.id} />)
-            ) : (
-              <p>No social media accounts listed.</p>
-            )}
-          </SocialMediaCollection>
-        </div>
-      </div>
+      </ErrorReportingBoundry>
     </Wrapper>
   )
 }

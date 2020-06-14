@@ -108,7 +108,9 @@ const MailDialog = (props: Props) => {
   const [state, setState] = useState("")
   const [zip, setZip] = useState("")
   const [shareString, setShareString] = useState("")
+  const [cpyMsg, setCpyMsg] = useState("")
   const ref = useRef<HTMLDivElement>(null)
+  const shareUrlRef = useRef<HTMLDivElement>(null)
   const [createLetter] = useMutation(CREATE_LETTER)
   const [mailLetter] = useMutation(MAIL_LETTER)
   const [updateLetter] = useMutation(UPDATE_LETTER)
@@ -270,6 +272,27 @@ const MailDialog = (props: Props) => {
     }
   }, [handleClick])
 
+  const copyToClipboard = () => {
+    // select the text
+    const range = document.createRange()
+    if (shareUrlRef.current) {
+      range.selectNode(shareUrlRef.current)
+      const selection = window.getSelection()
+      if (selection) {
+        selection.addRange(range)
+        try {
+          // Now that we've selected the anchor text, execute the copy command
+          var successful = document.execCommand("copy")
+          var msg = successful ? "successful" : "unsuccessful"
+          setCpyMsg("Copy email command was " + msg)
+        } catch (error) {
+          setCpyMsg("Oops, unable to copy")
+        }
+        selection.removeAllRanges()
+      }
+    }
+  }
+
   return (
     <Wrapper ref={ref}>
       <H1>Mailing your letter</H1>
@@ -357,9 +380,9 @@ const MailDialog = (props: Props) => {
           <h2>Share</h2>
           <p>Share your letter and let other people mail their copy of your letter to {props.to.name} also!</p>
           <p>Copy this url or click the button to copy it. Paste it into the social media of your choice.</p>
-          <SecondaryButton>Copy URL</SecondaryButton>
+          <SecondaryButton onClick={copyToClipboard}>{cpyMsg.length ? cpyMsg : "Copy URL"}</SecondaryButton>
           <CodeWrapper>
-            <Code>
+            <Code ref={shareUrlRef}>
               https://voiceyourstance.com{location.pathname}?template={shareString}
             </Code>
           </CodeWrapper>

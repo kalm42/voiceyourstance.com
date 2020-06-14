@@ -4,6 +4,7 @@ import Representative from "./Representative"
 import { Link, useHistory } from "react-router-dom"
 import { useRepresentatives } from "../../context/Representatives"
 import { useAnalytics } from "../../context/Analytics"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
 const Wrapper = styled.div`
   padding: 0 2rem;
@@ -30,6 +31,7 @@ interface Rep {
   title: string
   name: string
   party: string
+  index: number
 }
 interface Div {
   id: string
@@ -77,7 +79,7 @@ const Representatives = () => {
           for (const index of office.officialIndices) {
             const official = civicInfo.officials[index]
             const { name, party } = official
-            reps.push({ title, name, party })
+            reps.push({ title, name, party, index })
           }
         })
 
@@ -93,18 +95,20 @@ const Representatives = () => {
 
   return (
     <Wrapper>
-      {scope.map((division) => (
-        <div key={division.id}>
-          <h2>{division.name}</h2>
-          <DivisionWrapper>
-            {division.reps.map((rep, index) => (
-              <RepLink to={`/reps/${index}`} key={index}>
-                <Representative {...rep} />
-              </RepLink>
-            ))}
-          </DivisionWrapper>
-        </div>
-      ))}
+      <ErrorReportingBoundry>
+        {scope.map((division, divisionIndex) => (
+          <div key={division.id}>
+            <h2>{division.name}</h2>
+            <DivisionWrapper>
+              {division.reps.map((rep) => (
+                <RepLink to={`/reps/${rep.index}`} key={rep.index}>
+                  <Representative {...rep} />
+                </RepLink>
+              ))}
+            </DivisionWrapper>
+          </div>
+        ))}
+      </ErrorReportingBoundry>
     </Wrapper>
   )
 }

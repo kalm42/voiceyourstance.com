@@ -6,6 +6,7 @@ import MailDialog from "./MailDialog"
 import { useParams } from "react-router-dom"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
 import FromForm from "./FromForm"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
 interface Params {
   repId?: string
@@ -67,19 +68,21 @@ const WriteLetter = () => {
     <Wrapper>
       <PageWrapper pay={pay}>
         <AddressDetails>
-          <FromForm
-            pay={pay}
-            line1={line1}
-            setLine1={setLine1}
-            name={name}
-            setName={setName}
-            city={city}
-            setCity={setCity}
-            setState={setState}
-            setZip={setZip}
-            state={state}
-            zip={zip}
-          />
+          <ErrorReportingBoundry>
+            <FromForm
+              pay={pay}
+              line1={line1}
+              setLine1={setLine1}
+              name={name}
+              setName={setName}
+              city={city}
+              setCity={setCity}
+              setState={setState}
+              setZip={setZip}
+              state={state}
+              zip={zip}
+            />
+          </ErrorReportingBoundry>
           <div>
             <h2>To</h2>
             <p>
@@ -100,9 +103,11 @@ const WriteLetter = () => {
           </div>
         )}
         <h2>Write your letter here</h2>
-        <EditorWrapper>
-          <Editor editorState={editorState} onChange={setEditorState} />
-        </EditorWrapper>
+        <ErrorReportingBoundry>
+          <EditorWrapper>
+            <Editor editorState={editorState} onChange={setEditorState} />
+          </EditorWrapper>
+        </ErrorReportingBoundry>
         <PrimaryInputSubmit
           value="Mail now $5 USD"
           type="submit"
@@ -111,12 +116,14 @@ const WriteLetter = () => {
         />
       </PageWrapper>
       {pay && (
-        <MailDialog
-          editorState={editorState}
-          to={{ ...to }}
-          from={{ name, line1, city, state, zip }}
-          close={() => setPay(false)}
-        />
+        <ErrorReportingBoundry>
+          <MailDialog
+            editorState={editorState}
+            to={{ ...to }}
+            from={{ name, line1, city, state, zip }}
+            close={() => setPay(false)}
+          />
+        </ErrorReportingBoundry>
       )}
     </Wrapper>
   )
