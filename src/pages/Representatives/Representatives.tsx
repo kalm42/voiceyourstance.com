@@ -31,6 +31,7 @@ interface Rep {
   title: string
   name: string
   party: string
+  index: number
 }
 interface Div {
   id: string
@@ -78,7 +79,7 @@ const Representatives = () => {
           for (const index of office.officialIndices) {
             const official = civicInfo.officials[index]
             const { name, party } = official
-            reps.push({ title, name, party })
+            reps.push({ title, name, party, index })
           }
         })
 
@@ -95,12 +96,12 @@ const Representatives = () => {
   return (
     <Wrapper>
       <ErrorReportingBoundry>
-        {scope.map((division) => (
+        {scope.map((division, divisionIndex) => (
           <div key={division.id}>
             <h2>{division.name}</h2>
             <DivisionWrapper>
-              {division.reps.map((rep, index) => (
-                <RepLink to={`/reps/${index}`} key={index}>
+              {division.reps.map((rep) => (
+                <RepLink to={`/reps/${rep.index}`} key={rep.index}>
                   <Representative {...rep} />
                 </RepLink>
               ))}
