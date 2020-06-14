@@ -12,6 +12,7 @@ import ErrorMessage from "../../common/ErrorMessage"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faSpinner, faVoteYea } from "@fortawesome/free-solid-svg-icons"
 import { Input, PrimaryButton } from "../../common/elements"
+import { useAnalytics } from "../../context/Analytics"
 
 /**
  * GraphQL
@@ -150,6 +151,14 @@ const MailDialog = (props: Props) => {
   const [createLetter] = useMutation(CREATE_LETTER)
   const [mailLetter] = useMutation(MAIL_LETTER)
   const [updateLetter] = useMutation(UPDATE_LETTER)
+  const analytics = useAnalytics()
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.modalView("mail letter modal")
+  }, [analytics])
 
   const handleClick = useCallback(
     (event: MouseEvent) => {
@@ -194,6 +203,7 @@ const MailDialog = (props: Props) => {
     mailLetter({ variables: { letterId, stripeId } })
       .then((res) => {
         if (res.data.mailLetter.id) {
+          analytics?.event("MAIL", "Letter mailed", "MAIL_LETTER", true)
           setMailId(res.data.mailLetter.id)
           setMailDate(res.data.mailLetter.expectedDeliveryDate)
         } else {
@@ -206,7 +216,7 @@ const MailDialog = (props: Props) => {
           setWrongAddress(true)
         }
       })
-  }, [letterId, mailLetter, stripeId])
+  }, [analytics, letterId, mailLetter, stripeId])
 
   const saveTheLetter = useCallback(() => {
     const letterState = props.editorState.getCurrentContent()
@@ -229,6 +239,7 @@ const MailDialog = (props: Props) => {
     createLetter({ variables: { letter } })
       .then((res) => {
         if (res.data?.createLetter?.id) {
+          analytics?.event("MAIL", "Save letter", "SAVE_LETTER", true)
           setLetterId(res.data.createLetter.id as string)
         } else {
           setError(new Error("failed to create letter"))
@@ -236,6 +247,7 @@ const MailDialog = (props: Props) => {
       })
       .catch(() => setError(new Error("Failed to save the letter. Please try again later.")))
   }, [
+    analytics,
     createLetter,
     props.editorState,
     props.from.city,
@@ -299,7 +311,6 @@ const MailDialog = (props: Props) => {
             aria-label="Full name"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            // disabled={pay}
           />
           <Input
             type="text"
@@ -309,7 +320,6 @@ const MailDialog = (props: Props) => {
             aria-label="Street address"
             value={line1}
             onChange={(event) => setLine1(event.target.value)}
-            // disabled={pay}
           />
           <Input
             type="text"
@@ -319,7 +329,6 @@ const MailDialog = (props: Props) => {
             aria-label="City"
             value={city}
             onChange={(event) => setCity(event.target.value)}
-            // disabled={pay}
           />
           <Input
             type="text"
@@ -329,7 +338,6 @@ const MailDialog = (props: Props) => {
             aria-label="State"
             value={state}
             onChange={(event) => setState(event.target.value)}
-            // disabled={pay}
           />
           <Input
             type="text"
@@ -339,7 +347,6 @@ const MailDialog = (props: Props) => {
             aria-label="Zip code"
             value={zip}
             onChange={(event) => setZip(event.target.value)}
-            // disabled={pay}
           />
           <PrimaryButton onClick={tryAgain}>Try Again</PrimaryButton>
         </div>

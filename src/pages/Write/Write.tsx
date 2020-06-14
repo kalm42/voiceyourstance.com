@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react"
 import { Editor, EditorState, convertToRaw } from "draft-js"
-import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
 import { Input, PrimaryInputSubmit } from "../../common/elements"
 import { useRepresentatives } from "../../context/Representatives"
 import MailDialog from "./MailDialog"
+import { useParams } from "react-router-dom"
+import { useAnalytics } from "../../context/Analytics"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -44,12 +45,12 @@ const PageWrapper = styled.div`
   }}
 `
 
-interface Props extends RouteComponentProps {
+interface Params {
   repId?: string
   addrId?: string
 }
 
-const Write = (props: Props) => {
+const Write = () => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
   const [characterCount, setCharacterCount] = useState(5000)
   const [name, setName] = useState("")
@@ -59,6 +60,15 @@ const Write = (props: Props) => {
   const [zip, setZip] = useState("")
   const [pay, setPay] = useState(false)
   const representativeContext = useRepresentatives()
+  const { repId, addrId } = useParams<Params>()
+  const analytics = useAnalytics()
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
 
   useEffect(() => {
     const contentState = editorState.getCurrentContent()
@@ -67,7 +77,7 @@ const Write = (props: Props) => {
     setCharacterCount(5000 - charCount)
   }, [editorState])
 
-  if (!representativeContext || !props.repId || !props.addrId) return null
+  if (!representativeContext || !repId || !addrId) return null
 
   const { civicInfo } = representativeContext
   if (!civicInfo) return null
@@ -84,15 +94,8 @@ const Write = (props: Props) => {
     }
   }
 
-  const rep = reps[(props.repId as unknown) as number]
-  const address = rep.address[(props.addrId as unknown) as number]
-
-  const verifyAddressEntered = () => {
-    if (!name.length || !line1.length || !city.length || !state.length || !zip.length) {
-      return false
-    }
-    return true
-  }
+  const rep = reps[(repId as unknown) as number]
+  const address = rep.address[(addrId as unknown) as number]
 
   return (
     <Wrapper>

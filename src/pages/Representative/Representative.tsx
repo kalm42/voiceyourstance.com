@@ -1,5 +1,4 @@
-import React from "react"
-import { RouteComponentProps } from "@reach/router"
+import React, { useEffect } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
@@ -7,6 +6,8 @@ import { useRepresentatives } from "../../context/Representatives"
 import DisplayPhone from "./DisplayPhone"
 import DisplayAddress from "./DisplayAddress"
 import DisplaySocialMedia from "./DisplaySocialMedia"
+import { useParams } from "react-router-dom"
+import { useAnalytics } from "../../context/Analytics"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -41,12 +42,22 @@ const SocialMediaCollection = styled.div`
   grid-gap: 1rem;
 `
 
-interface Props extends RouteComponentProps {
+interface Params {
   repId?: string
 }
 
-const Representative = (props: Props) => {
+const Representative = () => {
   const representativeContext = useRepresentatives()
+  const { repId } = useParams<Params>()
+  const analytics = useAnalytics()
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
+
   if (!representativeContext) {
     return null
   }
@@ -54,7 +65,7 @@ const Representative = (props: Props) => {
   if (!civicInfo) {
     return null
   }
-  if (!props.repId) return null
+  if (!repId) return null
 
   const reps = []
 
@@ -68,7 +79,7 @@ const Representative = (props: Props) => {
     }
   }
 
-  const rep = reps[(props.repId as unknown) as number]
+  const rep = reps[(repId as unknown) as number]
   return (
     <Wrapper>
       <ProfileImage>
@@ -86,7 +97,7 @@ const Representative = (props: Props) => {
           <h4>Phone</h4>
           <PhoneCollection>
             {rep.phones ? (
-              rep.phones.map((phone) => <DisplayPhone phoneNumber={phone} />)
+              rep.phones.map((phone) => <DisplayPhone phoneNumber={phone} key={phone} />)
             ) : (
               <p>No phone numbers listed.</p>
             )}
@@ -97,7 +108,9 @@ const Representative = (props: Props) => {
           <p>Click on an address to write a letter to them.</p>
           <AddressCollection>
             {rep.address ? (
-              rep.address.map((addr, index) => <DisplayAddress address={addr} repId={props.repId} addrId={index} />)
+              rep.address.map((addr, index) => (
+                <DisplayAddress address={addr} repId={repId} addrId={index} key={index} />
+              ))
             ) : (
               <p>No addresses provided.</p>
             )}
@@ -107,7 +120,7 @@ const Representative = (props: Props) => {
           <h4>Social Media</h4>
           <SocialMediaCollection>
             {rep.channels ? (
-              rep.channels.map((channel) => <DisplaySocialMedia {...channel} />)
+              rep.channels.map((channel) => <DisplaySocialMedia {...channel} key={channel.id} />)
             ) : (
               <p>No social media accounts listed.</p>
             )}

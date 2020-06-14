@@ -1,9 +1,9 @@
-import React from "react"
-import { RouteComponentProps, navigate } from "@reach/router"
+import React, { useEffect } from "react"
 import styled from "styled-components"
 import Representative from "./Representative"
-import { Link } from "@reach/router"
+import { Link, useHistory } from "react-router-dom"
 import { useRepresentatives } from "../../context/Representatives"
+import { useAnalytics } from "../../context/Analytics"
 
 const Wrapper = styled.div`
   padding: 0 2rem;
@@ -38,18 +38,28 @@ interface Div {
 }
 type YourReps = Div[]
 
-const Representatives = (props: RouteComponentProps) => {
+const Representatives = () => {
   const representativeContext = useRepresentatives()
+  const history = useHistory()
+  const analytics = useAnalytics()
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
+
   if (!representativeContext) {
     const message = encodeURIComponent("Please refresh the page and try again.")
-    navigate(`/?error=${message}`)
+    history.push(`/?error=${message}`)
     return null
   }
 
   const { civicInfo } = representativeContext
   if (!civicInfo) {
     const message = encodeURIComponent("There was an error and we did not find any representatives for you.")
-    navigate(`/?error=${message}`)
+    history.push(`/?error=${message}`)
     return null
   }
 
@@ -88,7 +98,7 @@ const Representatives = (props: RouteComponentProps) => {
           <h2>{division.name}</h2>
           <DivisionWrapper>
             {division.reps.map((rep, index) => (
-              <RepLink to={`/reps/${index}`}>
+              <RepLink to={`/reps/${index}`} key={index}>
                 <Representative {...rep} />
               </RepLink>
             ))}

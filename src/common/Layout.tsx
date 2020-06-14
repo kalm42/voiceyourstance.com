@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBars, faEllipsisV, faEnvelope, faTimes, faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { Link } from "@reach/router"
+import { Link } from "react-router-dom"
 import styled from "styled-components"
 
 const Title = styled.h1`

@@ -1,32 +1,18 @@
 import React from "react"
 import AppContext from "./context/AppContext"
-import { Router } from "@reach/router"
-import Location from "./pages/Location"
-import Representatives from "./pages/Representatives"
-import Representative from "./pages/Representative"
-import NotFound from "./pages/NotFound"
 import Layout from "./common/Layout"
-import Write from "./pages/Write"
-import ContactUs from "./pages/ContactUs"
-import PrivacyPolicy from "./pages/PrivacyPolicy"
+import Routes from "./Routes"
+import { BrowserRouter } from "react-router-dom"
 
 function App() {
   return (
-    <div>
+    <BrowserRouter>
       <AppContext>
         <Layout>
-          <Router>
-            <Location path="/" />
-            <Representatives path="/reps" />
-            <Representative path="/reps/:repId" />
-            <Write path="/reps/:repId/write/:addrId" />
-            <ContactUs path="/contact-us" />
-            <PrivacyPolicy path="/privacy-policy" />
-            <NotFound default />
-          </Router>
+          <Routes />
         </Layout>
       </AppContext>
-    </div>
+    </BrowserRouter>
   )
 }
 
