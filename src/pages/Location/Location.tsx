@@ -1,65 +1,52 @@
-import React, { Component } from "react"
-import { RouteComponentProps, navigate } from "@reach/router"
+import React, { useEffect, useRef, useState, useCallback } from "react"
 import { GeocodeResult } from "../../types"
 import LocationDisplay from "./LocationDisplay"
-import { RepresentativeContext } from "../../context/Representatives"
+import { useRepresentatives } from "../../context/Representatives"
+import ErrorMessage from "../../common/ErrorMessage"
+import { useLocation, useHistory } from "react-router-dom"
+import { useAnalytics } from "../../context/Analytics"
+import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
 
-type LocationState = {
-  streetAddress: string
-  city: string
-  state: string
-  zipCode: string
-  disabled: boolean
-}
+type AcceptableErrors = Error | PositionError
 
-export class Location extends Component<RouteComponentProps, LocationState> {
-  controller: AbortController
+const Location = () => {
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const [streetAddress, setStreetAddress] = useState("")
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [zipCode, setZipCode] = useState("")
+  const [disabled, setDisabled] = useState(false)
+  const [error, setError] = useState<AcceptableErrors | undefined>(undefined)
+  const search = useLocation().search
+  const reps = useRepresentatives()
+  const history = useHistory()
+  const analytics = useAnalytics()
 
-  constructor(props: RouteComponentProps) {
-    super(props)
-    this.state = {
-      streetAddress: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      disabled: false,
+  /**
+   * If the page changes during the fetch this will abort the fetch request
+   */
+  useEffect(() => {
+    abortControllerRef.current = new AbortController()
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
     }
-    this.controller = new AbortController()
+  }, [])
+
+  /**
+   * Takes in errors and reports them to the necessary reports and then alerts the user.
+   * @param error
+   */
+  const handleError = (error: AcceptableErrors) => {
+    setError(error)
   }
 
-  componentWillUnmount() {
-    this.controller.abort()
-  }
-
-  reverseGeocode = (position: Position) => {
-    console.log("Received location, ", position)
-    const cordinates = position.coords
-    const googleKey = process.env.REACT_APP_GOOGLE_API_KEY
-    const latlng = `latlng=${cordinates.latitude},${cordinates.longitude}`
-    const key = `key=${googleKey}`
-    const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?${latlng}&${key}`)
-    const { signal } = this.controller
-
-    console.log("Fetching reverse geocode")
-    this.setState({ disabled: true })
-    fetch(url, { signal })
-      .then((response) => response.json())
-      .then((results) => {
-        console.log("Recevied results: ", results)
-        this.setState({ disabled: false })
-        if (results?.status === "OK") {
-          const result = results.results[0]
-          return result
-        } else {
-          throw new Error(results.status)
-        }
-      })
-      .then(this.massageResult)
-      .catch(this.handleError)
-  }
-
-  massageResult = (address: GeocodeResult) => {
-    console.log("Transforming result to match form: ", address)
+  /**
+   * Takes the reverse geocode result and set's it to state.
+   * @param address GeocodeResult
+   */
+  const massageResults = (address: GeocodeResult) => {
     let streetNumber = ""
     let route = ""
     let city = ""
@@ -91,28 +78,50 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       }
     }
 
-    this.setState({
-      streetAddress: `${streetNumber} ${route}`,
-      city,
-      state,
-      zipCode,
-    })
-    console.log("State set")
+    setStreetAddress(`${streetNumber} ${route}`)
+    setCity(city)
+    setState(state)
+    setZipCode(zipCode)
   }
 
-  handlePositionError: PositionErrorCallback = (error: PositionError) => {
-    console.log("Handle error")
-    // TODO: Report error or do something.
-    console.log(error)
+  /**
+   * Takes the browser's coordinates and requests estimated addresses from Google
+   * @param position Position
+   */
+  const reverseGeocode = (position: Position) => {
+    const cordinates = position.coords
+    const googleKey = process.env.REACT_APP_GOOGLE_API_KEY
+    const latlng = `latlng=${cordinates.latitude},${cordinates.longitude}`
+    const key = `key=${googleKey}`
+    const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?${latlng}&${key}`)
+    const abrt = abortControllerRef.current
+    if (!abrt) {
+      setError(new Error("Abort controller not set"))
+      return
+    }
+    const { signal } = abrt
+
+    // start fetch
+    setDisabled(true)
+    fetch(url, { signal })
+      .then((response) => response.json())
+      .then((results) => {
+        setDisabled(false)
+        if (results.status === "OK") {
+          const result = results.results[0]
+          return result
+        } else {
+          setError(new Error(results.status))
+        }
+      })
+      .then(massageResults)
+      .catch(handleError)
   }
 
-  handleError = (error: Error) => {
-    console.log(error)
-  }
-
-  getGeoLocation = () => {
-    console.log("Getting geolocation")
-
+  /**
+   * Get the geo location from the browser. If it fails tell the user.
+   */
+  const getGeoLocation = () => {
     new Promise((resolve, reject) => {
       const timerId = window.setTimeout(() => {
         const err = new Error("Browser did not return a position.")
@@ -131,58 +140,103 @@ export class Location extends Component<RouteComponentProps, LocationState> {
       )
     })
       .then((pos) => {
-        this.reverseGeocode(pos as Position)
+        reverseGeocode(pos as Position)
       })
-      .catch((error) => this.handlePositionError(error))
+      .catch((error) => handleError(error))
   }
 
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const name = ({ [event.target.name]: event.target.value } as unknown) as LocationState
-
-    this.setState(name)
+  /**
+   * Update state for the address.
+   * @param event Change Event
+   */
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    switch (event.target.name) {
+      case "streetAddress":
+        setStreetAddress(event.target.value)
+        break
+      case "city":
+        setCity(event.target.value)
+        break
+      case "state":
+        setState(event.target.value)
+        break
+      case "zipCode":
+        setZipCode(event.target.value)
+        break
+      default:
+        break
+    }
   }
 
-  handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  /**
+   * Get representatives from google.
+   * @param event Form Submission
+   */
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    // ! Validate address fields
-    const { streetAddress, city, state, zipCode } = this.state
-    if (!streetAddress || !city || !state || !zipCode) {
-      // TODO: set error message of some kind
+    if (!streetAddress.length || !city.length || !state.length || !zipCode.length) {
+      handleError(new Error("You must have a complete address."))
+      return
     }
-    // ! make fetch request
+
     const address = {
       line1: streetAddress,
       city,
       state,
       zip: zipCode,
     }
-    const reps = this.context
+    if (!reps) {
+      handleError(new Error("There has been an error. Please refresh the page."))
+      return
+    }
     reps
       .getRepresentativesByAddress(address)
       .then(() => {
-        navigate("/reps")
+        history.push("/reps")
       })
-      .catch((error: Error) => this.handleError(error))
-    // ! store result in local storage
-    // ! change page to /reps
+      .catch((error: Error) => handleError(error))
   }
 
-  render() {
-    return (
-      <LocationDisplay
-        streetAddress={this.state.streetAddress}
-        city={this.state.city}
-        state={this.state.state}
-        zipCode={this.state.zipCode}
-        getGeoLocation={this.getGeoLocation}
-        handleChange={this.handleChange}
-        disabled={this.state.disabled}
-        handleSubmit={this.handleSubmit}
-      />
-    )
-  }
+  /**
+   * Check for an error query param. Other pages are set to push to this page with an error message in the query param.
+   */
+  const checkForError = useCallback(() => {
+    const urlParams = new URLSearchParams(search)
+    const errorMessage = urlParams.get("error")
+    if (errorMessage && errorMessage.length) {
+      setError(new Error(decodeURIComponent(errorMessage)))
+    }
+  }, [search])
+
+  useEffect(() => {
+    checkForError()
+  }, [checkForError])
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
+
+  return (
+    <div>
+      <ErrorReportingBoundry>
+        <ErrorMessage error={error} />
+        <LocationDisplay
+          streetAddress={streetAddress}
+          city={city}
+          state={state}
+          zipCode={zipCode}
+          getGeoLocation={getGeoLocation}
+          handleChange={handleChange}
+          disabled={disabled}
+          handleSubmit={handleSubmit}
+        />
+      </ErrorReportingBoundry>
+    </div>
+  )
 }
-Location.contextType = RepresentativeContext
 
 export default Location

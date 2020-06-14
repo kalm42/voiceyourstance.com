@@ -4,10 +4,10 @@ import { CardElement } from "@stripe/react-stripe-js"
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
-      color: "#ffffff",
+      color: "#000000",
       fontWeight: "300",
       "::placeholder": {
-        color: "#d1d7dd",
+        color: "dimgrey",
       },
     },
     invalid: {

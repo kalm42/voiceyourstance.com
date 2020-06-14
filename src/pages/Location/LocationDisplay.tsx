@@ -6,6 +6,7 @@ const PageContent = styled.div`
   max-width: 800px;
   width: 67vw;
   margin: 0 auto;
+  padding-bottom: 2rem;
 `
 interface Props {
   streetAddress: string
@@ -20,6 +21,7 @@ interface Props {
 
 const LocationDisplay = (props: Props) => {
   const { streetAddress, city, state, zipCode, getGeoLocation, handleChange, handleSubmit, disabled } = props
+
   return (
     <PageContent>
       <p>What is your voter registration address?</p>

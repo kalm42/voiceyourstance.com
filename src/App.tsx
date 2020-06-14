@@ -1,28 +1,21 @@
 import React from "react"
 import AppContext from "./context/AppContext"
-import { Router } from "@reach/router"
-import Location from "./pages/Location"
-import Representatives from "./pages/Representatives"
-import Representative from "./pages/Representative"
-import NotFound from "./pages/NotFound"
 import Layout from "./common/Layout"
-import Write from "./pages/Write"
+import Routes from "./Routes"
+import { BrowserRouter } from "react-router-dom"
+import ErrorReportingBoundry from "./common/ErrorReportingBoundry"
 
 function App() {
   return (
-    <div>
-      <AppContext>
-        <Layout>
-          <Router>
-            <Location path="/" />
-            <Representatives path="/reps" />
-            <Representative path="/reps/:repId" />
-            <Write path="/reps/:repId/write/:addrId" />
-            <NotFound default />
-          </Router>
-        </Layout>
-      </AppContext>
-    </div>
+    <ErrorReportingBoundry>
+      <BrowserRouter>
+        <AppContext>
+          <Layout>
+            <Routes />
+          </Layout>
+        </AppContext>
+      </BrowserRouter>
+    </ErrorReportingBoundry>
   )
 }
 
