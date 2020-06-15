@@ -4,6 +4,7 @@ import { faBars, faEllipsisV, faEnvelope, faTimes, faCaretRight } from "@fortawe
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Link } from "react-router-dom"
 import styled from "styled-components"
+import { useMetaData } from "../context/MetaData"
 
 const Title = styled.h1`
   padding: 0;
@@ -136,6 +137,9 @@ const GoldIcon = styled(FontAwesomeIcon)`
 
 const Layout: FunctionComponent = ({ children }) => {
   const [open, setOpen] = useState(false)
+  const MetaData = useMetaData()
+
+  const t = MetaData?.title || "Home"
 
   const handleMenuClick = () => {
     setOpen(!open)
@@ -147,7 +151,7 @@ const Layout: FunctionComponent = ({ children }) => {
         <Button onClick={handleMenuClick} style={{ justifySelf: "start" }}>
           <MenuButton icon={faBars} />
         </Button>
-        <Title>Home</Title>
+        <Title>{t}</Title>
         <Button style={{ justifySelf: "end" }}>
           <MenuButton icon={faEllipsisV} />
         </Button>

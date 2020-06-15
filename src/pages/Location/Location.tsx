@@ -6,6 +6,7 @@ import ErrorMessage from "../../common/ErrorMessage"
 import { useLocation, useHistory } from "react-router-dom"
 import { useAnalytics } from "../../context/Analytics"
 import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
+import { useMetaData } from "../../context/MetaData"
 
 type AcceptableErrors = Error | PositionError
 
@@ -21,6 +22,17 @@ const Location = () => {
   const reps = useRepresentatives()
   const history = useHistory()
   const analytics = useAnalytics()
+  const MetaData = useMetaData()
+
+  const setMetaData = useCallback(() => {
+    if (!MetaData) return
+    MetaData.setMetaDescription("Enter your registered voting address to find out who your representatives are.")
+    MetaData.setTitle("Locate Me")
+  }, [MetaData])
+
+  useEffect(() => {
+    setMetaData()
+  }, [setMetaData])
 
   /**
    * If the page changes during the fetch this will abort the fetch request
