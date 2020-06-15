@@ -1,6 +1,7 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { useAnalytics } from "../context/Analytics"
+import { useMetaData } from "../context/MetaData"
 
 const Wrapper = styled.div`
   max-width: 700px;
@@ -10,6 +11,17 @@ const Wrapper = styled.div`
 
 const NotFound = () => {
   const analytics = useAnalytics()
+  const MetaData = useMetaData()
+
+  const setMetaData = useCallback(() => {
+    if (!MetaData) return
+    MetaData.setMetaDescription("The page you were looking for is not here.")
+    MetaData.setTitle("Not Found")
+  }, [MetaData])
+
+  useEffect(() => {
+    setMetaData()
+  }, [setMetaData])
 
   /**
    * Analytics Report Page View

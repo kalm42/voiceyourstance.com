@@ -1,7 +1,8 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { useAnalytics } from "../../context/Analytics"
 import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
+import { useMetaData } from "../../context/MetaData"
 
 const Section = styled.section`
   max-width: 900px;
@@ -11,6 +12,17 @@ const Section = styled.section`
 
 const PrivacyPolicy = () => {
   const analytics = useAnalytics()
+  const MetaData = useMetaData()
+
+  const setMetaData = useCallback(() => {
+    if (!MetaData) return
+    MetaData.setMetaDescription("Learn about what information we gather, how we use, and who we share it with.")
+    MetaData.setTitle("Privacy Policy")
+  }, [MetaData])
+
+  useEffect(() => {
+    setMetaData()
+  }, [setMetaData])
 
   /**
    * Analytics Report Page View

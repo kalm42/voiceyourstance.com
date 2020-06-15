@@ -6,19 +6,22 @@ import { UserProvider } from "./UserContext"
 import { VoiceYourStanceThemeProvider } from "./ThemeContext"
 import ApolloContext from "./ApolloContext"
 import { AnalyticsProvider } from "./Analytics"
+import { MetaDataProvider } from "./MetaData"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
     <AnalyticsProvider>
-      <VoiceYourStanceThemeProvider>
-        <ApolloContext>
-          <AuthenticationProvider>
-            <UserProvider>
-              <RepresentativeProvider>{children}</RepresentativeProvider>
-            </UserProvider>
-          </AuthenticationProvider>
-        </ApolloContext>
-      </VoiceYourStanceThemeProvider>
+      <MetaDataProvider>
+        <VoiceYourStanceThemeProvider>
+          <ApolloContext>
+            <AuthenticationProvider>
+              <UserProvider>
+                <RepresentativeProvider>{children}</RepresentativeProvider>
+              </UserProvider>
+            </AuthenticationProvider>
+          </ApolloContext>
+        </VoiceYourStanceThemeProvider>
+      </MetaDataProvider>
     </AnalyticsProvider>
   )
 }

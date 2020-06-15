@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback, useMemo } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
@@ -9,6 +9,7 @@ import DisplaySocialMedia from "./DisplaySocialMedia"
 import { useParams } from "react-router-dom"
 import { useAnalytics } from "../../context/Analytics"
 import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
+import { useMetaData } from "../../context/MetaData"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -51,7 +52,38 @@ const Representative = () => {
   const representativeContext = useRepresentatives()
   const { repId } = useParams<Params>()
   const analytics = useAnalytics()
+  const MetaData = useMetaData()
 
+  const rep = useMemo(() => {
+    if (!representativeContext) return null
+    const { civicInfo } = representativeContext
+    if (!civicInfo || !repId) return null
+
+    const reps = []
+
+    for (const office of civicInfo.offices) {
+      const title = office.name
+
+      for (const index of office.officialIndices) {
+        const official = civicInfo.officials[index]
+        const { name, party, address, phones, channels } = official
+        reps.push({ title, name, party, address, phones, channels })
+      }
+    }
+
+    return reps[(repId as unknown) as number]
+  }, [representativeContext, repId])
+
+  const setMetaData = useCallback(() => {
+    if (!MetaData || !rep) return
+
+    MetaData.setMetaDescription(`${rep.name} the ${rep.title}'s contact information`)
+    MetaData.setTitle("Representative")
+  }, [MetaData, rep])
+
+  useEffect(() => {
+    setMetaData()
+  }, [setMetaData])
   /**
    * Analytics Report Page View
    */
@@ -59,28 +91,10 @@ const Representative = () => {
     analytics?.pageView()
   }, [analytics])
 
-  if (!representativeContext) {
-    return null
-  }
-  const { civicInfo } = representativeContext
-  if (!civicInfo) {
-    return null
-  }
-  if (!repId) return null
-
-  const reps = []
-
-  for (const office of civicInfo.offices) {
-    const title = office.name
-
-    for (const index of office.officialIndices) {
-      const official = civicInfo.officials[index]
-      const { name, party, address, phones, channels } = official
-      reps.push({ title, name, party, address, phones, channels })
-    }
+  if (!rep) {
+    throw new Error("No representative was found.")
   }
 
-  const rep = reps[(repId as unknown) as number]
   return (
     <Wrapper>
       <ErrorReportingBoundry>
