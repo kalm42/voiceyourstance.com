@@ -4,6 +4,7 @@ import Layout from "./common/Layout"
 import Routes from "./Routes"
 import { BrowserRouter } from "react-router-dom"
 import ErrorReportingBoundry from "./common/ErrorReportingBoundry"
+import Seo from "./common/Seo"
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <BrowserRouter>
         <AppContext>
           <Layout>
+            <Seo />
             <Routes />
           </Layout>
         </AppContext>

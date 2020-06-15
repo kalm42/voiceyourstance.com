@@ -1,7 +1,8 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { useAnalytics } from "../../context/Analytics"
 import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
+import { useMetaData } from "../../context/MetaData"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -11,13 +12,21 @@ const Wrapper = styled.div`
 
 const ContactUs = () => {
   const analytics = useAnalytics()
+  const MetaData = useMetaData()
+
+  const setMetaData = useCallback(() => {
+    if (!MetaData) return
+    MetaData.setMetaDescription("Contact our small but mighty team to help resolve a problem.")
+    MetaData.setTitle("Contact Us")
+  }, [MetaData])
 
   /**
    * Analytics Report Page View
    */
   useEffect(() => {
     analytics?.pageView()
-  }, [analytics])
+    setMetaData()
+  }, [analytics, setMetaData])
 
   return (
     <Wrapper>

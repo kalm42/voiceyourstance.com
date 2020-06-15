@@ -6,6 +6,7 @@ import { Address } from "../../types"
 import lzString from "../../common/lzString"
 import WriteLetter from "./WriteLetter"
 import WriteTemplateLetter from "./WriteTemplateLetter"
+import { useMetaData } from "../../context/MetaData"
 
 interface To extends Address {
   name: string
@@ -20,6 +21,17 @@ const Write = () => {
   const [template, setTemplate] = useState<Template | undefined>(undefined)
   const analytics = useAnalytics()
   const searchParams = new URLSearchParams(useLocation().search)
+  const MetaData = useMetaData()
+
+  const setMetaData = useCallback(() => {
+    if (!MetaData) return
+    MetaData.setMetaDescription("Write and mail a letter to your representative.")
+    MetaData.setTitle("Write a letter")
+  }, [MetaData])
+
+  useEffect(() => {
+    setMetaData()
+  }, [setMetaData])
 
   /**
    * Analytics Report Page View
