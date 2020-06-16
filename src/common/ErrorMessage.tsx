@@ -1,6 +1,7 @@
 import React from "react"
 import styled from "styled-components"
 import { StripeError } from "@stripe/stripe-js"
+import reportError from "../common/reportError"
 
 const ErrorBox = styled.div`
   padding: 2rem;
@@ -15,15 +16,9 @@ interface Props {
 const ErrorMessage = (props: Props) => {
   const { error } = props
   if (!error || !error.message) return null
-  // if (error.networkError?.result?.errors?.length) {
-  //   return error.networkError.result.errors.map((error: Error, index) => (
-  //     <ErrorBox>
-  //       <p>
-  //         <em>Shoot!</em> {error.message.replace("GraphQL error: ", "")}
-  //       </p>
-  //     </ErrorBox>
-  //   ))
-  // }
+
+  reportError(error)
+
   return (
     <ErrorBox>
       <p>
