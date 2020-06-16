@@ -25,6 +25,7 @@ import {
   CodeWrapper,
   Code,
 } from "./MailDialogStyledComponents"
+import reportError from "../../common/reportError"
 
 /**
  * GraphQL
@@ -210,7 +211,10 @@ const MailDialog = (props: Props) => {
           setError(new Error("failed to create letter"))
         }
       })
-      .catch(() => setError(new Error("Failed to save the letter. Please try again later.")))
+      .catch((error) => {
+        reportError(error)
+        setError(new Error("Failed to save the letter. Please try again later."))
+      })
   }, [
     analytics,
     createLetter,
