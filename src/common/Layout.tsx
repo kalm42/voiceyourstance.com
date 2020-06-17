@@ -65,7 +65,7 @@ const Nav = styled.nav`
   padding: 20px;
 `
 const Main = styled.main`
-  min-height: calc(100vh - 300px);
+  min-height: calc(100vh - 290px);
 `
 const Footer = styled.footer`
   background: ${(props) => props.theme.main};
