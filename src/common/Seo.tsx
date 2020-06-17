@@ -1,10 +1,11 @@
 import React from "react"
 import { Helmet } from "react-helmet"
 import { useMetaData } from "../context/MetaData"
+import { useLocation } from "react-router-dom"
 
 const Seo = () => {
-  const meta = []
   const MetaData = useMetaData()
+  const location = useLocation()
   if (!MetaData) return null
   const { lang, title, metaDescription, author } = MetaData
   return (
@@ -12,6 +13,8 @@ const Seo = () => {
       <title>{title}</title>
       <html lang={lang} />
       <meta name="description" content={metaDescription} />
+      {/* <meta property="og:image" content={} /> */}
+      <meta property="og:url" content={location.pathname} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:type" content="website" />
