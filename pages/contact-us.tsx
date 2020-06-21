@@ -31,7 +31,10 @@ const ContactUs = () => {
 
   return (
     <Wrapper>
-      <Seo metaDescription="Contact our small but mighty team to help resolve a problem." title="Contact Us" />
+      <Seo
+        metaDescription="Contact our small but mighty team to help resolve a problem."
+        title="Contact Us | Voice Your Stance"
+      />
       <ErrorReportingBoundry>
         <h1>Contact Us</h1>
         <p>

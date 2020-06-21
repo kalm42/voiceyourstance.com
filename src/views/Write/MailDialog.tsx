@@ -387,7 +387,7 @@ const MailDialog = (props: Props) => {
           <SecondaryButton onClick={copyToClipboard}>{cpyMsg.length ? cpyMsg : "Copy URL"}</SecondaryButton>
           <CodeWrapper>
             <Code ref={shareUrlRef}>
-              https://voiceyourstance.com{router.pathname}?template={shareString}
+              https://voiceyourstance.com{router.asPath}?template={shareString}
             </Code>
           </CodeWrapper>
         </div>

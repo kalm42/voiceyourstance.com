@@ -33,7 +33,7 @@ const PrivacyPolicy = () => {
     <Section id="privacy">
       <Seo
         metaDescription="Learn about what information we gather, how we use, and who we share it with."
-        title="Privacy Policy"
+        title="Privacy Policy | Voice Your Stance"
       />
       <ErrorReportingBoundry>
         <h1>Privacy Policy</h1>
