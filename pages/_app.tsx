@@ -1,9 +1,9 @@
 import React from "react"
 import { AppProps } from "next/app"
-import NextNProgress from "nextjs-progressbar"
 import AppContext from "../src/context/AppContext"
 import ErrorReportingBoundary from "../src/common/ErrorReportingBoundry"
 import Layout from "../src/common/Layout"
+import ProgressBar from "../src/common/ProgressBar"
 import * as Sentry from "@sentry/browser"
 import "./_app.css"
 
@@ -15,7 +15,7 @@ function VYSApp({ Component, pageProps }: AppProps) {
     <ErrorReportingBoundary>
       <AppContext>
         <Layout>
-          <NextNProgress options={{ easing: "ease" }} color="#344051" />
+          <ProgressBar options={{ easing: "ease" }} color="#344051" />
           <Component {...pageProps} />
         </Layout>
       </AppContext>

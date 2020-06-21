@@ -121,7 +121,7 @@ const Representative = () => {
   /**
    * set the title
    */
-  if (MetaData.safeSetTitle) {
+  if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle("Representative")
   }
 
