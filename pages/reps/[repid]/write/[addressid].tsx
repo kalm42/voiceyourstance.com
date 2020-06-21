@@ -26,7 +26,7 @@ const Write = () => {
   /**
    * set the title
    */
-  if (MetaData.safeSetTitle) {
+  if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle("Write a letter")
   }
 
