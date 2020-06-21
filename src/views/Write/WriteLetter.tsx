@@ -63,7 +63,10 @@ const WriteLetter = () => {
 
   return (
     <Wrapper>
-      <Seo title="Write a letter" metaDescription="Write and mail a letter to your representative." />
+      <Seo
+        title="Mail a letter to your representative | Voice Your Stance"
+        metaDescription="Write and mail a letter to your representative."
+      />
       <PageWrapper pay={pay}>
         <AddressDetails>
           <ErrorReportingBoundry>

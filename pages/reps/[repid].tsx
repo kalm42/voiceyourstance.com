@@ -163,7 +163,7 @@ const Representative = () => {
   return (
     <Wrapper>
       <Seo
-        title={`Representative ${rep.name}`}
+        title={`Representative ${rep.name} | Voice Your Stance`}
         metaDescription={`${rep.name} the ${rep.title}'s contact information`}
       />
       <ErrorReportingBoundry>

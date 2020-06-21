@@ -52,7 +52,10 @@ const WriteTemplateLetter = (props: Props) => {
 
   return (
     <Wrapper>
-      <Seo metaDescription="Write and mail a letter to your representative." title="Write a letter" />
+      <Seo
+        metaDescription="Write and mail a letter to your representative."
+        title="Mail a letter to your representative | Voice Your Stance"
+      />
       <PageWrapper pay={pay}>
         <AddressDetails>
           <ErrorReportingBoundry>

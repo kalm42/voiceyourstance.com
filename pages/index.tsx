@@ -241,7 +241,7 @@ const Location = () => {
     <div>
       <Seo
         metaDescription="Enter your registered voting address to find out who your representatives are."
-        title="Locate Me"
+        title="Find out who your representatives are | Voice Your Stance"
       />
       <ErrorReportingBoundry>
         <ErrorMessage error={error} />

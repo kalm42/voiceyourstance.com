@@ -124,7 +124,7 @@ const Representatives = () => {
 
   return (
     <Wrapper>
-      <Seo metaDescription="A list of all of your representatives." title="Representatives" />
+      <Seo metaDescription="A list of all of your representatives." title="Representatives | Voice Your Stance" />
       <ErrorReportingBoundry>
         {scope.map((division, divisionIndex) => (
           <div key={division.id}>
