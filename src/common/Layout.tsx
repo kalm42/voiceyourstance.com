@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faBars, faEllipsisV, faEnvelope, faTimes, faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { Link } from "react-router-dom"
+import Link from "next/link"
 import styled from "styled-components"
 import { useMetaData } from "../context/MetaData"
 
@@ -39,7 +39,7 @@ const Menu = styled.ul`
   padding: 0 40px;
   max-width: 500px;
 `
-const MenuItem = styled(Link)`
+const MenuItem = styled.a`
   display: block;
   padding: 2rem 1rem;
   text-decoration: none;
@@ -65,7 +65,7 @@ const Nav = styled.nav`
   padding: 20px;
 `
 const Main = styled.main`
-  min-height: calc(100vh - 300px);
+  min-height: calc(100vh - 280px);
 `
 const Footer = styled.footer`
   background: ${(props) => props.theme.main};
@@ -102,7 +102,7 @@ const SocialNav = styled.ul`
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 2rem;
 `
-const FooterNavLinks = styled(Link)`
+const FooterNavLinks = styled.a`
   color: ${(props) => props.theme.background};
   text-decoration: none;
   text-transform: lowercase;
@@ -161,24 +161,32 @@ const Layout: FunctionComponent = ({ children }) => {
           </Button>
           <Menu>
             <li>
-              <MenuItem to="/" onClick={handleMenuClick}>
-                Location <GoldIcon icon={faCaretRight} />
-              </MenuItem>
+              <Link href="/" passHref>
+                <MenuItem onClick={handleMenuClick}>
+                  Location <GoldIcon icon={faCaretRight} />
+                </MenuItem>
+              </Link>
             </li>
             <li>
-              <MenuItem to="/reps" onClick={handleMenuClick}>
-                Your Representatives <GoldIcon icon={faCaretRight} />
-              </MenuItem>
+              <Link href="/reps" passHref>
+                <MenuItem onClick={handleMenuClick}>
+                  Your Representatives <GoldIcon icon={faCaretRight} />
+                </MenuItem>
+              </Link>
             </li>
             <li>
-              <MenuItem to="/contact-us" onClick={handleMenuClick}>
-                Contact Us <GoldIcon icon={faCaretRight} />
-              </MenuItem>
+              <Link href="/contact-us" passHref>
+                <MenuItem onClick={handleMenuClick}>
+                  Contact Us <GoldIcon icon={faCaretRight} />
+                </MenuItem>
+              </Link>
             </li>
             <li>
-              <MenuItem to="/privacy-policy" onClick={handleMenuClick}>
-                Privacy Policy <GoldIcon icon={faCaretRight} />
-              </MenuItem>
+              <Link href="/privacy-policy">
+                <MenuItem onClick={handleMenuClick}>
+                  Privacy Policy <GoldIcon icon={faCaretRight} />
+                </MenuItem>
+              </Link>
             </li>
           </Menu>
         </Nav>
@@ -189,10 +197,14 @@ const Layout: FunctionComponent = ({ children }) => {
           <FooterTitle>Voice Your Stance</FooterTitle>
           <FooterNav>
             <li>
-              <FooterNavLinks to="/contact-us">Contact Us</FooterNavLinks>
+              <Link href="/contact-us" passHref>
+                <FooterNavLinks>Contact Us</FooterNavLinks>
+              </Link>
             </li>
             <li>
-              <FooterNavLinks to="/privacy-policy">Privacy Policy</FooterNavLinks>
+              <Link href="/privacy-policy" passHref>
+                <FooterNavLinks>Privacy Policy</FooterNavLinks>
+              </Link>
             </li>
           </FooterNav>
         </FooterGroup>

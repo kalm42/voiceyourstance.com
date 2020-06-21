@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
 import ReactGA from "react-ga"
-const ANALYTICS_KEY = process.env.REACT_APP_ANALYTICS_KEY
+const ANALYTICS_KEY = process.env.NEXT_PUBLIC_ANALYTICS_KEY
 
 interface AnalyticsContextInterface {
   pageView: () => void

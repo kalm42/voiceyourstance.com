@@ -1,14 +1,22 @@
 import React from "react"
-import { Helmet } from "react-helmet"
-import { useMetaData } from "../context/MetaData"
+import Head from "next/head"
 
-const Seo = () => {
-  const meta = []
-  const MetaData = useMetaData()
-  if (!MetaData) return null
-  const { lang, title, metaDescription, author } = MetaData
+interface Props {
+  lang?: string
+  title?: string
+  metaDescription?: string
+  author?: string
+}
+
+const Seo = (props: Props) => {
+  const {
+    lang = "en",
+    title = "Voice Your Stance",
+    metaDescription = "The easiest way to find and communicate with your representatives. It's time to Voice Your Stance.",
+    author = "Kyle Melton",
+  } = props
   return (
-    <Helmet>
+    <Head>
       <title>{title}</title>
       <html lang={lang} />
       <meta name="description" content={metaDescription} />
@@ -19,7 +27,7 @@ const Seo = () => {
       <meta name="twitter:creator" content={author} />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={metaDescription} />
-    </Helmet>
+    </Head>
   )
 }
 
