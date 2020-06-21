@@ -43,7 +43,7 @@ const CheckoutForm = (props: Props) => {
     if (!stripe || !elements) return
     setLoading(true)
 
-    const uri = process.env.REACT_APP_BACKEND
+    const uri = process.env.NEXT_PUBLIC_BACKEND
     const clientSecret = await fetch(`${uri}/secret`)
       .then((response) => response.json())
       .then((json) => json.client_secret)

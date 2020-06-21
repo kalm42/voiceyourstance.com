@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/browser"
 import ReactGA from "react-ga"
 import { StripeError } from "@stripe/stripe-js"
-const ANALYTICS_KEY = process.env.REACT_APP_ANALYTICS_KEY
+const ANALYTICS_KEY = process.env.NEXT_PUBLIC_ANALYTICS_KEY
 
 type AcceptableError = Error | PositionError | StripeError
 

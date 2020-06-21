@@ -8,7 +8,7 @@ interface RepresentativeContextInterface {
   getRepresentativesByAddress: (address: Address) => Promise<Response>
 }
 
-interface CivicInfo {
+export interface CivicInfo {
   kind: string
   normalizedInput: Address
   divisions: {
@@ -98,7 +98,7 @@ function RepresentativeProvider(props: Props) {
 
   const getRepresentativesByAddress = (address: Address) => {
     const addr = encodeURIComponent(addressToString(address))
-    const key = process.env.REACT_APP_GOOGLE_API_KEY_CIVIC
+    const key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY_CIVIC
     const url = `https://www.googleapis.com/civicinfo/v2/representatives?key=${key}&address=${addr}`
 
     return fetch(url)

@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react"
 import { Editor, EditorState, convertToRaw } from "draft-js"
+import { useRouter } from "next/router"
 import { PrimaryInputSubmit } from "../../common/elements"
 import { useRepresentatives } from "../../context/Representatives"
 import MailDialog from "./MailDialog"
-import { useParams } from "react-router-dom"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
 import FromForm from "./FromForm"
 import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
-
-interface Params {
-  repId?: string
-  addrId?: string
-}
+import Seo from "../../common/Seo"
 
 const WriteLetter = () => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
@@ -23,7 +19,8 @@ const WriteLetter = () => {
   const [zip, setZip] = useState("")
   const [pay, setPay] = useState(false)
   const representativeContext = useRepresentatives()
-  const { repId, addrId } = useParams<Params>()
+  const router = useRouter()
+  const { repid, addressid } = router.query
 
   /**
    * On state change calcuate the number of characters remaining.
@@ -38,7 +35,7 @@ const WriteLetter = () => {
   /**
    * Guard statements
    */
-  if (!representativeContext || !repId || !addrId) return null
+  if (!representativeContext || !repid || !addressid) return null
 
   const { civicInfo } = representativeContext
   if (!civicInfo) return null
@@ -55,8 +52,8 @@ const WriteLetter = () => {
       reps.push({ title, name, party, address, emails })
     }
   }
-  const rep = reps[(repId as unknown) as number]
-  const address = rep.address[(addrId as unknown) as number]
+  const rep = reps[(repid as unknown) as number]
+  const address = rep.address[(addressid as unknown) as number]
 
   const to = {
     name: rep.name,
@@ -66,6 +63,7 @@ const WriteLetter = () => {
 
   return (
     <Wrapper>
+      <Seo title="Write a letter" metaDescription="Write and mail a letter to your representative." />
       <PageWrapper pay={pay}>
         <AddressDetails>
           <ErrorReportingBoundry>

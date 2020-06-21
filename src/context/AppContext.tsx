@@ -11,17 +11,17 @@ import { MetaDataProvider } from "./MetaData"
 const AppContext: FunctionComponent = ({ children }) => {
   return (
     <AnalyticsProvider>
-      <MetaDataProvider>
-        <VoiceYourStanceThemeProvider>
-          <ApolloContext>
-            <AuthenticationProvider>
-              <UserProvider>
+      <VoiceYourStanceThemeProvider>
+        <ApolloContext>
+          <AuthenticationProvider>
+            <UserProvider>
+              <MetaDataProvider>
                 <RepresentativeProvider>{children}</RepresentativeProvider>
-              </UserProvider>
-            </AuthenticationProvider>
-          </ApolloContext>
-        </VoiceYourStanceThemeProvider>
-      </MetaDataProvider>
+              </MetaDataProvider>
+            </UserProvider>
+          </AuthenticationProvider>
+        </ApolloContext>
+      </VoiceYourStanceThemeProvider>
     </AnalyticsProvider>
   )
 }

@@ -1,8 +1,9 @@
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
-import { useAnalytics } from "../../context/Analytics"
-import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
-import { useMetaData } from "../../context/MetaData"
+import { useAnalytics } from "../src/context/Analytics"
+import ErrorReportingBoundry from "../src/common/ErrorReportingBoundry"
+import Seo from "../src/common/Seo"
+import { useMetaData } from "../src/context/MetaData"
 
 const Section = styled.section`
   max-width: 900px;
@@ -14,15 +15,12 @@ const PrivacyPolicy = () => {
   const analytics = useAnalytics()
   const MetaData = useMetaData()
 
-  const setMetaData = useCallback(() => {
-    if (!MetaData) return
-    MetaData.setMetaDescription("Learn about what information we gather, how we use, and who we share it with.")
-    MetaData.setTitle("Privacy Policy")
-  }, [MetaData])
-
-  useEffect(() => {
-    setMetaData()
-  }, [setMetaData])
+  /**
+   * set the title
+   */
+  if (MetaData.safeSetTitle) {
+    MetaData.safeSetTitle("Privacy Policy")
+  }
 
   /**
    * Analytics Report Page View
@@ -33,6 +31,10 @@ const PrivacyPolicy = () => {
 
   return (
     <Section id="privacy">
+      <Seo
+        metaDescription="Learn about what information we gather, how we use, and who we share it with."
+        title="Privacy Policy"
+      />
       <ErrorReportingBoundry>
         <h1>Privacy Policy</h1>
         <p>

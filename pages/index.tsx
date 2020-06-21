@@ -1,12 +1,21 @@
 import React, { useEffect, useRef, useState, useCallback } from "react"
-import { GeocodeResult } from "../../types"
-import LocationDisplay from "./LocationDisplay"
-import { useRepresentatives } from "../../context/Representatives"
-import ErrorMessage from "../../common/ErrorMessage"
-import { useLocation, useHistory } from "react-router-dom"
-import { useAnalytics } from "../../context/Analytics"
-import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
-import { useMetaData } from "../../context/MetaData"
+import styled from "styled-components"
+import Router, { useRouter } from "next/router"
+import { GeocodeResult } from "../src/types"
+import { useRepresentatives } from "../src/context/Representatives"
+import ErrorMessage from "../src/common/ErrorMessage"
+import { useAnalytics } from "../src/context/Analytics"
+import ErrorReportingBoundry from "../src/common/ErrorReportingBoundry"
+import { useMetaData } from "../src/context/MetaData"
+import { Form, Input, PrimaryInputSubmit, SecondaryButton } from "../src/common/elements"
+import Seo from "../src/common/Seo"
+
+const PageContent = styled.div`
+  max-width: 800px;
+  width: 67vw;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+`
 
 type AcceptableErrors = Error | PositionError
 
@@ -18,21 +27,18 @@ const Location = () => {
   const [zipCode, setZipCode] = useState("")
   const [disabled, setDisabled] = useState(false)
   const [error, setError] = useState<AcceptableErrors | undefined>(undefined)
-  const search = useLocation().search
+  const router = useRouter()
+  const search = router.query
   const reps = useRepresentatives()
-  const history = useHistory()
   const analytics = useAnalytics()
   const MetaData = useMetaData()
 
-  const setMetaData = useCallback(() => {
-    if (!MetaData) return
-    MetaData.setMetaDescription("Enter your registered voting address to find out who your representatives are.")
-    MetaData.setTitle("Locate Me")
-  }, [MetaData])
-
-  useEffect(() => {
-    setMetaData()
-  }, [setMetaData])
+  /**
+   * set the title
+   */
+  if (MetaData.safeSetTitle) {
+    MetaData.safeSetTitle("Locate Me")
+  }
 
   /**
    * If the page changes during the fetch this will abort the fetch request
@@ -102,7 +108,7 @@ const Location = () => {
    */
   const reverseGeocode = (position: Position) => {
     const cordinates = position.coords
-    const googleKey = process.env.REACT_APP_GOOGLE_API_KEY
+    const googleKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
     const latlng = `latlng=${cordinates.latitude},${cordinates.longitude}`
     const key = `key=${googleKey}`
     const url = encodeURI(`https://maps.googleapis.com/maps/api/geocode/json?${latlng}&${key}`)
@@ -205,7 +211,7 @@ const Location = () => {
     reps
       .getRepresentativesByAddress(address)
       .then(() => {
-        history.push("/reps")
+        Router.push("/reps")
       })
       .catch((error: Error) => handleError(error))
   }
@@ -214,10 +220,9 @@ const Location = () => {
    * Check for an error query param. Other pages are set to push to this page with an error message in the query param.
    */
   const checkForError = useCallback(() => {
-    const urlParams = new URLSearchParams(search)
-    const errorMessage = urlParams.get("error")
+    const errorMessage = search?.error
     if (errorMessage && errorMessage.length) {
-      setError(new Error(decodeURIComponent(errorMessage)))
+      setError(new Error(decodeURIComponent(errorMessage as string)))
     }
   }, [search])
 
@@ -234,18 +239,59 @@ const Location = () => {
 
   return (
     <div>
+      <Seo
+        metaDescription="Enter your registered voting address to find out who your representatives are."
+        title="Locate Me"
+      />
       <ErrorReportingBoundry>
         <ErrorMessage error={error} />
-        <LocationDisplay
-          streetAddress={streetAddress}
-          city={city}
-          state={state}
-          zipCode={zipCode}
-          getGeoLocation={getGeoLocation}
-          handleChange={handleChange}
-          disabled={disabled}
-          handleSubmit={handleSubmit}
-        />
+        <PageContent>
+          <p>What is your voter registration address?</p>
+          <SecondaryButton onClick={getGeoLocation}>Use my current location</SecondaryButton>
+          <Form method="post" onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              name="streetAddress"
+              id="street-address"
+              placeholder="1600 Pennsylvania Ave"
+              aria-label="Street address"
+              value={streetAddress}
+              onChange={handleChange}
+              disabled={disabled}
+            />
+            <Input
+              type="text"
+              name="city"
+              id="city"
+              placeholder="Washington"
+              aria-label="City"
+              value={city}
+              onChange={handleChange}
+              disabled={disabled}
+            />
+            <Input
+              type="text"
+              name="state"
+              id="state"
+              placeholder="DC"
+              aria-label="State"
+              value={state}
+              onChange={handleChange}
+              disabled={disabled}
+            />
+            <Input
+              type="text"
+              name="zipCode"
+              id="zipcode"
+              placeholder="20003"
+              aria-label="Zip code"
+              value={zipCode}
+              onChange={handleChange}
+              disabled={disabled}
+            />
+            <PrimaryInputSubmit type="submit" value="Find my representatives" />
+          </Form>
+        </PageContent>
       </ErrorReportingBoundry>
     </div>
   )
