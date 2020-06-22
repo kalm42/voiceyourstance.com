@@ -40,7 +40,7 @@ class ProgressBar extends React.Component<Props, State> {
     const { color, height } = this.props
 
     return (
-      <style jsx global>{`
+      <style global>{`
         #nprogress {
           pointer-events: none;
         }
