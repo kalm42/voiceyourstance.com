@@ -37,7 +37,7 @@ const Location = () => {
    * set the title
    */
   if (MetaData && MetaData.safeSetTitle) {
-    MetaData.safeSetTitle("Locate Me")
+    MetaData.safeSetTitle("Find my representatives")
   }
 
   /**
