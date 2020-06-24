@@ -6,6 +6,7 @@ import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyl
 import FromForm from "./FromForm"
 import { Address } from "../../types"
 import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
+import Seo from "../../common/Seo"
 
 interface To extends Address {
   name: string
@@ -51,6 +52,10 @@ const WriteTemplateLetter = (props: Props) => {
 
   return (
     <Wrapper>
+      <Seo
+        metaDescription="Write and mail a letter to your representative."
+        title="Mail a letter to your representative | Voice Your Stance"
+      />
       <PageWrapper pay={pay}>
         <AddressDetails>
           <ErrorReportingBoundry>

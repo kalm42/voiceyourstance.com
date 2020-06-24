@@ -12,7 +12,7 @@ import { faSpinner, faVoteYea } from "@fortawesome/free-solid-svg-icons"
 import { Input, PrimaryButton, SecondaryButton } from "../../common/elements"
 import { useAnalytics } from "../../context/Analytics"
 import lzString from "../../common/lzString"
-import { useLocation } from "react-router-dom"
+import { useRouter } from "next/router"
 import {
   Wrapper,
   H1,
@@ -55,7 +55,7 @@ const UPDATE_LETTER = gql`
 /**
  * Stripe Setup
  */
-const key = process.env.REACT_APP_STRIPE_KEY
+const key = process.env.NEXT_PUBLIC_STRIPE_KEY
 if (!key) {
   throw new Error("No stripe key")
 }
@@ -116,7 +116,7 @@ const MailDialog = (props: Props) => {
   const [mailLetter] = useMutation(MAIL_LETTER)
   const [updateLetter] = useMutation(UPDATE_LETTER)
   const analytics = useAnalytics()
-  const location = useLocation()
+  const router = useRouter()
 
   /**
    * Analytics Report Page View
@@ -387,7 +387,7 @@ const MailDialog = (props: Props) => {
           <SecondaryButton onClick={copyToClipboard}>{cpyMsg.length ? cpyMsg : "Copy URL"}</SecondaryButton>
           <CodeWrapper>
             <Code ref={shareUrlRef}>
-              https://voiceyourstance.com{location.pathname}?template={shareString}
+              https://voiceyourstance.com{router.asPath}?template={shareString}
             </Code>
           </CodeWrapper>
         </div>

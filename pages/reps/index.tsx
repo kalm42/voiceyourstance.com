@@ -1,11 +1,14 @@
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
-import Representative from "./Representative"
-import { Link, useHistory } from "react-router-dom"
-import { useRepresentatives } from "../../context/Representatives"
-import { useAnalytics } from "../../context/Analytics"
-import ErrorReportingBoundry from "../../common/ErrorReportingBoundry"
-import { useMetaData } from "../../context/MetaData"
+import Link from "next/link"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faUserCircle, faChevronRight } from "@fortawesome/free-solid-svg-icons"
+import { useRepresentatives } from "../../src/context/Representatives"
+import { useAnalytics } from "../../src/context/Analytics"
+import ErrorReportingBoundry from "../../src/common/ErrorReportingBoundry"
+import ErrorMessage from "../../src/common/ErrorMessage"
+import Seo from "../../src/common/Seo"
+import { useMetaData } from "../../src/context/MetaData"
 
 const Wrapper = styled.div`
   padding: 0 2rem;
@@ -19,7 +22,7 @@ const DivisionWrapper = styled.div`
   grid-gap: 2rem;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 `
-const RepLink = styled(Link)`
+const RepLink = styled.a`
   color: ${(props) => props.theme.text};
   text-decoration: none;
   transition: all 200ms ease;
@@ -27,6 +30,27 @@ const RepLink = styled(Link)`
   &:hover {
     transform: scale(1.02);
   }
+`
+const ProfileIcon = styled(FontAwesomeIcon)`
+  height: 4rem !important;
+  width: 4rem !important;
+  color: ${(props) => props.theme.main};
+`
+const Rep = styled.div`
+  display: grid;
+  grid-template-columns: 80px 1fr 20px;
+  align-items: center;
+`
+const ChevronRight = styled(FontAwesomeIcon)`
+  color: ${(props) => props.theme.accent};
+`
+const Dot = styled.span`
+  width: 5px;
+  height: 5px;
+  background: black;
+  display: inline-block;
+  border-radius: 50%;
+  margin: 3px;
 `
 interface Rep {
   title: string
@@ -43,19 +67,15 @@ type YourReps = Div[]
 
 const Representatives = () => {
   const representativeContext = useRepresentatives()
-  const history = useHistory()
   const analytics = useAnalytics()
   const MetaData = useMetaData()
 
-  const setMetaData = useCallback(() => {
-    if (!MetaData) return
-    MetaData.setMetaDescription("A list of all of your representatives.")
-    MetaData.setTitle("Representatives")
-  }, [MetaData])
-
-  useEffect(() => {
-    setMetaData()
-  }, [setMetaData])
+  /**
+   * set the title
+   */
+  if (MetaData && MetaData.safeSetTitle) {
+    MetaData.safeSetTitle("Representatives")
+  }
 
   /**
    * Analytics Report Page View
@@ -64,17 +84,14 @@ const Representatives = () => {
     analytics?.pageView()
   }, [analytics])
 
-  if (!representativeContext) {
-    const message = encodeURIComponent("Please refresh the page and try again.")
-    history.push(`/?error=${message}`)
-    return null
-  }
-
+  if (!representativeContext) return null
   const { civicInfo } = representativeContext
   if (!civicInfo) {
-    const message = encodeURIComponent("There was an error and we did not find any representatives for you.")
-    history.push(`/?error=${message}`)
-    return null
+    return (
+      <Wrapper>
+        <ErrorMessage error={new Error("No representatives found. Please search for them again.")} />
+      </Wrapper>
+    )
   }
 
   const scope: YourReps = []
@@ -107,15 +124,27 @@ const Representatives = () => {
 
   return (
     <Wrapper>
+      <Seo metaDescription="A list of all of your representatives." title="Representatives | Voice Your Stance" />
       <ErrorReportingBoundry>
         {scope.map((division, divisionIndex) => (
           <div key={division.id}>
             <h2>{division.name}</h2>
             <DivisionWrapper>
               {division.reps.map((rep) => (
-                <RepLink to={`/reps/${rep.index}`} key={rep.index}>
-                  <Representative {...rep} />
-                </RepLink>
+                <Link href="/reps/[repid]" as={`/reps/${rep.index}`} key={rep.index} passHref>
+                  <RepLink>
+                    <Rep>
+                      <ProfileIcon icon={faUserCircle} />
+                      <div>
+                        <p>{rep.title}</p>
+                        <p>
+                          {rep.name} <Dot /> {rep.party}
+                        </p>
+                      </div>
+                      <ChevronRight icon={faChevronRight} />
+                    </Rep>
+                  </RepLink>
+                </Link>
               ))}
             </DivisionWrapper>
           </div>

@@ -5,6 +5,7 @@ import styled from "styled-components"
 import ErrorMessage from "../../common/ErrorMessage"
 import { StripeError } from "@stripe/stripe-js"
 import { useAnalytics } from "../../context/Analytics"
+import { Input } from "../../common/elements"
 
 const Button = styled.button`
   padding: 1rem;
@@ -33,6 +34,7 @@ interface Props {
 const CheckoutForm = (props: Props) => {
   const [error, setError] = useState<undefined | StripeError | Error>(undefined)
   const [loading, setLoading] = useState(false)
+  const [name, setName] = useState("")
   const stripe = useStripe()
   const elements = useElements()
   const analytics = useAnalytics()
@@ -43,7 +45,7 @@ const CheckoutForm = (props: Props) => {
     if (!stripe || !elements) return
     setLoading(true)
 
-    const uri = process.env.REACT_APP_BACKEND
+    const uri = process.env.NEXT_PUBLIC_BACKEND
     const clientSecret = await fetch(`${uri}/secret`)
       .then((response) => response.json())
       .then((json) => json.client_secret)
@@ -60,7 +62,7 @@ const CheckoutForm = (props: Props) => {
         payment_method: {
           card,
           billing_details: {
-            name: "Name string goes here",
+            name,
           },
         },
       })
@@ -84,6 +86,12 @@ const CheckoutForm = (props: Props) => {
   return (
     <Form onSubmit={handleSubmit}>
       <ErrorMessage error={error} />
+      <Input
+        placeholder="Your name"
+        type="text"
+        value={name}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setName(event.target.value)}
+      />
       <PaymentWrapper>
         <CardSection />
       </PaymentWrapper>

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { RawDraftContentState } from "draft-js"
-import { useLocation } from "react-router-dom"
-import { useAnalytics } from "../../context/Analytics"
-import { Address } from "../../types"
-import lzString from "../../common/lzString"
-import WriteLetter from "./WriteLetter"
-import WriteTemplateLetter from "./WriteTemplateLetter"
-import { useMetaData } from "../../context/MetaData"
+import { useRouter } from "next/router"
+import { useAnalytics } from "../../../../src/context/Analytics"
+import { Address } from "../../../../src/types"
+import lzString from "../../../../src/common/lzString"
+import { WriteLetter, WriteTemplateLetter } from "../../../../src/views"
+import { useMetaData } from "../../../../src/context/MetaData"
 
 interface To extends Address {
   name: string
@@ -20,18 +19,16 @@ interface Template {
 const Write = () => {
   const [template, setTemplate] = useState<Template | undefined>(undefined)
   const analytics = useAnalytics()
-  const searchParams = new URLSearchParams(useLocation().search)
+  const router = useRouter()
+  const searchParams = router.query
   const MetaData = useMetaData()
 
-  const setMetaData = useCallback(() => {
-    if (!MetaData) return
-    MetaData.setMetaDescription("Write and mail a letter to your representative.")
-    MetaData.setTitle("Write a letter")
-  }, [MetaData])
-
-  useEffect(() => {
-    setMetaData()
-  }, [setMetaData])
+  /**
+   * set the title
+   */
+  if (MetaData && MetaData.safeSetTitle) {
+    MetaData.safeSetTitle("Write a letter")
+  }
 
   /**
    * Analytics Report Page View
@@ -57,9 +54,9 @@ const Write = () => {
   )
 
   useEffect(() => {
-    const templateSP = searchParams.get("template")
+    const templateSP = searchParams.template
     if (templateSP && !template) {
-      setWriteTemplate(templateSP)
+      setWriteTemplate(templateSP as string)
     }
   }, [searchParams, setWriteTemplate, template])
 
