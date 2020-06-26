@@ -11,8 +11,8 @@
 # production
 /build
 /.next
-public
-.cache
+/public
+/.cache
 
 # misc
 .DS_Store

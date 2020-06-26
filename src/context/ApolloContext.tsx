@@ -27,7 +27,7 @@ const typeDefs = gql`
   }
 `
 
-const uri = process.env.NEXT_PUBLIC_BACKEND
+const uri = process.env.GATSBY_BACKEND
 const client = new ApolloCient({ uri: `${uri}/graphql`, typeDefs })
 
 const ApolloContext: FunctionComponent = ({ children }) => {
