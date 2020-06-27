@@ -3,15 +3,11 @@ import { useAuthentication, UserData } from "./Authentication"
 
 interface Props {}
 
-const UserContext = React.createContext<UserData | null>(null)
+const UserContext = React.createContext<UserData | null | undefined>(null)
 
 function UserProvider(props: Props) {
   const auth = useAuthentication()
-  let user = null
-
-  if (auth) {
-    user = auth.userData
-  }
+  const user = auth?.userData
 
   return <UserContext.Provider value={user} {...props} />
 }
