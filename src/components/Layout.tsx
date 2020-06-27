@@ -21,7 +21,7 @@ const Header = styled.header`
   justify-items: center;
 `
 const MenuButton = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
   height: 20px !important;
   width: 20px !important;
 `
@@ -44,10 +44,10 @@ const MenuItem = styled(Link)`
   padding: 2rem 1rem;
   text-decoration: none;
   transition: all 200ms ease;
-  color: ${props => props.theme.text};
+  color: var(--text);
   &:hover {
-    background: ${props => props.theme.accent};
-    color: ${props => props.theme.background};
+    background: var(--accent);
+    color: var(--background);
   }
 `
 interface NavProps {
@@ -68,12 +68,12 @@ const Main = styled.main`
   min-height: calc(100vh - 280px);
 `
 const Footer = styled.footer`
-  background: ${props => props.theme.main};
+  background: var(--main);
   margin-bottom: -16px;
 `
 const FooterTitle = styled.h1`
   color: white;
-  border-bottom: 1px solid ${props => props.theme.accent};
+  border-bottom: 1px solid var(--accent);
   margin: 0;
   padding: 20px 0;
   font-variation-settings: "wght" 400;
@@ -90,7 +90,7 @@ const FooterNav = styled.ul`
   grid-gap: 1rem;
 `
 const FooterSocial = styled.div`
-  background: ${props => props.theme.main_dark};
+  background: var(--mainDark);
   padding: 1rem;
   display: grid;
   justify-items: center;
@@ -103,35 +103,35 @@ const SocialNav = styled.ul`
   grid-gap: 2rem;
 `
 const FooterNavLinks = styled(Link)`
-  color: ${props => props.theme.background};
+  color: var(--background);
   text-decoration: none;
   text-transform: lowercase;
   font-size: 1rem;
-  font-family: ${props => props.theme.formalFont};
+  font-family: var(--formalFont);
 `
 const FacebookLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   &:hover {
     color: #3b5998;
   }
 `
 const TwitterLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   &:hover {
     color: #00acee;
   }
 `
 const EmailLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   &:hover {
     color: #0072c6;
   }
 `
 const GoldIcon = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
   transition: all 200ms ease;
   ${MenuItem}:hover & {
-    color: ${props => props.theme.background};
+    color: var(--background);
   }
 `
 

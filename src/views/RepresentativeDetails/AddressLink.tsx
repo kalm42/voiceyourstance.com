@@ -6,21 +6,21 @@ import { Link } from "gatsby"
 import { Address } from "../../types"
 
 const RightArrow = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
 `
 const AddressDetails = styled.div`
-  background: ${props => props.theme.main};
+  background: var(--main);
   display: grid;
   padding: 1rem;
   grid-template-columns: 30px 1fr 30px;
   align-items: center;
 `
 const Feather = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
   align-self: start;
 `
 const AddrLink = styled(Link)`
-  color: ${props => props.theme.background};
+  color: var(--background);
   text-decoration: none;
   transition: all 200ms ease;
   cursor: pointer;

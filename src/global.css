@@ -1,9 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
+:root {
+  --blue: rgb(52, 64, 81);
+  --darkBlue: rgb(39, 49, 63);
+  --gold: rgb(169, 136, 96);
+  --red: rgb(226, 0, 32);
+  --white: rgb(255, 255, 255);
+  --black: rgb(50, 58, 69);
+  --main: var(--blue);
+  --mainDark: var(--darkBlue);
+  --accent: var(--gold);
+  --error: var(--red);
+  --background: var(--white);
+  --text: var(--black);
+  --formalFont: "Playfair Display", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  --informalFont: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: var(--informalFont);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -18,6 +35,6 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Playfair Display", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  font-family: var(--formalFont);
   font-variation-settings: "wght" 400;
 }

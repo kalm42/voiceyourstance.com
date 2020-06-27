@@ -6,7 +6,7 @@ import { faUserCircle, faChevronRight } from "@fortawesome/free-solid-svg-icons"
 import { Representative } from "../../types"
 
 const RepLink = styled(Link)`
-  color: ${props => props.theme.text};
+  color: var(--text);
   text-decoration: none;
   transition: all 200ms ease;
   cursor: pointer;
@@ -17,7 +17,7 @@ const RepLink = styled(Link)`
 const ProfileIcon = styled(FontAwesomeIcon)`
   height: 4rem !important;
   width: 4rem !important;
-  color: ${props => props.theme.main};
+  color: var(--main);
 `
 const Rep = styled.div`
   display: grid;
@@ -25,7 +25,7 @@ const Rep = styled.div`
   align-items: center;
 `
 const ChevronRight = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
 `
 const Dot = styled.span`
   width: 5px;

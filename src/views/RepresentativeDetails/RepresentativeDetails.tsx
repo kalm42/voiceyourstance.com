@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   padding: 2rem;
 `
 const ProfileImage = styled.div`
-  background: ${props => props.theme.main};
+  background: var(--main);
   height: 136px;
   margin: 0 -2rem;
   display: grid;
@@ -25,7 +25,7 @@ const ProfileImage = styled.div`
   justify-items: center;
 `
 const DefaultProfileImage = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.background};
+  color: var(--background);
   height: 5rem !important;
   width: 5rem !important;
 `

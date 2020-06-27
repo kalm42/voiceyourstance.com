@@ -4,10 +4,10 @@ import { faArrowRight, faPhoneAlt } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
 
 const RightArrow = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
 `
 const PLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   text-decoration: none;
   transition: all 200ms ease;
   cursor: pointer;
@@ -16,10 +16,10 @@ const PLink = styled.a`
   }
 `
 const PhoneIcon = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
 `
 const PhoneDetails = styled.div`
-  background: ${props => props.theme.main};
+  background: var(--main);
   display: grid;
   grid-template-columns: 30px 1fr 30px;
   align-items: center;

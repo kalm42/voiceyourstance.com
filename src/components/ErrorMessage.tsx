@@ -5,8 +5,8 @@ import reportError from "./reportError"
 
 const ErrorBox = styled.div`
   padding: 2rem;
-  background: ${props => props.theme.background};
-  border: 1px solid ${props => props.theme.error};
+  background: var(--background);
+  border: 1px solid var(--error);
 `
 
 interface Props {
