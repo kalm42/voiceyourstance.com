@@ -3,8 +3,19 @@ import styled from "styled-components"
 export const Form = styled.form`
   display: grid;
   grid-gap: 1rem;
+  padding: 1rem 0;
+`
+export const TextInputs = styled.div`
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 `
 export const Input = styled.input`
+  font-size: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--accent);
+`
+export const TextInput = styled.input`
   font-size: 1rem;
   padding: 1rem;
   border: 1px solid var(--accent);
@@ -44,7 +55,6 @@ export const SecondaryButton = styled.button`
   font-size: 1rem;
   background: white;
   border: 2px solid var(--main);
-  margin-bottom: 1rem;
   text-transform: lowercase;
   transition: all 200ms ease;
   &:hover {

@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from "react"
 import { Editor, EditorState, convertToRaw } from "draft-js"
-import { PrimaryInputSubmit } from "../../components/elements"
+import styled from "styled-components"
+import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
 import { useRepresentatives } from "../../context/Representatives"
 import MailDialog from "./MailDialog"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
 import FromForm from "./FromForm"
 import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
 import SEO from "../../components/SEO"
+import RegistryDrawer from "./RegistryDrawer"
+import AuthenticationDialog from "./AuthenticationDialog"
+
+const TitleWrapper = styled.div`
+  display: flex;
+`
+const Title = styled.h2`
+  flex: 3;
+  margin: 0;
+  align-self: flex-end;
+`
+const LetterControls = styled.div`
+  display: flex;
+  justify-content: space-between;
+`
 
 interface Props {
   repid: number
@@ -14,6 +30,7 @@ interface Props {
 }
 const WriteLetterFromScratch = (props: Props) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
+  const [registryIsOpen, setRegistryIsOpen] = useState(false)
   const [characterCount, setCharacterCount] = useState(5000)
   const [name, setName] = useState("")
   const [line1, setLine1] = useState("")
@@ -21,6 +38,7 @@ const WriteLetterFromScratch = (props: Props) => {
   const [state, setState] = useState("")
   const [zip, setZip] = useState("")
   const [pay, setPay] = useState(false)
+  const [shouldDisplayAuthenticationDialog, setShouldDisplayAuthenticationDialog] = useState(false)
   const representativeContext = useRepresentatives()
   const { repid, addressid } = props
 
@@ -68,7 +86,8 @@ const WriteLetterFromScratch = (props: Props) => {
         title="Mail a letter to your representative | Voice Your Stance"
         description="Write and mail a letter to your representative."
       />
-      <PageWrapper pay={pay}>
+      <RegistryDrawer isOpen={registryIsOpen} close={() => setRegistryIsOpen(false)} />
+      <PageWrapper pay={pay || shouldDisplayAuthenticationDialog}>
         <AddressDetails>
           <ErrorReportingBoundry>
             <FromForm
@@ -104,19 +123,35 @@ const WriteLetterFromScratch = (props: Props) => {
             <p>You have {characterCount} characters left. There is a 5,000 character limit.</p>
           </div>
         )}
-        <h2>Write your letter here</h2>
+        <TitleWrapper>
+          <Title>Write your letter here</Title>
+          <SecondaryButton style={{ flex: 1 }} onClick={() => setRegistryIsOpen(true)}>
+            Use a letter from the registry
+          </SecondaryButton>
+        </TitleWrapper>
         <ErrorReportingBoundry>
           <EditorWrapper>
             <Editor editorState={editorState} onChange={setEditorState} />
           </EditorWrapper>
         </ErrorReportingBoundry>
-        <PrimaryInputSubmit
-          value="Mail now $5 USD"
-          type="submit"
-          onClick={() => setPay(!pay)}
-          disabled={characterCount < 1}
-        />
+        <LetterControls>
+          <PrimaryInputSubmit
+            value="Mail now $5 USD"
+            type="submit"
+            onClick={() => setPay(!pay)}
+            disabled={characterCount < 1}
+          />
+          <SecondaryButton onClick={() => setShouldDisplayAuthenticationDialog(true)}>Save</SecondaryButton>
+        </LetterControls>
       </PageWrapper>
+      {shouldDisplayAuthenticationDialog && (
+        <ErrorReportingBoundry>
+          <AuthenticationDialog
+            isOpen={shouldDisplayAuthenticationDialog}
+            close={() => setShouldDisplayAuthenticationDialog(false)}
+          />
+        </ErrorReportingBoundry>
+      )}
       {pay && (
         <ErrorReportingBoundry>
           <MailDialog

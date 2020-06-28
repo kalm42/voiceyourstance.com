@@ -24,6 +24,7 @@ const AddrLink = styled(Link)`
   text-decoration: none;
   transition: all 200ms ease;
   cursor: pointer;
+  max-width: 40rem;
   &:hover {
     transform: scale(1.02);
   }

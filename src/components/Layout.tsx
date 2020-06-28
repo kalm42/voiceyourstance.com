@@ -5,6 +5,7 @@ import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Link } from "gatsby"
 import styled from "styled-components"
 import { useMetaData } from "../context/MetaData"
+import CloseButton from "./CloseButton"
 
 const Title = styled.h1`
   padding: 0;
@@ -156,9 +157,7 @@ const Layout: FunctionComponent = ({ children }) => {
           <MenuButton icon={faEllipsisV} />
         </Button>
         <Nav open={open}>
-          <Button onClick={handleMenuClick}>
-            <MenuButton icon={faTimes} />
-          </Button>
+          <CloseButton handleClick={handleMenuClick} />
           <Menu>
             <li>
               <MenuItem to="/" onClick={handleMenuClick}>
