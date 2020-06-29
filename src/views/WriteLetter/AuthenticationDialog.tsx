@@ -38,6 +38,7 @@ const Controls = styled.button`
   font-size: 1rem;
   font-variation-settings: "wght" 300;
   transition: all 200ms ease;
+  cursor: pointer;
   &:hover {
     background: var(--main);
     color: var(--background);

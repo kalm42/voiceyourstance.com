@@ -2,6 +2,7 @@ import React, { FunctionComponent } from "react"
 import ApolloCient, { gql } from "apollo-boost"
 import { ApolloProvider } from "@apollo/react-hooks"
 
+// GraphQL Type deffinitions
 const typeDefs = gql`
   type LetterInput {
     toName: String!
