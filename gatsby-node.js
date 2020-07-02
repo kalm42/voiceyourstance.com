@@ -5,7 +5,6 @@
  */
 
 require("ts-node").register({ files: true })
-const path = require("path")
 
 /** @type { import("gatsby").GatsbyNode["createPages"] } */
 exports.onCreatePage = async ({ page, actions }) => {
@@ -13,6 +12,10 @@ exports.onCreatePage = async ({ page, actions }) => {
 
   if (page.path.match(/^\/reps/)) {
     page.matchPath = `/reps/*`
+    createPage(page)
+  }
+  if (page.path.match(/^\/write/)) {
+    page.matchPath = `/write/*`
     createPage(page)
   }
 }

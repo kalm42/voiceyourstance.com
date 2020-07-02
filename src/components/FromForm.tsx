@@ -1,12 +1,17 @@
 import React from "react"
-import { Input } from "../../components/elements"
-import { From } from "./WriteStyledComponents"
+import styled from "styled-components"
+import { Input } from "./elements"
+
+const From = styled.div`
+  display: grid;
+  grid-gap: 1rem;
+`
 
 interface Props {
   city: string
   line1: string
   name: string
-  pay: boolean
+  disabled: boolean
   setCity: (s: string) => void
   setLine1: (s: string) => void
   setName: (s: string) => void
@@ -17,7 +22,7 @@ interface Props {
 }
 
 const FromForm = (props: Props) => {
-  const { city, line1, name, pay, setCity, setLine1, setName, setState, setZip, state, zip } = props
+  const { city, line1, name, disabled, setCity, setLine1, setName, setState, setZip, state, zip } = props
   return (
     <div>
       <h2>From</h2>
@@ -30,7 +35,7 @@ const FromForm = (props: Props) => {
           aria-label="Full name"
           value={name}
           onChange={event => setName(event.target.value)}
-          disabled={pay}
+          disabled={disabled}
         />
         <Input
           type="text"
@@ -40,7 +45,7 @@ const FromForm = (props: Props) => {
           aria-label="Street address"
           value={line1}
           onChange={event => setLine1(event.target.value)}
-          disabled={pay}
+          disabled={disabled}
         />
         <Input
           type="text"
@@ -50,7 +55,7 @@ const FromForm = (props: Props) => {
           aria-label="City"
           value={city}
           onChange={event => setCity(event.target.value)}
-          disabled={pay}
+          disabled={disabled}
         />
         <Input
           type="text"
@@ -60,7 +65,7 @@ const FromForm = (props: Props) => {
           aria-label="State"
           value={state}
           onChange={event => setState(event.target.value)}
-          disabled={pay}
+          disabled={disabled}
         />
         <Input
           type="text"
@@ -70,7 +75,7 @@ const FromForm = (props: Props) => {
           aria-label="Zip code"
           value={zip}
           onChange={event => setZip(event.target.value)}
-          disabled={pay}
+          disabled={disabled}
         />
       </From>
     </div>

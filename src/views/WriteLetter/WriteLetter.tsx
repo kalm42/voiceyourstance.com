@@ -13,8 +13,8 @@ import SEO from "../../components/SEO"
 import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
 import MailDialog from "./MailDialog"
-import FromForm from "./FromForm"
-import RegistryDrawer from "./RegistryDrawer"
+import FromForm from "../../components/FromForm"
+import RegistryDrawer from "../../components/RegistryDrawer"
 import AuthenticationDialog from "./AuthenticationDialog"
 import { GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
@@ -187,7 +187,7 @@ const WriteLetter = (props: Props) => {
         <AddressDetails>
           <ErrorReportingBoundry>
             <FromForm
-              pay={pay}
+              disabled={pay}
               line1={line1}
               setLine1={setLine1}
               name={name}

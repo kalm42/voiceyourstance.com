@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useEffect } from "react"
 import styled from "styled-components"
-import CloseButton from "../../components/CloseButton"
-import { TextInput, PrimaryInputSubmit } from "../../components/elements"
+import CloseButton from "./CloseButton"
+import { TextInput, PrimaryInputSubmit } from "./elements"
 
 interface WrapperProps {
   registry: boolean
