@@ -1,9 +1,10 @@
 import React from "react"
-import { useAuthentication, UserData } from "./Authentication"
+import { useAuthentication } from "./Authentication"
+import { GQL } from "../types"
 
 interface Props {}
 
-const UserContext = React.createContext<UserData | null | undefined>(null)
+const UserContext = React.createContext<GQL.MeData | null | undefined>(null)
 
 function UserProvider(props: Props) {
   const auth = useAuthentication()
@@ -12,12 +13,6 @@ function UserProvider(props: Props) {
   return <UserContext.Provider value={user} {...props} />
 }
 
-function useUser() {
-  const context = React.useContext(UserContext)
-  if (context === undefined) {
-    throw new Error(`useUser must be used within a UserProvider`)
-  }
-  return context
-}
+const useUser = () => React.useContext(UserContext)
 
 export { UserProvider, useUser }

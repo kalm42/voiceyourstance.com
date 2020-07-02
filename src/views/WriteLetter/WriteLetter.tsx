@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react"
 import { RouteComponentProps } from "@reach/router"
-import { useAnalytics } from "../../context/Analytics"
-import { useMetaData } from "../../context/MetaData"
-import { Editor, EditorState, convertToRaw } from "draft-js"
-import styled from "styled-components"
-import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
-import { useRepresentatives } from "../../context/Representatives"
-import MailDialog from "./MailDialog"
-import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
-import FromForm from "./FromForm"
-import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
-import SEO from "../../components/SEO"
-import RegistryDrawer from "./RegistryDrawer"
-import AuthenticationDialog from "./AuthenticationDialog"
-import { useUser } from "../../context/UserContext"
 import { useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
-import { Address } from "../../types"
+import { Editor, EditorState, convertToRaw } from "draft-js"
+import styled from "styled-components"
+import { useAnalytics } from "../../context/Analytics"
+import { useMetaData } from "../../context/MetaData"
+import { useRepresentatives } from "../../context/Representatives"
+import { useUser } from "../../context/UserContext"
+import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
+import SEO from "../../components/SEO"
+import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
+import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
+import MailDialog from "./MailDialog"
+import FromForm from "./FromForm"
+import RegistryDrawer from "./RegistryDrawer"
+import AuthenticationDialog from "./AuthenticationDialog"
+import { GQL } from "../../types"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -44,40 +44,6 @@ interface Props extends RouteComponentProps {
   addressid?: string
 }
 
-interface GQL_Letter {
-  id: string
-  fromAddress: Address
-  toAddress: Address
-  content: object
-  payment?: object
-  mail?: object
-  user?: object
-  createdAt: string
-  updatedAt: string
-}
-
-interface GQL_LetterData {
-  createLetter: GQL_Letter
-}
-
-interface GQL_LetterVars {
-  letter: {
-    toName: string
-    toAddressLine1: string
-    toAddressLine2: string
-    toAddressCity: string
-    toAddressState: string
-    toAddressZip: string
-    fromName: string
-    fromAddressLine1: string
-    fromAddressLine2: string
-    fromAddressCity: string
-    fromAddressState: string
-    fromAddressZip: string
-    content: object
-  }
-}
-
 const WriteLetter = (props: Props) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
   const [registryIsOpen, setRegistryIsOpen] = useState(false)
@@ -93,7 +59,7 @@ const WriteLetter = (props: Props) => {
   const analytics = useAnalytics()
   const MetaData = useMetaData()
   const user = useUser()
-  const [saveLetter] = useMutation<GQL_LetterData, GQL_LetterVars>(SAVE_LETTER)
+  const [saveLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(SAVE_LETTER)
   const { repid, addressid } = props
 
   /**
@@ -125,7 +91,7 @@ const WriteLetter = (props: Props) => {
    */
   const save = () => {
     if (user) {
-      // save the letter 
+      // save the letter
       const contentState = editorState.getCurrentContent()
       const content = convertToRaw(contentState)
       saveLetter({
@@ -143,22 +109,30 @@ const WriteLetter = (props: Props) => {
             toAddressCity: to.city,
             toAddressState: to.state,
             toAddressZip: to.zip,
-            content: content
-          }
-        }
+            content: content,
+          },
+        },
       })
     } else {
       setShouldDisplayAuthenticationDialog(true)
     }
   }
 
+  /**
+   * Handled auth
+   */
+  const handledAuthNowSave = () => save()
 
   /**
    * Group representatives by division
    */
   const rep = representativeContext?.getRepresentativeById((repid as unknown) as number)
   if (!rep) {
-    return (<Wrapper><p>No representative was found. Please try again</p></Wrapper>)
+    return (
+      <Wrapper>
+        <p>No representative was found. Please try again</p>
+      </Wrapper>
+    )
   }
 
   const address = rep.address[(addressid as unknown) as number]
@@ -237,6 +211,7 @@ const WriteLetter = (props: Props) => {
           <AuthenticationDialog
             isOpen={shouldDisplayAuthenticationDialog}
             close={() => setShouldDisplayAuthenticationDialog(false)}
+            callback={handledAuthNowSave}
           />
         </ErrorReportingBoundry>
       )}
@@ -251,7 +226,7 @@ const WriteLetter = (props: Props) => {
         </ErrorReportingBoundry>
       )}
     </Wrapper>
-
+  )
 }
 
 export default WriteLetter

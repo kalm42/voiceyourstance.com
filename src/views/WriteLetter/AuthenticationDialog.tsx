@@ -51,6 +51,7 @@ const Controls = styled.button`
 interface Props {
   isOpen: boolean
   close: () => void
+  callback?: () => void
 }
 
 const AuthenticationDialog = (props: Props) => {
@@ -71,6 +72,13 @@ const AuthenticationDialog = (props: Props) => {
     },
     [props],
   )
+
+  const handleCallback = () => {
+    if (props.callback) {
+      props.callback()
+    }
+    close()
+  }
 
   /**
    * Handle click outside close
@@ -105,7 +113,7 @@ const AuthenticationDialog = (props: Props) => {
   return (
     <Wrapper ref={ref}>
       {!isSignUp && !forgotPassword && <SignIn />}
-      {isSignUp && <SignUp />}
+      {isSignUp && <SignUp done={handleCallback} />}
       {forgotPassword && <ForgotPassword />}
       <Divider />
       <FormControls>

@@ -1,11 +1,17 @@
 import React, { useState } from "react"
 import { Form, TextInputs, TextInput, PrimaryInputSubmit } from "./elements"
 import { useAuthentication } from "../context/Authentication"
+import ErrorMessage from "./ErrorMessage"
 
-const SignUp = () => {
+interface Props {
+  done?: () => void
+}
+
+const SignUp = (props: Props) => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | undefined>(undefined)
   const authentication = useAuthentication()
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -15,11 +21,23 @@ const SignUp = () => {
     // validate context
     if (!authentication) throw new Error("You can't register an account from outside the authentication context.")
     setIsLoading(true)
-    authentication.register(email, password)
+    authentication
+      .register(email, password)
+      .then(res => {
+        console.log("Register Response", res)
+        setIsLoading(false)
+      })
+      .then(() => props.done && props.done())
+      .catch(error => {
+        console.log({ ...error })
+        setIsLoading(false)
+        setError(error)
+      })
   }
   return (
     <div>
       <h2>Sign Up</h2>
+      <ErrorMessage error={error} />
       <Form method="post" onSubmit={handleSubmit}>
         <TextInputs>
           <TextInput
@@ -29,6 +47,7 @@ const SignUp = () => {
             placeholder="your@email.address"
             value={email}
             onChange={event => setEmail(event.target.value)}
+            disabled={isLoading}
           />
           <TextInput
             type="password"
@@ -37,9 +56,10 @@ const SignUp = () => {
             placeholder="password"
             value={password}
             onChange={event => setPassword(event.target.value)}
+            disabled={isLoading}
           />
         </TextInputs>
-        <PrimaryInputSubmit type="button" value="Sign Up" />
+        <PrimaryInputSubmit type="submit" value="Sign Up" disabled={isLoading} />
       </Form>
     </div>
   )

@@ -1,5 +1,49 @@
 export namespace GQL {
   /**
+   * error
+   */
+  export interface GQError extends Error {
+    graphQLErrors: object
+  }
+  /**
+   * Inputs
+   */
+  export interface TemplateSearchInput {
+    title?: string
+    tags?: string[]
+  }
+
+  export interface TemplateInput {
+    title: string
+    tags: string[]
+    content: object
+  }
+
+  export interface LetterInput {
+    toName: string
+    toAddressLine1: string
+    toAddressLine2: string
+    toAddressCity: string
+    toAddressState: string
+    toAddressZip: string
+    fromName: string
+    fromAddressLine1: string
+    fromAddressLine2: string
+    fromAddressCity: string
+    fromAddressState: string
+    fromAddressZip: string
+    content: object
+  }
+
+  export interface AddressInput {
+    fromName: string
+    fromAddressLine1: string
+    fromAddressCity: string
+    fromAddressState: string
+    fromAddressZip: string
+  }
+
+  /**
    * Data models
    */
   export interface SuccessMessage {
@@ -110,6 +154,36 @@ export namespace GQL {
     resetToken: string
     password: string
     confirmPassword: string
+  }
+
+  // createLetter(letter: LetterInput): Letter!
+  export interface CreateLetterVars {
+    letter: LetterInput
+  }
+
+  export interface CreateLetterData {
+    createLetter: Letter
+  }
+
+  // updateLetter(letterId: String!, from: AddressInput, content: Json): Letter!
+  export interface UpdateLetterVars {
+    letterId: string
+    from?: AddressInput
+    content?: object
+  }
+
+  export interface UpdateLetterData {
+    updateLetter: Letter
+  }
+
+  // mailLetter(letterId: String!, stripeId: String!): Mail!
+  export interface MailLetterVars {
+    letterId: string
+    stripeId: string
+  }
+
+  export interface MailLetterData {
+    mailLetter: Mail
   }
 
   /**

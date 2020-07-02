@@ -19,6 +19,13 @@ const ErrorMessage = (props: Props) => {
 
   reportError(error)
 
+  // Check to see if this is a GQL error
+  if (error.graphQLErrors) {
+    error.graphQLErrors.forEach(e => console.log("GraphQL Error: ", e))
+    console.log("Network Error: ", error.networkError)
+    console.log("Extra Info: ", error.extraInfo)
+  }
+
   return (
     <ErrorBox>
       <p>
