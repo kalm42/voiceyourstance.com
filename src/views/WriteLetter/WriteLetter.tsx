@@ -17,6 +17,8 @@ import FromForm from "./FromForm"
 import RegistryDrawer from "./RegistryDrawer"
 import AuthenticationDialog from "./AuthenticationDialog"
 import { GQL } from "../../types"
+import ErrorMessage from "../../components/ErrorMessage"
+import { navigate } from "gatsby"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -55,6 +57,7 @@ const WriteLetter = (props: Props) => {
   const [zip, setZip] = useState("")
   const [pay, setPay] = useState(false)
   const [shouldDisplayAuthenticationDialog, setShouldDisplayAuthenticationDialog] = useState(false)
+  const [error, setError] = useState<Error | undefined>(undefined)
   const representativeContext = useRepresentatives()
   const analytics = useAnalytics()
   const MetaData = useMetaData()
@@ -87,10 +90,37 @@ const WriteLetter = (props: Props) => {
   }, [editorState])
 
   /**
+   * Clear error after some time
+   */
+  useEffect(() => {
+    let timeoutId: number
+    if (error) {
+      timeoutId = setTimeout(() => setError(undefined), 10000)
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [error])
+
+  /**
+   * Validate from
+   */
+  const isValidAddress = () => {
+    // TODO: consider using the lob address api, or usps api or some address validator
+    return !name.length || !line1.length || !city.length || state.length !== 2 || zip.length !== 5 ? false : true
+  }
+
+  /**
    * Save the letter
    */
   const save = () => {
     if (user) {
+      // is the from address set?
+      if (!isValidAddress()) {
+        setError(new Error("You must enter a valid address"))
+        return
+      }
+
       // save the letter
       const contentState = editorState.getCurrentContent()
       const content = convertToRaw(contentState)
@@ -113,6 +143,13 @@ const WriteLetter = (props: Props) => {
           },
         },
       })
+        .then(res => {
+          return res.data?.createLetter.id
+        })
+        .then(id => {
+          navigate(`/write/draft/${id}`)
+        })
+        .catch(err => setError(err))
     } else {
       setShouldDisplayAuthenticationDialog(true)
     }
@@ -144,10 +181,7 @@ const WriteLetter = (props: Props) => {
 
   return (
     <Wrapper>
-      <SEO
-        title="Mail a letter to your representative | Voice Your Stance"
-        description="Write and mail a letter to your representative."
-      />
+      <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
       <RegistryDrawer isOpen={registryIsOpen} close={() => setRegistryIsOpen(false)} />
       <PageWrapper pay={pay || shouldDisplayAuthenticationDialog}>
         <AddressDetails>
@@ -185,6 +219,7 @@ const WriteLetter = (props: Props) => {
             <p>You have {characterCount} characters left. There is a 5,000 character limit.</p>
           </div>
         )}
+        <ErrorMessage error={error} />
         <TitleWrapper>
           <Title>Write your letter here</Title>
           <SecondaryButton style={{ flex: 1 }} onClick={() => setRegistryIsOpen(true)}>

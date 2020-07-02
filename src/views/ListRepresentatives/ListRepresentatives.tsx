@@ -49,7 +49,7 @@ const ListRepresentatives = (props: Props) => {
 
   return (
     <Wrapper>
-      <SEO description="A list of all of your representatives." title="Representatives | Voice Your Stance" />
+      <SEO description="A list of all of your representatives." title="Representatives" />
       <ErrorReportingBoundry>
         {rgbd.map(division => (
           <Division division={division} key={division.id} />

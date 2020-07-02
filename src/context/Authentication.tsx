@@ -44,49 +44,20 @@ const ME = gql`
       id
       email
       address {
-        name
+        id
+        hash
         line1
+        line2
         city
         state
         zip
-      }
-      letters {
-        id
-        toAddress {
-          id
-          name
-        }
-        fromAddress {
-          id
-          name
-        }
-        content
-        payment {
-          id
-          createdAt
-        }
-        mail {
-          id
-          expectedDeliveryDate
-          createdAt
-        }
-        template {
-          id
-          title
-          tags
-        }
-      }
-      templates {
-        id
-        title
-        tags
       }
     }
   }
 `
 
 interface AuthenticationContextInterface {
-  userData: GQL.MeData | undefined
+  userData: GQL.User | undefined
   login: (email: string, password: string) => Promise<ExecutionResult<GQL.SigninData>>
   logout: () => Promise<ExecutionResult<GQL.SignoutData>>
   register: (email: string, password: string) => Promise<ExecutionResult<GQL.SignupData>>
@@ -128,7 +99,7 @@ function AuthenticationProvider(props: Props) {
   }
   return (
     <AuthenticationContext.Provider
-      value={{ userData: data, login, logout, register, requestPasswordReset, changePassword }}
+      value={{ userData: data?.me, login, logout, register, requestPasswordReset, changePassword }}
       {...props}
     />
   )

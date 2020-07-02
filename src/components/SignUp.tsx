@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Form, TextInputs, TextInput, PrimaryInputSubmit } from "./elements"
 import { useAuthentication } from "../context/Authentication"
 import ErrorMessage from "./ErrorMessage"
@@ -34,6 +34,24 @@ const SignUp = (props: Props) => {
         setError(error)
       })
   }
+
+  /**
+   * Clear errors after some time
+   */
+  useEffect(() => {
+    let timerId: number
+    if (error) {
+      timerId = setTimeout(() => {
+        setError(undefined)
+      }, 3000)
+    }
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId)
+      }
+    }
+  }, [error])
+
   return (
     <div>
       <h2>Sign Up</h2>
