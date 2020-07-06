@@ -6,6 +6,8 @@ import { Link } from "gatsby"
 import styled from "styled-components"
 import { useMetaData } from "../context/MetaData"
 import CloseButton from "./CloseButton"
+import AuthenticationForms from "./AuthenticationForms"
+import { useUser } from "../context/UserContext"
 
 const Title = styled.h1`
   padding: 0;
@@ -135,16 +137,33 @@ const GoldIcon = styled(FontAwesomeIcon)`
     color: var(--background);
   }
 `
+interface AuthProps {
+  open: boolean
+}
+const AuthenticationMenu = styled.div`
+  position: absolute;
+  top: ${(props: AuthProps) => (props.open ? "4rem" : "-130%")};
+  right: 1rem;
+  padding: 2rem;
+  background: var(--background);
+  border: 1px solid var(--accent);
+  transition: all 200ms ease;
+`
 
 const Layout: FunctionComponent = ({ children }) => {
   const [open, setOpen] = useState(false)
+  const [authIsOpen, setAuthIsOpen] = useState(false)
   const MetaData = useMetaData()
+  const user = useUser()
 
   const t = MetaData?.title || "Home"
 
   const handleMenuClick = () => {
     setOpen(!open)
   }
+
+  const closeAuth = () => setAuthIsOpen(false)
+  const toggleAuthMenu = () => setAuthIsOpen(!authIsOpen)
 
   return (
     <div>
@@ -153,9 +172,18 @@ const Layout: FunctionComponent = ({ children }) => {
           <MenuButton icon={faBars} />
         </Button>
         <Title>{t}</Title>
-        <Button style={{ justifySelf: "end" }}>
+        <Button style={{ justifySelf: "end" }} onClick={toggleAuthMenu}>
           <MenuButton icon={faEllipsisV} />
         </Button>
+        <AuthenticationMenu open={authIsOpen}>
+          {user ? (
+            <div>
+              <p>You're logged in.</p>
+            </div>
+          ) : (
+            <AuthenticationForms close={closeAuth} isOpen={authIsOpen} callback={closeAuth} />
+          )}
+        </AuthenticationMenu>
         <Nav open={open}>
           <CloseButton handleClick={handleMenuClick} />
           <Menu>

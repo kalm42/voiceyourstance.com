@@ -15,10 +15,10 @@ import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyl
 import MailDialog from "./MailDialog"
 import FromForm from "./FromForm"
 import RegistryDrawer from "./RegistryDrawer"
-import AuthenticationDialog from "./AuthenticationDialog"
 import { GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
 import { navigate } from "gatsby"
+import AuthenticationForms from "../../components/AuthenticationForms"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -39,6 +39,19 @@ const Title = styled.h2`
 const LetterControls = styled.div`
   display: flex;
   justify-content: space-between;
+`
+const AuthenticationDialog = styled.div`
+  position: fixed;
+  top: calc(100vh / 3 / 2);
+  left: 0;
+  right: 0;
+  margin: auto;
+  background: var(--background);
+  border: 1px solid var(--accent);
+  padding: 2rem;
+  max-height: 67vh;
+  width: calc((100vw / 3 / 2) * 4);
+  transition: all 200ms ease-in;
 `
 
 interface Props extends RouteComponentProps {
@@ -243,11 +256,13 @@ const WriteLetter = (props: Props) => {
       </PageWrapper>
       {shouldDisplayAuthenticationDialog && (
         <ErrorReportingBoundry>
-          <AuthenticationDialog
-            isOpen={shouldDisplayAuthenticationDialog}
-            close={() => setShouldDisplayAuthenticationDialog(false)}
-            callback={handledAuthNowSave}
-          />
+          <AuthenticationDialog>
+            <AuthenticationForms
+              isOpen={shouldDisplayAuthenticationDialog}
+              close={() => setShouldDisplayAuthenticationDialog(false)}
+              callback={handledAuthNowSave}
+            />
+          </AuthenticationDialog>
         </ErrorReportingBoundry>
       )}
       {pay && (

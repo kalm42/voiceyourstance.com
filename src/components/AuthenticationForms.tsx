@@ -1,25 +1,9 @@
 import React, { useState, useRef, useCallback, useEffect } from "react"
 import styled from "styled-components"
-import SignIn from "../../components/SignIn"
-import SignUp from "../../components/SignUp"
-import ForgotPassword from "../../components/ForgotPassword"
+import SignIn from "./SignIn"
+import SignUp from "./SignUp"
+import ForgotPassword from "./ForgotPassword"
 
-interface WrapperProps {
-  isOpen: boolean
-}
-const Wrapper = styled.div`
-  position: fixed;
-  top: calc(100vh / 3 / 2);
-  left: 0;
-  right: 0;
-  margin: auto;
-  background: var(--background);
-  border: 1px solid var(--accent);
-  padding: 2rem;
-  max-height: 67vh;
-  width: calc((100vw / 3 / 2) * 4);
-  transition: all 200ms ease-in;
-`
 const FormControls = styled.ul`
   margin: 0;
   padding: 0;
@@ -54,7 +38,7 @@ interface Props {
   callback?: () => void
 }
 
-const AuthenticationDialog = (props: Props) => {
+const AuthenticationForms = (props: Props) => {
   const [isSignUp, setIsSignUp] = useState(false)
   const [forgotPassword, setForgotPassword] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -111,8 +95,8 @@ const AuthenticationDialog = (props: Props) => {
   }
 
   return (
-    <Wrapper ref={ref}>
-      {!isSignUp && !forgotPassword && <SignIn />}
+    <div ref={ref}>
+      {!isSignUp && !forgotPassword && <SignIn done={handleCallback} />}
       {isSignUp && <SignUp done={handleCallback} />}
       {forgotPassword && <ForgotPassword />}
       <Divider />
@@ -126,8 +110,8 @@ const AuthenticationDialog = (props: Props) => {
           </Controls>
         </li>
       </FormControls>
-    </Wrapper>
+    </div>
   )
 }
 
-export default AuthenticationDialog
+export default AuthenticationForms
