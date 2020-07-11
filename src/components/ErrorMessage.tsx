@@ -2,6 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import { StripeError } from "@stripe/stripe-js"
 import reportError from "./reportError"
+import { GQL } from "../types"
 
 const ErrorBox = styled.div`
   padding: 2rem;
@@ -10,7 +11,7 @@ const ErrorBox = styled.div`
 `
 
 interface Props {
-  error?: Error | PositionError | StripeError
+  error?: Error | PositionError | StripeError | GQL.GQLError
 }
 
 const ErrorMessage = (props: Props) => {
@@ -21,9 +22,20 @@ const ErrorMessage = (props: Props) => {
 
   // Check to see if this is a GQL error
   if (error.graphQLErrors) {
-    error.graphQLErrors.forEach(e => console.log("GraphQL Error: ", e))
-    console.log("Network Error: ", error.networkError)
-    console.log("Extra Info: ", error.extraInfo)
+    return (
+      <ErrorBox>
+        <p>
+          <em>Shoot!</em>
+        </p>
+        <ul>
+          {error.graphQLErrors.map((err, index) => (
+            <li key={index}>
+              <em>{err.message}</em>
+            </li>
+          ))}
+        </ul>
+      </ErrorBox>
+    )
   }
 
   return (
