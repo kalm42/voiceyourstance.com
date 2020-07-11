@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback } from "react"
 import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
-import CheckoutForm from "./CheckoutForm"
+import styled from "styled-components"
 import { EditorState, convertToRaw } from "draft-js"
-import { Address } from "../../types"
 import { useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { format } from "date-fns"
-import ErrorMessage from "../../components/ErrorMessage"
 import { faSpinner, faVoteYea } from "@fortawesome/free-solid-svg-icons"
+import CheckoutForm from "./CheckoutForm"
+import ErrorMessage from "../../components/ErrorMessage"
+import RegistryForm from "../../components/RegistryForm"
+import { Address } from "../../types"
 import { Input, PrimaryButton, SecondaryButton } from "../../components/elements"
 import { useAnalytics } from "../../context/Analytics"
 import lzString from "../../components/lzString"
@@ -26,6 +28,29 @@ import {
 } from "./MailDialogStyledComponents"
 import reportError from "../../components/reportError"
 import { useLocation } from "@reach/router"
+
+interface RegistryDialogProps {
+  open: boolean
+}
+const RegistryDialog = styled.div`
+  position: fixed;
+  top: 10vh;
+  left: ${(props: RegistryDialogProps) => (props.open ? "20vw" : "100vw")};
+  background: var(--background);
+  border: 1px solid var(--accent);
+  padding: 2rem;
+  width: 60vw;
+  height: 80vh;
+  overflow-x: scroll;
+`
+const LetterPreview = styled.div`
+  font-family: var(--formalFont);
+  border: 1px solid var(--accent);
+  width: 30vw;
+  padding: 2rem;
+  margin: 0 auto;
+  transform: scale(0.8);
+`
 
 /**
  * GraphQL
@@ -110,6 +135,7 @@ const MailDialog = (props: Props) => {
   const [zip, setZip] = useState("")
   const [shareString, setShareString] = useState("")
   const [cpyMsg, setCpyMsg] = useState("")
+  const [registryDialogIsOpen, setRegistryDialogIsOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const shareUrlRef = useRef<HTMLDivElement>(null)
   const [createLetter] = useMutation(CREATE_LETTER)
@@ -400,6 +426,36 @@ const MailDialog = (props: Props) => {
           </p>
         </div>
       )}
+      <div>
+        <h2>Add your letter to the registry</h2>
+        <p>
+          Click the button below to add your letter to our registry. You will be asked to provide a title and tags for
+          your letter. This will help others to find your letter so that they can send it to their representatives.
+        </p>
+        <PrimaryButton onClick={() => setRegistryDialogIsOpen(true)}>Add to the registry</PrimaryButton>
+        <RegistryDialog open={registryDialogIsOpen}>
+          <h2>Save your letter in our letter registry</h2>
+          <p>
+            Since you're adding your letter to the registry after mailing it we assume there is some of your personal
+            information in the letter. For that reason your letter will not be made public by default. You will need to
+            update your letter once it is saved. That way you have a chance to remove any personal details you would
+            like to remove.
+          </p>
+          <RegistryForm
+            letterContent={convertToRaw(props.editorState.getCurrentContent())}
+            close={() => setRegistryDialogIsOpen(false)}
+          />
+          <div>
+            <h3>Your letter</h3>
+            <p>It's here just in case you wanted to be able to double check things.</p>
+            <LetterPreview>
+              {convertToRaw(props.editorState.getCurrentContent()).blocks.map(block => (
+                <p key={block.key}>{block.text}</p>
+              ))}
+            </LetterPreview>
+          </div>
+        </RegistryDialog>
+      </div>
     </Wrapper>
   )
 }
