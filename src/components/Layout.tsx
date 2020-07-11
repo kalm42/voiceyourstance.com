@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBars, faEllipsisV, faEnvelope, faTimes, faCaretRight } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faEllipsisV, faEnvelope, faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Link } from "gatsby"
 import styled from "styled-components"
@@ -8,6 +8,8 @@ import { useMetaData } from "../context/MetaData"
 import CloseButton from "./CloseButton"
 import AuthenticationForms from "./AuthenticationForms"
 import { useUser } from "../context/UserContext"
+import { Menu, MenuItem, GoldIcon } from "./elements"
+import UserMenu from "./UserMenu"
 
 const Title = styled.h1`
   padding: 0;
@@ -22,6 +24,7 @@ const Header = styled.header`
   padding: 20px;
   align-items: center;
   justify-items: center;
+  height: 20px;
 `
 const MenuButton = styled(FontAwesomeIcon)`
   color: var(--accent);
@@ -32,26 +35,6 @@ const Button = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-`
-const Menu = styled.ul`
-  align-items: center;
-  display: grid;
-  height: 90vh;
-  list-style: none;
-  margin: 0 auto;
-  padding: 0 40px;
-  max-width: 500px;
-`
-const MenuItem = styled(Link)`
-  display: block;
-  padding: 2rem 1rem;
-  text-decoration: none;
-  transition: all 200ms ease;
-  color: var(--text);
-  &:hover {
-    background: var(--accent);
-    color: var(--background);
-  }
 `
 interface NavProps {
   open: boolean
@@ -68,11 +51,12 @@ const Nav = styled.nav`
   padding: 20px;
 `
 const Main = styled.main`
-  min-height: calc(100vh - 305px);
+  min-height: calc(100vh - 222px - 60px);
 `
 const Footer = styled.footer`
   background: var(--main);
   margin-bottom: -16px;
+  height: 222px;
 `
 const FooterTitle = styled.h1`
   color: white;
@@ -130,13 +114,6 @@ const EmailLink = styled.a`
     color: #0072c6;
   }
 `
-const GoldIcon = styled(FontAwesomeIcon)`
-  color: var(--accent);
-  transition: all 200ms ease;
-  ${MenuItem}:hover & {
-    color: var(--background);
-  }
-`
 interface AuthProps {
   open: boolean
 }
@@ -177,16 +154,14 @@ const Layout: FunctionComponent = ({ children }) => {
         </Button>
         <AuthenticationMenu open={authIsOpen}>
           {user ? (
-            <div>
-              <p>You're logged in.</p>
-            </div>
+            <UserMenu close={closeAuth} />
           ) : (
             <AuthenticationForms close={closeAuth} isOpen={authIsOpen} callback={closeAuth} />
           )}
         </AuthenticationMenu>
         <Nav open={open}>
           <CloseButton handleClick={handleMenuClick} />
-          <Menu>
+          <Menu fullscreen>
             <li>
               <MenuItem to="/" onClick={handleMenuClick}>
                 Location <GoldIcon icon={faCaretRight} />

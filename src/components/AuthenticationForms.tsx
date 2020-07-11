@@ -3,6 +3,7 @@ import styled from "styled-components"
 import SignIn from "./SignIn"
 import SignUp from "./SignUp"
 import ForgotPassword from "./ForgotPassword"
+import { Divider } from "./elements"
 
 const FormControls = styled.ul`
   margin: 0;
@@ -10,10 +11,6 @@ const FormControls = styled.ul`
   list-style: none;
   display: flex;
   justify-content: space-evenly;
-`
-const Divider = styled.hr`
-  border: 1px dashed var(--accent);
-  margin: 1rem;
 `
 const Controls = styled.button`
   border: none;
@@ -59,9 +56,9 @@ const AuthenticationForms = (props: Props) => {
 
   const handleCallback = () => {
     if (props.callback) {
-      props.callback()
+      // props.callback()
     }
-    close()
+    // close()
   }
 
   /**
