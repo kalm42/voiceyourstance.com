@@ -2,8 +2,8 @@ export namespace GQL {
   /**
    * error
    */
-  export interface GQError extends Error {
-    graphQLErrors: object
+  export interface GQLError extends Error {
+    graphQLErrors: Error[]
   }
   /**
    * Inputs

@@ -13,12 +13,12 @@ import SEO from "../../components/SEO"
 import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
 import MailDialog from "./MailDialog"
-import FromForm from "../../components/FromForm"
-import RegistryDrawer from "../../components/RegistryDrawer"
-import AuthenticationDialog from "./AuthenticationDialog"
 import { GQL } from "../../types"
-import ErrorMessage from "../../components/ErrorMessage"
 import { navigate } from "gatsby"
+import AuthenticationForms from "../../components/AuthenticationForms"
+import ErrorMessage from "../../components/ErrorMessage"
+import FromForm from "./FromForm"
+import RegistryDrawer from "./RegistryDrawer"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -39,6 +39,19 @@ const Title = styled.h2`
 const LetterControls = styled.div`
   display: flex;
   justify-content: space-between;
+`
+const AuthenticationDialog = styled.div`
+  position: fixed;
+  top: calc(100vh / 3 / 2);
+  left: 0;
+  right: 0;
+  margin: auto;
+  background: var(--background);
+  border: 1px solid var(--accent);
+  padding: 2rem;
+  max-height: 67vh;
+  width: calc((100vw / 3 / 2) * 4);
+  transition: all 200ms ease-in;
 `
 
 interface Props extends RouteComponentProps {
@@ -187,7 +200,7 @@ const WriteLetter = (props: Props) => {
         <AddressDetails>
           <ErrorReportingBoundry>
             <FromForm
-              disabled={pay}
+              pay={pay}
               line1={line1}
               setLine1={setLine1}
               name={name}
@@ -243,11 +256,13 @@ const WriteLetter = (props: Props) => {
       </PageWrapper>
       {shouldDisplayAuthenticationDialog && (
         <ErrorReportingBoundry>
-          <AuthenticationDialog
-            isOpen={shouldDisplayAuthenticationDialog}
-            close={() => setShouldDisplayAuthenticationDialog(false)}
-            callback={handledAuthNowSave}
-          />
+          <AuthenticationDialog>
+            <AuthenticationForms
+              isOpen={shouldDisplayAuthenticationDialog}
+              close={() => setShouldDisplayAuthenticationDialog(false)}
+              callback={handledAuthNowSave}
+            />
+          </AuthenticationDialog>
         </ErrorReportingBoundry>
       )}
       {pay && (

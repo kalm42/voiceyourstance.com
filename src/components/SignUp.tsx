@@ -24,8 +24,9 @@ const SignUp = (props: Props) => {
     authentication
       .register(email, password)
       .then(res => {
-        console.log("Register Response", res)
         setIsLoading(false)
+        setEmail("")
+        setPassword("")
       })
       .then(() => props.done && props.done())
       .catch(error => {
