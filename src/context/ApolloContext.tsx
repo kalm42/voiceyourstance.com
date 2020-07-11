@@ -26,6 +26,11 @@ const typeDefs = gql`
     fromAddressState: String!
     fromAddressZip: String!
   }
+  input TemplateInput {
+    title: String!
+    tags: [String!]!
+    content: Json!
+  }
 `
 
 const uri = process.env.GATSBY_BACKEND

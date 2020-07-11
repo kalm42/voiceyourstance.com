@@ -17,7 +17,7 @@ import { GQL } from "../../types"
 import { navigate } from "gatsby"
 import AuthenticationForms from "../../components/AuthenticationForms"
 import ErrorMessage from "../../components/ErrorMessage"
-import FromForm from "./FromForm"
+import FromForm from "../../components/FromForm"
 import RegistryDrawer from "./RegistryDrawer"
 
 const SAVE_LETTER = gql`
