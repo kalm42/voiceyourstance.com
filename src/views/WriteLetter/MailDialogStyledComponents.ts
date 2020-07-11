@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
   background: white;
   padding: 2rem;
   max-width: 500px;
-  border: 1px solid ${(props) => props.theme.accent};
+  border: 1px solid var(--accent);
   max-height: 80vh;
   overflow-x: scroll;
 
@@ -47,7 +47,7 @@ export const Spinner = styled(FontAwesomeIcon)`
   animation: ${rotate} 750ms linear infinite;
 `
 export const GoldIcon = styled(FontAwesomeIcon)`
-  color: ${(props) => props.theme.accent};
+  color: var(--accent);
 `
 export const CodeWrapper = styled.div`
   padding: 1rem;

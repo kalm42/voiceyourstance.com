@@ -6,7 +6,7 @@ import { SocialMediaChannel } from "../../types"
 
 const SocialMedia = styled.div`
   display: grid;
-  background: ${props => props.theme.main};
+  background: var(--main);
   padding: 1rem;
   border-radius: 50%;
   width: 2rem;
@@ -19,13 +19,13 @@ const SocialMediaIcon = styled(FontAwesomeIcon)`
   height: 2rem !important;
 `
 const SocialMediaLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   text-decoration: none;
   transition: all 200ms ease;
   cursor: pointer;
   &:hover {
     transform: scale(1.02);
-    color: ${props => props.theme.accent};
+    color: var(--accent);
   }
 `
 

@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from "react"
-import ApolloCient, { gql } from "apollo-boost"
+import ApolloCient, { gql, InMemoryCache } from "apollo-boost"
 import { ApolloProvider } from "@apollo/react-hooks"
 
+// GraphQL Type deffinitions
 const typeDefs = gql`
   type LetterInput {
     toName: String!
@@ -28,7 +29,7 @@ const typeDefs = gql`
 `
 
 const uri = process.env.GATSBY_BACKEND
-const client = new ApolloCient({ uri: `${uri}/graphql`, typeDefs })
+const client = new ApolloCient({ uri: `${uri}/graphql`, typeDefs, credentials: "include", cache: new InMemoryCache() })
 
 const ApolloContext: FunctionComponent = ({ children }) => {
   return <ApolloProvider client={client}>{children}</ApolloProvider>

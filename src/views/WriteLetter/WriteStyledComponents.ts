@@ -18,10 +18,10 @@ export const From = styled.div`
   grid-gap: 1rem;
 `
 export const EditorWrapper = styled.div`
-  border: 1px solid ${(props) => props.theme.accent};
-  margin: 2rem 0;
+  border: 1px solid var(--accent);
+  margin: 1rem 0;
   padding: 1rem;
-  font-family: ${(props) => props.theme.formalFont};
+  font-family: var(--formalFont);
 `
 interface PageWrapperProps {
   pay: boolean
@@ -32,7 +32,7 @@ export const PageWrapper = styled.div`
     if (props.pay) {
       return `
         filter: blur(5px) grayscale(50%);
-        transform: scale(0.9);
+        transform: scale(0.99);
       `
     }
   }}

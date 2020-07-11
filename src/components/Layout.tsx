@@ -1,10 +1,15 @@
 import React, { FunctionComponent, useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBars, faEllipsisV, faEnvelope, faTimes, faCaretRight } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faEllipsisV, faEnvelope, faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import { faFacebookF, faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Link } from "gatsby"
 import styled from "styled-components"
 import { useMetaData } from "../context/MetaData"
+import CloseButton from "./CloseButton"
+import AuthenticationForms from "./AuthenticationForms"
+import { useUser } from "../context/UserContext"
+import { Menu, MenuItem, GoldIcon } from "./elements"
+import UserMenu from "./UserMenu"
 
 const Title = styled.h1`
   padding: 0;
@@ -19,9 +24,10 @@ const Header = styled.header`
   padding: 20px;
   align-items: center;
   justify-items: center;
+  height: 20px;
 `
 const MenuButton = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+  color: var(--accent);
   height: 20px !important;
   width: 20px !important;
 `
@@ -29,26 +35,6 @@ const Button = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-`
-const Menu = styled.ul`
-  align-items: center;
-  display: grid;
-  height: 90vh;
-  list-style: none;
-  margin: 0 auto;
-  padding: 0 40px;
-  max-width: 500px;
-`
-const MenuItem = styled(Link)`
-  display: block;
-  padding: 2rem 1rem;
-  text-decoration: none;
-  transition: all 200ms ease;
-  color: ${props => props.theme.text};
-  &:hover {
-    background: ${props => props.theme.accent};
-    color: ${props => props.theme.background};
-  }
 `
 interface NavProps {
   open: boolean
@@ -65,15 +51,16 @@ const Nav = styled.nav`
   padding: 20px;
 `
 const Main = styled.main`
-  min-height: calc(100vh - 280px);
+  min-height: calc(100vh - 222px - 60px);
 `
 const Footer = styled.footer`
-  background: ${props => props.theme.main};
+  background: var(--main);
   margin-bottom: -16px;
+  height: 222px;
 `
 const FooterTitle = styled.h1`
   color: white;
-  border-bottom: 1px solid ${props => props.theme.accent};
+  border-bottom: 1px solid var(--accent);
   margin: 0;
   padding: 20px 0;
   font-variation-settings: "wght" 400;
@@ -90,7 +77,7 @@ const FooterNav = styled.ul`
   grid-gap: 1rem;
 `
 const FooterSocial = styled.div`
-  background: ${props => props.theme.main_dark};
+  background: var(--mainDark);
   padding: 1rem;
   display: grid;
   justify-items: center;
@@ -103,47 +90,57 @@ const SocialNav = styled.ul`
   grid-gap: 2rem;
 `
 const FooterNavLinks = styled(Link)`
-  color: ${props => props.theme.background};
+  color: var(--background);
   text-decoration: none;
   text-transform: lowercase;
   font-size: 1rem;
-  font-family: ${props => props.theme.formalFont};
+  font-family: var(--formalFont);
 `
 const FacebookLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   &:hover {
     color: #3b5998;
   }
 `
 const TwitterLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   &:hover {
     color: #00acee;
   }
 `
 const EmailLink = styled.a`
-  color: ${props => props.theme.background};
+  color: var(--background);
   &:hover {
     color: #0072c6;
   }
 `
-const GoldIcon = styled(FontAwesomeIcon)`
-  color: ${props => props.theme.accent};
+interface AuthProps {
+  open: boolean
+}
+const AuthenticationMenu = styled.div`
+  position: absolute;
+  top: ${(props: AuthProps) => (props.open ? "4rem" : "-130%")};
+  right: 1rem;
+  padding: 2rem;
+  background: var(--background);
+  border: 1px solid var(--accent);
   transition: all 200ms ease;
-  ${MenuItem}:hover & {
-    color: ${props => props.theme.background};
-  }
 `
 
 const Layout: FunctionComponent = ({ children }) => {
   const [open, setOpen] = useState(false)
+  const [authIsOpen, setAuthIsOpen] = useState(false)
   const MetaData = useMetaData()
+  const user = useUser()
 
   const t = MetaData?.title || "Home"
 
   const handleMenuClick = () => {
     setOpen(!open)
   }
+
+  const closeAuth = () => setAuthIsOpen(false)
+  const toggleAuthMenu = () => setAuthIsOpen(!authIsOpen)
 
   return (
     <div>
@@ -152,14 +149,19 @@ const Layout: FunctionComponent = ({ children }) => {
           <MenuButton icon={faBars} />
         </Button>
         <Title>{t}</Title>
-        <Button style={{ justifySelf: "end" }}>
+        <Button style={{ justifySelf: "end" }} onClick={toggleAuthMenu}>
           <MenuButton icon={faEllipsisV} />
         </Button>
+        <AuthenticationMenu open={authIsOpen}>
+          {user ? (
+            <UserMenu close={closeAuth} />
+          ) : (
+            <AuthenticationForms close={closeAuth} isOpen={authIsOpen} callback={closeAuth} />
+          )}
+        </AuthenticationMenu>
         <Nav open={open}>
-          <Button onClick={handleMenuClick}>
-            <MenuButton icon={faTimes} />
-          </Button>
-          <Menu>
+          <CloseButton handleClick={handleMenuClick} />
+          <Menu fullscreen>
             <li>
               <MenuItem to="/" onClick={handleMenuClick}>
                 Location <GoldIcon icon={faCaretRight} />

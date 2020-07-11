@@ -9,9 +9,9 @@ import CardSection from "./CardSection"
 
 const Button = styled.button`
   padding: 1rem;
-  background: ${props => props.theme.main};
+  background: var(--main);
   border: none;
-  color: ${props => props.theme.background};
+  color: var(--background);
   font-size: 0.9rem;
   text-transform: lowercase;
   font-variation-settings: "wght" 600;
@@ -24,7 +24,7 @@ const Form = styled.form`
 const PaymentWrapper = styled.div`
   font-size: 1rem;
   padding: 1rem;
-  border: 1px solid ${props => props.theme.accent};
+  border: 1px solid var(--accent);
 `
 
 interface Props {
