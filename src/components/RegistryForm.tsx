@@ -46,6 +46,8 @@ const RemoveIcon = styled(FontAwesomeIcon)`
 interface Props {
   letterContent: RawDraftContentState
   close: () => void
+  templateId: string | undefined
+  setTemplateId: (id: string) => void
 }
 
 const RegistryForm = (props: Props) => {
@@ -94,7 +96,12 @@ const RegistryForm = (props: Props) => {
       return
     }
     createTemplate({ variables: { template: { content: props.letterContent, tags, title } } })
-      .then(() => props.close())
+      .then(response => {
+        if (response.data?.createTemplate.id) {
+          props.setTemplateId(response.data.createTemplate.id)
+        }
+        props.close()
+      })
       .catch(err => setError(err))
   }
 

@@ -71,6 +71,11 @@ const WriteLetter = (props: Props) => {
   const [pay, setPay] = useState(false)
   const [shouldDisplayAuthenticationDialog, setShouldDisplayAuthenticationDialog] = useState(false)
   const [error, setError] = useState<Error | undefined>(undefined)
+  const [letterId, setLetterId] = useState<string | undefined>(undefined)
+  const [mailId, setMailId] = useState<string | undefined>(undefined)
+  const [paymentId, setPaymentId] = useState<string | undefined>(undefined)
+  const [sharedId, setSharedId] = useState<string | undefined>(undefined)
+  const [templateId, setTemplateId] = useState<string | undefined>(undefined)
   const representativeContext = useRepresentatives()
   const analytics = useAnalytics()
   const MetaData = useMetaData()
@@ -91,6 +96,19 @@ const WriteLetter = (props: Props) => {
   useEffect(() => {
     analytics?.pageView()
   }, [analytics])
+
+  /**
+   * Load civic response and pull out address info from it
+   */
+  useEffect(() => {
+    const civic = JSON.parse(localStorage.getItem("vys-representatives") || "")
+    if (civic) {
+      setLine1(civic.normalizedInput.line1)
+      setCity(civic.normalizedInput.city)
+      setState(civic.normalizedInput.state)
+      setZip(civic.normalizedInput.zip)
+    }
+  }, [])
 
   /**
    * On state change calcuate the number of characters remaining.
@@ -200,7 +218,6 @@ const WriteLetter = (props: Props) => {
         <AddressDetails>
           <ErrorReportingBoundry>
             <FromForm
-              pay={pay}
               line1={line1}
               setLine1={setLine1}
               name={name}
@@ -211,6 +228,7 @@ const WriteLetter = (props: Props) => {
               setZip={setZip}
               state={state}
               zip={zip}
+              disabled={pay}
             />
           </ErrorReportingBoundry>
           <div>
@@ -272,6 +290,16 @@ const WriteLetter = (props: Props) => {
             to={{ ...to }}
             from={{ name, line1, city, state, zip }}
             close={() => setPay(false)}
+            letterId={letterId}
+            setLetterId={setLetterId}
+            mailId={mailId}
+            setMailId={setMailId}
+            paymentId={paymentId}
+            setPaymentId={setPaymentId}
+            sharedId={sharedId}
+            setSharedId={setSharedId}
+            templateId={templateId}
+            setTemplateId={setTemplateId}
           />
         </ErrorReportingBoundry>
       )}
