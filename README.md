@@ -1,6 +1,89 @@
 # Voice Your Stance
 
-A website that makes it amazingly easy to contact your local and federal representatives.
+A website that makes it amazingly easy to contact your local and federal
+representatives.
+
+## Routes
+
+This is the exhaustive list of routes for Voice Your Stance
+
+### `/` Homepage
+
+The homepage gets the address of the user and will redirect the user to the
+/reps page to see a list of their representatives.
+
+### `/contact-us` Contact Us
+
+A simple page with a mailto link to send me an email.
+
+### `/password-reset` Password Reset
+
+The password reset page requires a query param of `resetToken` to work. The page
+is self descriptive.
+
+### `/privacy-policy` Privacy Policy
+
+Self descriptive. Includes the address to contact us.
+
+### `/reps` List of Representatives
+
+Lists out all of the users' representatives.
+
+### `/reps/:representativeIndex` Representative Details
+
+This page shows the contact details for a representative.
+
+### `/reps/:representativeIndex/write/:addressIndex` Write a letter to a representative at an address
+
+This will let the user write a letter to a specific representative at one of
+their available addresses.
+
+### `/write` Write a letter
+
+TODO: This page will let a user start writting a letter with no representative
+selected or template selected.
+
+### `/write/draft` List of all draft letters
+
+TODO: This page will list out all of the letters a user has started but has not
+mailed, or not paid for.
+
+### `/write/draft/:letterId` Edit a draft
+
+TODO: This page will let a user continue editing or send a draft. Once a draft
+is mailed it is no longer a draft.
+
+### `/sent` Sent Letters
+
+TODO: This page will list out all of the letters a user has sent and who the
+user sent them to.
+
+### `/write/:templateId` Write letter from template
+
+TODO: This page will load a template from the registry and let a user modify it.
+The user must still select a representative to mail it to before the letter can
+be mailed.
+
+### `/write/:templateId/:toId` Write a letter from a template to a representative
+
+TODO: This page will be the new path for all shared letters and any letter that
+is using a template.
+
+### `/registered-letters` List of registered letters a user has written
+
+TODO: This page will list out all of the registered letters a user has written.
+The list will be in reverse chronological order with the most recently edited
+on top.
+
+### `/registered-letters/:templateId` Edit a registered letter
+
+TODO: This page will let a user edit the settings and content of their registered
+letter. Shared letters from a user will also be here with searchable set to false.
+Some settings include:
+
+- `searchable` Is the letter findable when other users are looking for a template to use
+- `title`
+- `tags` Allowing the user to add or remove tags
 
 ## Available Scripts
 
@@ -9,62 +92,17 @@ In the project directory, you can run:
 ### `yarn start`
 
 Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:8000](http://localhost:8000) to view it in the browser.
 
 The page will reload if you make edits.<br />
 You will also see any lint errors in the console.
 
 ### `yarn test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+TODO: Launches the test runner in the interactive watch mode.
 
 ### `yarn build`
 
 Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+See the section about [deployment](https://www.gatsbyjs.org/docs/overview-of-the-gatsby-build-process/) for more information.

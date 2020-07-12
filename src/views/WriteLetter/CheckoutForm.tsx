@@ -29,15 +29,17 @@ const PaymentWrapper = styled.div`
 
 interface Props {
   callback: (id: string) => void
+  loading: boolean
+  setLoading: (b: boolean) => void
 }
 
 const CheckoutForm = (props: Props) => {
   const [error, setError] = useState<undefined | StripeError | Error>(undefined)
-  const [loading, setLoading] = useState(false)
   const [name, setName] = useState("")
   const stripe = useStripe()
   const elements = useElements()
   const analytics = useAnalytics()
+  const { loading, setLoading } = props
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()

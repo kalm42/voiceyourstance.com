@@ -186,6 +186,14 @@ export namespace GQL {
     mailLetter: Mail
   }
 
+  export interface CreateTemplateData {
+    createTemplate: Template
+  }
+
+  export interface CreateTemplateVars {
+    template: TemplateInput
+  }
+
   /**
    * Queries
    */

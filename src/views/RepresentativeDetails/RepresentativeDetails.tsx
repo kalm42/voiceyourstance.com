@@ -84,10 +84,7 @@ const RepresentativeDetails = (props: Props) => {
 
   return (
     <Wrapper>
-      <SEO
-        title={`Representative ${rep.name} | Voice Your Stance`}
-        description={`${rep.name} the ${rep.title}'s contact information`}
-      />
+      <SEO title={`Representative ${rep.name}`} description={`${rep.name} the ${rep.title}'s contact information`} />
       <ErrorReportingBoundry>
         <ProfileImage>
           <DefaultProfileImage icon={faUser} />
