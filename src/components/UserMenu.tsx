@@ -41,13 +41,18 @@ const UserMenu = (props: Props) => {
     <div ref={ref}>
       <Menu>
         <li>
-          <MenuItem to="/" onClick={handleMenuClick}>
+          <MenuItem to="/write/draft" onClick={handleMenuClick}>
             Letter Drafts <GoldIcon icon={faCaretRight} />
           </MenuItem>
         </li>
         <li>
-          <MenuItem to="/reps" onClick={handleMenuClick}>
+          <MenuItem to="/sent" onClick={handleMenuClick}>
             Sent Letters <GoldIcon icon={faCaretRight} />
+          </MenuItem>
+        </li>
+        <li>
+          <MenuItem to="/registered-letters" onClick={handleMenuClick}>
+            Registered Letters <GoldIcon icon={faCaretRight} />
           </MenuItem>
         </li>
       </Menu>
