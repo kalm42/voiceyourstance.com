@@ -98,6 +98,19 @@ const WriteLetter = (props: Props) => {
   }, [analytics])
 
   /**
+   * Load civic response and pull out address info from it
+   */
+  useEffect(() => {
+    const civic = JSON.parse(localStorage.getItem("vys-representatives") || "")
+    if (civic) {
+      setLine1(civic.normalizedInput.line1)
+      setCity(civic.normalizedInput.city)
+      setState(civic.normalizedInput.state)
+      setZip(civic.normalizedInput.zip)
+    }
+  }, [])
+
+  /**
    * On state change calcuate the number of characters remaining.
    */
   useEffect(() => {
