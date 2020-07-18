@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
 import { Input } from "./elements"
 
@@ -23,6 +23,20 @@ interface Props {
 
 const FromForm = (props: Props) => {
   const { city, line1, name, disabled, setCity, setLine1, setName, setState, setZip, state, zip } = props
+
+  /**
+   * Load civic response and pull out address info from it
+   */
+  useEffect(() => {
+    const civic = JSON.parse(localStorage.getItem("vys-representatives") || "")
+    if (civic) {
+      setLine1(civic.normalizedInput.line1)
+      setCity(civic.normalizedInput.city)
+      setState(civic.normalizedInput.state)
+      setZip(civic.normalizedInput.zip)
+    }
+  }, [])
+
   return (
     <div>
       <h2>From</h2>
