@@ -12,13 +12,13 @@ import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
 import SEO from "../../components/SEO"
 import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
-import MailDialog from "./MailDialog"
+import MailDialog from "../../components/MailDialog"
 import { GQL } from "../../types"
 import { navigate } from "gatsby"
 import AuthenticationForms from "../../components/AuthenticationForms"
 import ErrorMessage from "../../components/ErrorMessage"
 import FromForm from "../../components/FromForm"
-import RegistryDrawer from "./RegistryDrawer"
+import RegistryDrawer from "../../components/RegistryDrawer"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -137,7 +137,6 @@ const WriteLetter = (props: Props) => {
    * Validate from
    */
   const isValidAddress = () => {
-    // TODO: consider using the lob address api, or usps api or some address validator
     return !name.length || !line1.length || !city.length || state.length !== 2 || zip.length !== 5 ? false : true
   }
 

@@ -6,6 +6,7 @@ import { UserProvider } from "./UserContext"
 import ApolloContext from "./ApolloContext"
 import { AnalyticsProvider } from "./Analytics"
 import { MetaDataProvider } from "./MetaData"
+import { LetterProvider } from "./LetterContext"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
@@ -14,7 +15,9 @@ const AppContext: FunctionComponent = ({ children }) => {
         <AuthenticationProvider>
           <UserProvider>
             <MetaDataProvider>
-              <RepresentativeProvider>{children}</RepresentativeProvider>
+              <LetterProvider>
+                <RepresentativeProvider>{children}</RepresentativeProvider>
+              </LetterProvider>
             </MetaDataProvider>
           </UserProvider>
         </AuthenticationProvider>
