@@ -12,7 +12,7 @@ import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
 import SEO from "../../components/SEO"
 import { PrimaryInputSubmit, SecondaryButton } from "../../components/elements"
 import { Wrapper, PageWrapper, AddressDetails, EditorWrapper } from "./WriteStyledComponents"
-import MailDialog from "./MailDialog"
+import MailDialog from "../../components/MailDialog"
 import { GQL } from "../../types"
 import { navigate } from "gatsby"
 import AuthenticationForms from "../../components/AuthenticationForms"
@@ -98,19 +98,6 @@ const WriteLetter = (props: Props) => {
   }, [analytics])
 
   /**
-   * Load civic response and pull out address info from it
-   */
-  useEffect(() => {
-    const civic = JSON.parse(localStorage.getItem("vys-representatives") || "")
-    if (civic) {
-      setLine1(civic.normalizedInput.line1)
-      setCity(civic.normalizedInput.city)
-      setState(civic.normalizedInput.state)
-      setZip(civic.normalizedInput.zip)
-    }
-  }, [])
-
-  /**
    * On state change calcuate the number of characters remaining.
    */
   useEffect(() => {
@@ -137,7 +124,6 @@ const WriteLetter = (props: Props) => {
    * Validate from
    */
   const isValidAddress = () => {
-    // TODO: consider using the lob address api, or usps api or some address validator
     return !name.length || !line1.length || !city.length || state.length !== 2 || zip.length !== 5 ? false : true
   }
 
