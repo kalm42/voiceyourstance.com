@@ -1,3 +1,5 @@
+import { RawDraftContentState } from "draft-js"
+
 export namespace GQL {
   /**
    * error
@@ -94,7 +96,7 @@ export namespace GQL {
     id: string
     fromAddress: Address
     toAddress: Address
-    content: object
+    content: RawDraftContentState
     payment?: Payment
     mail?: Mail
     user?: User
@@ -202,4 +204,9 @@ export namespace GQL {
   }
 
   export interface MeVars {}
+
+  export interface GetDraftLettersData {
+    getDraftLetters: Letter[]
+  }
+  export interface GetDraftLettersVars {}
 }

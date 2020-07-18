@@ -1,6 +1,7 @@
 import React from "react"
 import { gql, ExecutionResult } from "apollo-boost"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation, useQuery } from "@apollo/react-hooks"
+import { QueryResult } from "@apollo/react-common"
 import { RawDraftContentState } from "draft-js"
 import { GQL } from "../types"
 
@@ -8,6 +9,25 @@ const CREATE_LETTER = gql`
   mutation CreateLetter($letter: LetterInput!) {
     createLetter(letter: $letter) {
       id
+    }
+  }
+`
+
+const GET_DRAFT_LETTERS = gql`
+  query GetDraftLetters {
+    getDraftLetters {
+      id
+      toAddress {
+        id
+        name
+        line1
+        line2
+        city
+        state
+        zip
+      }
+      content
+      updatedAt
     }
   }
 `
@@ -27,6 +47,7 @@ interface LetterContextInterface {
     to: AddressInput,
     content: RawDraftContentState,
   ) => Promise<ExecutionResult<GQL.CreateLetterData>>
+  getMyDrafts: () => QueryResult<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>
 }
 
 const LetterContext = React.createContext<LetterContextInterface | null>(null)
@@ -58,7 +79,11 @@ function LetterProvider(props: Props) {
     })
   }
 
-  return <LetterContext.Provider value={{ saveNewLetter }} {...props} />
+  const getMyDrafts = () => {
+    return useQuery<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>(GET_DRAFT_LETTERS)
+  }
+
+  return <LetterContext.Provider value={{ saveNewLetter, getMyDrafts }} {...props} />
 }
 
 const useLetter = () => React.useContext(LetterContext)
