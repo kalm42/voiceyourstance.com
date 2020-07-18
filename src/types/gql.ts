@@ -209,4 +209,11 @@ export namespace GQL {
     getDraftLetters: Letter[]
   }
   export interface GetDraftLettersVars {}
+
+  export interface GetLetterByIdData {
+    getLetterById: Letter
+  }
+  export interface GetLetterByIdVars {
+    id: string
+  }
 }
