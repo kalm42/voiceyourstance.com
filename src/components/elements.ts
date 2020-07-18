@@ -37,6 +37,22 @@ export const PrimaryButton = styled.button`
     transform: scale(0.9);
   }
 `
+export const PrimaryLink = styled(Link)`
+  padding: 1rem;
+  background: var(--main);
+  color: var(--background);
+  border: 0;
+  font-size: 1rem;
+  text-transform: lowercase;
+  transition: all 200ms ease;
+  text-decoration: none;
+  &:hover {
+    background: var(--mainDark);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+`
 export const PrimaryInputSubmit = styled.input`
   padding: 1rem;
   background: var(--main);
