@@ -126,7 +126,7 @@ interface Props {
   from: Person
   close: () => void
   letterId: string | undefined
-  setLetterId: (id: string) => void
+  setLetterId?: (id: string) => void
   mailId: string | undefined
   setMailId: (id: string) => void
   paymentId: string | undefined
