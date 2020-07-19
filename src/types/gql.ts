@@ -216,4 +216,9 @@ export namespace GQL {
   export interface GetLetterByIdVars {
     id: string
   }
+
+  export interface GetSentLettersData {
+    getSentLetters: Letter[]
+  }
+  export interface GetSentLettersVars {}
 }
