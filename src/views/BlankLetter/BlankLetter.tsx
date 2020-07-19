@@ -9,9 +9,11 @@ import SEO from "../../components/SEO"
 import { useUser } from "../../context/UserContext"
 import { useLetter } from "../../context/LetterContext"
 import MailDialog from "../../components/MailDialog"
-import ChooseRepresentative from "./ChooseRepresentative"
+import ChooseRepresentative from "../../components/ChooseRepresentative"
 import { Address, Representative } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
+import { useMetaData } from "../../context/MetaData"
+import { useAnalytics } from "../../context/Analytics"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -89,6 +91,8 @@ const BlankLetter = (props: RouteComponentProps) => {
   // contexts
   const user = useUser()
   const letterContext = useLetter()
+  const MetaData = useMetaData()
+  const analytics = useAnalytics()
 
   const from = { city, line1, name, state, zip }
   const to = {
@@ -99,6 +103,33 @@ const BlankLetter = (props: RouteComponentProps) => {
     state: toAddress?.state || "",
     zip: toAddress?.zip || "",
   }
+
+  /**
+   * set the title
+   */
+  useEffect(() => {
+    MetaData?.safeSetTitle("Write a letter")
+  }, [MetaData])
+
+  /**
+   * Analytics Report Page View
+   */
+  useEffect(() => {
+    analytics?.pageView()
+  }, [analytics])
+
+  /**
+   * Clear error after some time
+   */
+  useEffect(() => {
+    let timeoutId: number
+    if (error) {
+      timeoutId = setTimeout(() => setError(undefined), 10000)
+    }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [error])
 
   /**
    * On state change calcuate the number of characters remaining.

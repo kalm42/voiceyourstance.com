@@ -88,7 +88,7 @@ const LetterControls = styled.div`
 `
 
 interface Props extends RouteComponentProps {
-  letterId: string
+  letterId?: string
 }
 
 const EditLetter = (props: Props) => {
