@@ -199,17 +199,20 @@ export namespace GQL {
   /**
    * Queries
    */
+
+  // Me
   export interface MeData {
     me: User
   }
-
   export interface MeVars {}
 
+  // GetDraftLetters
   export interface GetDraftLettersData {
     getDraftLetters: Letter[]
   }
   export interface GetDraftLettersVars {}
 
+  // GetLetterById
   export interface GetLetterByIdData {
     getLetterById: Letter
   }
@@ -217,11 +220,13 @@ export namespace GQL {
     id: string
   }
 
+  // GetSentLetters
   export interface GetSentLettersData {
     getSentLetters: Letter[]
   }
   export interface GetSentLettersVars {}
 
+  // GetTemplateById
   export interface GetTemplateByIdData {
     getTemplateById: Template
   }
@@ -229,10 +234,17 @@ export namespace GQL {
     id: string
   }
 
+  // GetAddressById
   export interface GetAddressByIdData {
     getAddressById: Address
   }
   export interface GetAddressByIdVars {
     id: string
   }
+
+  // GetUsersTemplates
+  export interface GetUsersTemplatesData {
+    getUsersTemplates: Template[]
+  }
+  export interface GetUsersTemplatesVars {}
 }
