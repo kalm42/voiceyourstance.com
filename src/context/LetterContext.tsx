@@ -32,6 +32,30 @@ const GET_DRAFT_LETTERS = gql`
   }
 `
 
+const GET_SENT_LETTERS = gql`
+  query GetSentLetters {
+    getSentLetters {
+      id
+      content
+      updatedAt
+      toAddress {
+        hash
+        name
+        line1
+        line2
+        city
+        state
+        zip
+      }
+      mail {
+        id
+        expectedDeliveryDate
+        createdAt
+      }
+    }
+  }
+`
+
 interface AddressInput {
   name: string
   line1: string
@@ -48,6 +72,7 @@ interface LetterContextInterface {
     content: RawDraftContentState,
   ) => Promise<ExecutionResult<GQL.CreateLetterData>>
   getMyDrafts: () => QueryResult<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>
+  getSentLettersQuery: QueryResult<GQL.GetSentLettersData, GQL.GetSentLettersVars>
 }
 
 const LetterContext = React.createContext<LetterContextInterface | null>(null)
@@ -56,6 +81,7 @@ interface Props {}
 
 function LetterProvider(props: Props) {
   const [createLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(CREATE_LETTER)
+  const getSentLettersQuery = useQuery<GQL.GetSentLettersData, GQL.GetSentLettersVars>(GET_SENT_LETTERS)
 
   const saveNewLetter = (from: AddressInput, to: AddressInput, content: RawDraftContentState) => {
     return createLetter({
@@ -83,7 +109,7 @@ function LetterProvider(props: Props) {
     return useQuery<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>(GET_DRAFT_LETTERS)
   }
 
-  return <LetterContext.Provider value={{ saveNewLetter, getMyDrafts }} {...props} />
+  return <LetterContext.Provider value={{ saveNewLetter, getMyDrafts, getSentLettersQuery }} {...props} />
 }
 
 const useLetter = () => React.useContext(LetterContext)

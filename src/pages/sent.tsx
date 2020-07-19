@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react"
 import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
+import { format } from "date-fns"
 import { useMetaData } from "../context/MetaData"
 import { useAnalytics } from "../context/Analytics"
-import ErrorMessage from "../components/ErrorMessage"
+import { useLetter } from "../context/LetterContext"
 import { useUser } from "../context/UserContext"
-import AuthenticationForms from "../components/AuthenticationForms"
-import { useQuery } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
-import { GQL } from "../types"
-import { format } from "date-fns"
+import ErrorMessage from "../components/ErrorMessage"
 import Layout from "../components/Layout"
 import SEO from "../components/SEO"
 
@@ -38,39 +35,12 @@ const LetterPreview = styled.div`
   transform: scale(0.75);
 `
 
-/**
- * Graph QL
- */
-const GET_SENT_LETTERS = gql`
-  query GetSentLetters {
-    getSentLetters {
-      id
-      content
-      updatedAt
-      toAddress {
-        hash
-        name
-        line1
-        line2
-        city
-        state
-        zip
-      }
-      mail {
-        id
-        expectedDeliveryDate
-        createdAt
-      }
-    }
-  }
-`
-
 const SentLetters = (props: RouteComponentProps) => {
   const [localError, setLocalError] = useState<Error | undefined>(undefined)
   const MetaData = useMetaData()
   const analytics = useAnalytics()
   const user = useUser()
-  const { data, loading, error } = useQuery<GQL.GetSentLettersData, GQL.GetSentLettersVars>(GET_SENT_LETTERS)
+  const letter = useLetter()
 
   /**
    * set the title
@@ -99,21 +69,9 @@ const SentLetters = (props: RouteComponentProps) => {
     }
   }, [localError])
 
-  // TODO: Maybe change this to be an actual dialog like it wants to be
-  if (!user) {
-    return (
-      <AuthenticationForms
-        close={() => {
-          return
-        }}
-        isOpen={true}
-      />
-    )
-  }
-
-  console.log({ data, error })
-
-  const hasSentLetters = !!data?.getSentLetters.length
+  const hasSentLetters = !!letter?.getSentLettersQuery?.data?.getSentLetters?.length
+  const sentLetters = letter?.getSentLettersQuery?.data?.getSentLetters
+  const error = letter?.getSentLettersQuery?.error
 
   return (
     <Layout>
@@ -123,32 +81,33 @@ const SentLetters = (props: RouteComponentProps) => {
         <ErrorMessage error={error || localError} />
         <div>
           {!hasSentLetters && <p>You have not sent a letter yet.</p>}
-          {data?.getSentLetters.map(sent => (
-            <DraftWrapper key={sent.id}>
-              <div>
-                <h3>Expected Delivery Date:</h3>
-                <p>{format(new Date(sent.mail.expectedDeliveryDate), "MM/dd/yy hh:mm:ss a")}</p>
-              </div>
-              <DraftDetailsWrapper>
+          {sentLetters &&
+            sentLetters.map(sent => (
+              <DraftWrapper key={sent.id}>
                 <div>
-                  <h3>To: {sent.toAddress.name}</h3>
-                  <address>
-                    {sent.toAddress.line1}
-                    {sent.toAddress.line1 && <br />}
-                    {sent.toAddress.line2}
-                    {sent.toAddress.line2 && <br />}
-                    {sent.toAddress.city}, {sent.toAddress.state} {sent.toAddress.zip}
-                    <br />
-                  </address>
+                  <h3>Expected Delivery Date:</h3>
+                  <p>{format(new Date(sent.mail.expectedDeliveryDate), "MM/dd/yy hh:mm:ss a")}</p>
                 </div>
-                <LetterPreview>
-                  {sent.content.blocks.map(paragraph => (
-                    <p key={paragraph.key}>{paragraph.text}</p>
-                  ))}
-                </LetterPreview>
-              </DraftDetailsWrapper>
-            </DraftWrapper>
-          ))}
+                <DraftDetailsWrapper>
+                  <div>
+                    <h3>To: {sent.toAddress.name}</h3>
+                    <address>
+                      {sent.toAddress.line1}
+                      {sent.toAddress.line1 && <br />}
+                      {sent.toAddress.line2}
+                      {sent.toAddress.line2 && <br />}
+                      {sent.toAddress.city}, {sent.toAddress.state} {sent.toAddress.zip}
+                      <br />
+                    </address>
+                  </div>
+                  <LetterPreview>
+                    {sent.content.blocks.map(paragraph => (
+                      <p key={paragraph.key}>{paragraph.text}</p>
+                    ))}
+                  </LetterPreview>
+                </DraftDetailsWrapper>
+              </DraftWrapper>
+            ))}
         </div>
       </Wrapper>
     </Layout>
