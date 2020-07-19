@@ -228,4 +228,11 @@ export namespace GQL {
   export interface GetTemplateByIdVars {
     id: string
   }
+
+  export interface GetAddressByIdData {
+    getAddressById: Address
+  }
+  export interface GetAddressByIdVars {
+    id: string
+  }
 }
