@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUserCircle, faChevronRight } from "@fortawesome/free-solid-svg-icons"
-import { useRepresentatives } from "../../context/Representatives"
-import styled, { StyledComponent } from "styled-components"
-import { Representative, Address } from "../../types"
+import { useRepresentatives } from "../context/Representatives"
+import styled from "styled-components"
+import { Representative, Address } from "../types"
 
 const Wrapper = styled.div`
   position: fixed;

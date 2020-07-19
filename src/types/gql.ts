@@ -34,7 +34,7 @@ export namespace GQL {
     fromAddressCity: string
     fromAddressState: string
     fromAddressZip: string
-    content: object
+    content: RawDraftContentState
   }
 
   export interface AddressInput {
@@ -56,7 +56,7 @@ export namespace GQL {
     id: string
     title: string
     tags: string
-    content: object
+    content: RawDraftContentState
     user?: User
     createdAt: string
     updatedAt: string
@@ -171,7 +171,7 @@ export namespace GQL {
   export interface UpdateLetterVars {
     letterId: string
     from?: AddressInput
-    content?: object
+    content?: RawDraftContentState
   }
 
   export interface UpdateLetterData {
@@ -221,4 +221,11 @@ export namespace GQL {
     getSentLetters: Letter[]
   }
   export interface GetSentLettersVars {}
+
+  export interface GetTemplateByIdData {
+    getTemplateById: Template
+  }
+  export interface GetTemplateByIdVars {
+    id: string
+  }
 }

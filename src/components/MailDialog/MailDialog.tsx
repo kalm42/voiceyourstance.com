@@ -134,7 +134,7 @@ interface Props {
   sharedId: string | undefined
   setSharedId: (id: string) => void
   templateId: string | undefined
-  setTemplateId: (id: string) => void
+  setTemplateId?: (id: string) => void
 }
 
 const MailDialog = (props: Props) => {
