@@ -40,44 +40,50 @@ their available addresses.
 
 ### `/write` Write a letter
 
-TODO: This page will let a user start writting a letter with no representative
+This page will let a user start writting a letter with no representative
 selected or template selected.
 
 ### `/write/draft` List of all draft letters
 
-TODO: This page will list out all of the letters a user has started but has not
+This page will list out all of the letters a user has started but has not
 mailed, or not paid for.
 
 ### `/write/draft/:letterId` Edit a draft
 
-TODO: This page will let a user continue editing or send a draft. Once a draft
+This page will let a user continue editing or send a draft. Once a draft
 is mailed it is no longer a draft.
 
 ### `/sent` Sent Letters
 
-TODO: This page will list out all of the letters a user has sent and who the
+This page will list out all of the letters a user has sent and who the
 user sent them to.
 
 ### `/write/:templateId` Write letter from template
 
-TODO: This page will load a template from the registry and let a user modify it.
+This page will load a template from the registry and let a user modify it.
 The user must still select a representative to mail it to before the letter can
 be mailed.
 
 ### `/write/:templateId/:toId` Write a letter from a template to a representative
 
-TODO: This page will be the new path for all shared letters and any letter that
+This page will be the new path for all shared letters and any letter that
 is using a template.
 
 ### `/registered-letters` List of registered letters a user has written
 
-TODO: This page will list out all of the registered letters a user has written.
+This page will list out all of the registered letters a user has written.
 The list will be in reverse chronological order with the most recently edited
 on top.
 
+### `/registered-letters/new` Write a new letter for the registry
+
+This page will let a user write a new letter specifically for the registry. This
+will be helpful for advocacy organizations that do not necessarily wish to send
+a letter themselves but want to make their letter available to others.
+
 ### `/registered-letters/:templateId` Edit a registered letter
 
-TODO: This page will let a user edit the settings and content of their registered
+This page will let a user edit the settings and content of their registered
 letter. Shared letters from a user will also be here with searchable set to false.
 Some settings include:
 
