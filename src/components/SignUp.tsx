@@ -16,9 +16,6 @@ const SignUp = (props: Props) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    // validate email
-    // validate password
-    // validate context
     if (!authentication) throw new Error("You can't register an account from outside the authentication context.")
     setIsLoading(true)
     authentication
@@ -30,7 +27,6 @@ const SignUp = (props: Props) => {
       })
       .then(() => props.done && props.done())
       .catch(error => {
-        console.log({ ...error })
         setIsLoading(false)
         setError(error)
       })
