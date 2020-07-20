@@ -1,5 +1,5 @@
 import React, { useCallback } from "react"
-import "./toggle.css"
+import "./Toggle.css"
 
 interface Props {
   toggleId: string
