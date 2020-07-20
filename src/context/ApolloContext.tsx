@@ -30,6 +30,7 @@ const typeDefs = gql`
     title: String!
     tags: [String!]!
     content: Json!
+    isSearchable: Boolean!
   }
 `
 

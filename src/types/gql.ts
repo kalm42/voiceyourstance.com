@@ -19,6 +19,7 @@ export namespace GQL {
     title: string
     tags: string[]
     content: object
+    isSearchable: boolean
   }
 
   export interface LetterInput {
@@ -58,6 +59,7 @@ export namespace GQL {
     tags: string
     content: RawDraftContentState
     user?: User
+    isSearchable: boolean
     createdAt: string
     updatedAt: string
   }
@@ -116,42 +118,43 @@ export namespace GQL {
   /**
    * Mutations
    */
+
+  // SignIn
   export interface SigninData {
     signin: User
   }
-
   export interface SigninVars {
     email: string
     password: string
   }
 
+  // Signout
   export interface SignoutData {
     signout: SuccessMessage
   }
-
   export interface SignoutVars {}
 
+  // Signup
   export interface SignupData {
     signup: User
   }
-
   export interface SignupVars {
     email: string
     password: string
   }
 
+  // RequestReset
   export interface RequestResetData {
     requestReset: SuccessMessage
   }
-
   export interface RequestResetVars {
     email: string
   }
 
+  // ResetPassword
   export interface ResetPasswordData {
     resetPassword: User
   }
-
   export interface ResetPasswordVars {
     resetToken: string
     password: string
@@ -173,7 +176,6 @@ export namespace GQL {
     from?: AddressInput
     content?: RawDraftContentState
   }
-
   export interface UpdateLetterData {
     updateLetter: Letter
   }
@@ -183,19 +185,26 @@ export namespace GQL {
     letterId: string
     stripeId: string
   }
-
   export interface MailLetterData {
     mailLetter: Mail
   }
 
+  // CreateTemplate
   export interface CreateTemplateData {
     createTemplate: Template
   }
-
   export interface CreateTemplateVars {
     template: TemplateInput
   }
 
+  // UpdateTemplate
+  export interface UpdateTemplateData {
+    updateTemplate: Template
+  }
+  export interface UpdateTemplateVars {
+    template: TemplateInput
+    id: string
+  }
   /**
    * Queries
    */
