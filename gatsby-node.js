@@ -18,4 +18,9 @@ exports.onCreatePage = async ({ page, actions }) => {
     page.matchPath = `/write/*`
     createPage(page)
   }
+
+  if (page.path.match(/^\/registered-letters/)) {
+    page.matchPath = `/registered-letters/*`
+    createPage(page)
+  }
 }

@@ -4,13 +4,11 @@ import styled from "styled-components"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
 import ErrorMessage from "../../components/ErrorMessage"
-import { useUser } from "../../context/UserContext"
-import AuthenticationForms from "../../components/AuthenticationForms"
 import { useQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { GQL } from "../../types"
 import { format } from "date-fns"
-import { PrimaryButton, PrimaryLink } from "../../components/elements"
+import { PrimaryLink } from "../../components/elements"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -63,8 +61,7 @@ const ListDraftLetters = (props: RouteComponentProps) => {
   const [localError, setLocalError] = useState<Error | undefined>(undefined)
   const MetaData = useMetaData()
   const analytics = useAnalytics()
-  const user = useUser()
-  const { data, loading, error } = useQuery<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>(GET_DRAFT_LETTERS)
+  const { data, error } = useQuery<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>(GET_DRAFT_LETTERS)
 
   /**
    * set the title
@@ -92,20 +89,6 @@ const ListDraftLetters = (props: RouteComponentProps) => {
       if (timeoutId) clearTimeout(timeoutId)
     }
   }, [localError])
-
-  // TODO: Maybe change this to be an actual dialog like it wants to be
-  if (!user) {
-    return (
-      <AuthenticationForms
-        close={() => {
-          return
-        }}
-        isOpen={true}
-      />
-    )
-  }
-
-  console.log({ data, error })
 
   return (
     <Wrapper>
