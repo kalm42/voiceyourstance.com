@@ -122,7 +122,7 @@ const RegistryForm = (props: Props) => {
             type="text"
             name="tags"
             id="tags"
-            placeholder="#add #hashtags #🐶😄 #yesYouCanUseEmojis"
+            placeholder="#add #hashtags #🐶😄"
             value={nextTag}
             onChange={handleAddTag}
           />
