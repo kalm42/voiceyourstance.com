@@ -56,10 +56,19 @@ const ResultsCollection = styled.div`
   grid-gap: 2rem;
   padding: 1rem 0;
 `
-const Result = styled.div`
+const Result = styled.button`
   background: var(--main);
   color: var(--background);
   padding: 1rem;
+  font-size: 1rem;
+  text-align: start;
+  display: grid;
+  border: none;
+  cursor: pointer;
+  transition: all 200ms ease;
+  &:hover {
+    background: var(--mainDark);
+  }
 `
 const TagCollection = styled.ul`
   list-style: none;
@@ -67,6 +76,7 @@ const TagCollection = styled.ul`
   margin: 0;
   display: flex;
   flex-wrap: wrap;
+  align-items: start;
 `
 const Tag = styled.li`
   overflow: hidden;
@@ -74,23 +84,19 @@ const Tag = styled.li`
   padding: 1rem;
   background: var(--mainDark);
   margin: 0.5rem;
+  transition: all 200ms ease;
+  ${Result}:hover & {
+    background: var(--main);
+  }
 `
-const PageCollection = styled.ul`
-  padding: 1rem;
-  margin: 0;
-  list-style: none;
-  display: flex;
-  justify-content: center;
-`
-const Page = styled.li`
-  padding: 0.5rem;
-`
+
 interface Props {
   isOpen: boolean
   close: () => void
+  callback: (id: string) => void
 }
 const RegistryDrawer = (props: Props) => {
-  const { isOpen, close } = props
+  const { isOpen, close, callback } = props
   const [text, setText] = useState("")
   const [page, setPage] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
@@ -121,6 +127,11 @@ const RegistryDrawer = (props: Props) => {
     }
   }, [handleClick])
 
+  const handleChoose = (id: string) => {
+    callback(id)
+    close()
+  }
+
   return (
     <Wrapper registry={isOpen} ref={ref}>
       <TitleBar>
@@ -149,14 +160,17 @@ const RegistryDrawer = (props: Props) => {
       <ResultsCollection>
         <ErrorMessage error={error} />
         {data?.templates.nodes.map(result => (
-          <Result key={result.id}>
+          <Result key={result.id} onClick={() => handleChoose(result.id)}>
             <h3>{result.title}</h3>
             <TagCollection>
               {result.tags.split(" ").map((tag, index) => (
                 <Tag key={index}>{tag}</Tag>
               ))}
             </TagCollection>
-            <p>{result.content.blocks[0].text}</p>
+            <p>
+              {result.content.blocks[0].text.substr(0, 180)}
+              {result.content.blocks[0].text.length > 180 && <>...</>}
+            </p>
           </Result>
         ))}
       </ResultsCollection>
