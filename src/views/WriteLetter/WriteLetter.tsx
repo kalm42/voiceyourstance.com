@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { RouteComponentProps } from "@reach/router"
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
-import { Editor, EditorState, convertToRaw } from "draft-js"
+import { Editor, EditorState, convertToRaw, convertFromRaw } from "draft-js"
 import styled from "styled-components"
 import { useAnalytics } from "../../context/Analytics"
 import { useMetaData } from "../../context/MetaData"
@@ -19,6 +19,7 @@ import AuthenticationForms from "../../components/AuthenticationForms"
 import ErrorMessage from "../../components/ErrorMessage"
 import FromForm from "../../components/FromForm"
 import RegistryDrawer from "../../components/RegistryDrawer"
+import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -81,6 +82,7 @@ const WriteLetter = (props: Props) => {
   const MetaData = useMetaData()
   const user = useUser()
   const [saveLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(SAVE_LETTER)
+  const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { repid, addressid } = props
 
   /**
@@ -119,6 +121,22 @@ const WriteLetter = (props: Props) => {
       if (timeoutId) clearTimeout(timeoutId)
     }
   }, [error])
+
+  /**
+   * Set template
+   */
+  useEffect(() => {
+    if (templateId) {
+      getTemplateById({ variables: { id: templateId } })
+    }
+  }, [templateId])
+  useEffect(() => {
+    const template = tem.data?.getTemplateById
+    if (template) {
+      const newState = convertFromRaw(template.content)
+      setEditorState(EditorState.createWithContent(newState))
+    }
+  }, [tem])
 
   /**
    * Validate from
@@ -199,7 +217,7 @@ const WriteLetter = (props: Props) => {
   return (
     <Wrapper>
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
-      <RegistryDrawer isOpen={registryIsOpen} close={() => setRegistryIsOpen(false)} />
+      <RegistryDrawer isOpen={registryIsOpen} close={() => setRegistryIsOpen(false)} callback={setTemplateId} />
       <PageWrapper pay={pay || shouldDisplayAuthenticationDialog}>
         <AddressDetails>
           <ErrorReportingBoundry>
