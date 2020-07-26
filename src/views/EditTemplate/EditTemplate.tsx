@@ -158,7 +158,11 @@ const EditTemplate = (props: Props) => {
     const contentState = editorState.getCurrentContent()
     const content = convertToRaw(contentState)
 
-    templateCtrl.updateTemplateMutation(template.id, content, title, tags, searchable).catch(err => setError(err))
+    if (templateCtrl && template && searchable !== undefined) {
+      templateCtrl.updateTemplateMutation(template.id, content, title, tags, searchable).catch(err => setError(err))
+    } else {
+      setError(new Error("Internal error on updating the template. Please refresh the page and try again."))
+    }
   }
 
   const handleRemove = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
