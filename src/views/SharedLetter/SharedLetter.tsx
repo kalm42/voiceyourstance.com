@@ -11,7 +11,7 @@ import { useLetter } from "../../context/LetterContext"
 import MailDialog from "../../components/MailDialog"
 import { GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
-import { useQuery } from "@apollo/react-hooks"
+import { useQuery, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
@@ -91,6 +91,7 @@ interface Props extends RouteComponentProps {
 
 const SharedLetter = (props: Props) => {
   const { templateId, toId } = props
+  const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { data: templateData, error: templateError, loading: templateLoading } = useQuery<
     GQL.GetTemplateByIdData,
     GQL.GetTemplateByIdVars
@@ -109,6 +110,7 @@ const SharedLetter = (props: Props) => {
   const [mailId, setMailId] = useState("")
   const [paymentId, setPaymentId] = useState("")
   const [sharedId, setSharedId] = useState("")
+  const [secondTemplateId, setSecondTemplateId] = useState("")
   const [isLocked, setIsLocked] = useState(false)
   const [localError, setLocalError] = useState<Error | undefined>(undefined)
   const ref = useRef<Editor | null>(null)
@@ -165,6 +167,22 @@ const SharedLetter = (props: Props) => {
       if (timeoutId) clearTimeout(timeoutId)
     }
   }, [localError])
+
+  /**
+   * Set template
+   */
+  useEffect(() => {
+    if (secondTemplateId) {
+      getTemplateById({ variables: { id: secondTemplateId } })
+    }
+  }, [templateId])
+  useEffect(() => {
+    const template = tem.data?.getTemplateById
+    if (template) {
+      const newState = convertFromRaw(template.content)
+      setEditorState(EditorState.createWithContent(newState))
+    }
+  }, [tem])
 
   /**
    * Load the template into the editor
@@ -329,7 +347,11 @@ const SharedLetter = (props: Props) => {
           </small>
         </p>
       )}
-      <RegistryDrawer close={() => setRegistryDrawerIsOpen(false)} isOpen={registryDrawerIsOpen} />
+      <RegistryDrawer
+        close={() => setRegistryDrawerIsOpen(false)}
+        isOpen={registryDrawerIsOpen}
+        callback={setSecondTemplateId}
+      />
       {mailDialogIsOpen && (
         <MailDialog
           close={() => setMailDialogIsOpen(false)}

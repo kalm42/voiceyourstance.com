@@ -10,11 +10,12 @@ import { useUser } from "../../context/UserContext"
 import { useLetter } from "../../context/LetterContext"
 import MailDialog from "../../components/MailDialog"
 import ErrorMessage from "../../components/ErrorMessage"
-import { useQuery, useMutation } from "@apollo/react-hooks"
+import { useQuery, useMutation, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { GQL } from "../../types"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
+import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
 
 const UPDATE_LETTER = gql`
   mutation UpdateLetter($letterId: String!, $from: AddressInput, $content: Json!) {
@@ -93,8 +94,9 @@ interface Props extends RouteComponentProps {
 
 const EditLetter = (props: Props) => {
   const { letterId } = props
+  const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { data, loading, error } = useQuery<GQL.GetLetterByIdData, GQL.GetLetterByIdVars>(GET_LETTER_BY_ID, {
-    variables: { id: letterId },
+    variables: { id: letterId || "" },
   })
   const [updateLetter] = useMutation<GQL.UpdateLetterData, GQL.UpdateLetterVars>(UPDATE_LETTER)
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
@@ -153,6 +155,22 @@ const EditLetter = (props: Props) => {
   }, [localError])
 
   /**
+   * Set template
+   */
+  useEffect(() => {
+    if (templateId) {
+      getTemplateById({ variables: { id: templateId } })
+    }
+  }, [templateId])
+  useEffect(() => {
+    const template = tem.data?.getTemplateById
+    if (template) {
+      const newState = convertFromRaw(template.content)
+      setEditorState(EditorState.createWithContent(newState))
+    }
+  }, [tem])
+
+  /**
    * On state change calcuate the number of characters remaining.
    */
   useEffect(() => {
@@ -204,7 +222,7 @@ const EditLetter = (props: Props) => {
       return
     }
 
-    if (!letterContext) {
+    if (!letterContext || !letterId) {
       setLocalError(
         new Error("There has been an internal error. Copy your letter, refresh the page, and paste your letter back."),
       )
@@ -306,7 +324,11 @@ const EditLetter = (props: Props) => {
           </small>
         </p>
       )}
-      <RegistryDrawer close={() => setRegistryDrawerIsOpen(false)} isOpen={registryDrawerIsOpen} />
+      <RegistryDrawer
+        close={() => setRegistryDrawerIsOpen(false)}
+        isOpen={registryDrawerIsOpen}
+        callback={setTemplateId}
+      />
       {mailDialogIsOpen && data && (
         <MailDialog
           close={() => setMailDialogIsOpen(false)}

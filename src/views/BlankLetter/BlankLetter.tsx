@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { RouteComponentProps, navigate } from "@reach/router"
 import styled from "styled-components"
-import { Editor, EditorState, convertToRaw } from "draft-js"
+import { Editor, EditorState, convertToRaw, convertFromRaw } from "draft-js"
 import FromForm from "../../components/FromForm"
 import { PrimaryButton, SecondaryButton } from "../../components/elements"
 import RegistryDrawer from "../../components/RegistryDrawer"
@@ -10,10 +10,12 @@ import { useUser } from "../../context/UserContext"
 import { useLetter } from "../../context/LetterContext"
 import MailDialog from "../../components/MailDialog"
 import ChooseRepresentative from "../../components/ChooseRepresentative"
-import { Address, Representative } from "../../types"
+import { Address, Representative, GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
+import { useLazyQuery } from "@apollo/react-hooks"
+import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -75,6 +77,7 @@ const BlankLetter = (props: RouteComponentProps) => {
   const [toRepresentative, setToRepresentative] = useState<Representative | undefined>(undefined)
   const [isLocked, setIsLocked] = useState(false)
   const ref = useRef<Editor | null>(null)
+  const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   // Dialogs and modals
   const [registryDrawerIsOpen, setRegistryDrawerIsOpen] = useState(false)
   const [loginDialogIsOpen, setLoginDialogIsOpen] = useState(false)
@@ -130,6 +133,22 @@ const BlankLetter = (props: RouteComponentProps) => {
       if (timeoutId) clearTimeout(timeoutId)
     }
   }, [error])
+
+  /**
+   * Set template
+   */
+  useEffect(() => {
+    if (templateId) {
+      getTemplateById({ variables: { id: templateId } })
+    }
+  }, [templateId])
+  useEffect(() => {
+    const template = tem.data?.getTemplateById
+    if (template) {
+      const newState = convertFromRaw(template.content)
+      setEditorState(EditorState.createWithContent(newState))
+    }
+  }, [tem])
 
   /**
    * On state change calcuate the number of characters remaining.
@@ -300,7 +319,11 @@ const BlankLetter = (props: RouteComponentProps) => {
           close={() => setChooseRepresentativeDialogIsOpen(false)}
         />
       )}
-      <RegistryDrawer close={() => setRegistryDrawerIsOpen(false)} isOpen={registryDrawerIsOpen} />
+      <RegistryDrawer
+        close={() => setRegistryDrawerIsOpen(false)}
+        isOpen={registryDrawerIsOpen}
+        callback={setTemplateId}
+      />
       {mailDialogIsOpen && (
         <MailDialog
           close={() => setMailDialogIsOpen(false)}

@@ -12,18 +12,11 @@ import MailDialog from "../../components/MailDialog"
 import ChooseRepresentative from "../../components/ChooseRepresentative"
 import { Address, Representative, GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
-import { useQuery } from "@apollo/react-hooks"
+import { useQuery, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
-
-const GET_TEMPLATE_BY_ID = gql`
-  query GetTemplateById($id: String!) {
-    getTemplateById(id: $id) {
-      content
-    }
-  }
-`
+import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -78,6 +71,7 @@ interface Props extends RouteComponentProps {
 
 const WriteTemplate = (props: Props) => {
   const { templateId } = props
+  const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { data, error, loading } = useQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID, {
     variables: { id: templateId || "" },
   })
@@ -87,6 +81,7 @@ const WriteTemplate = (props: Props) => {
   const [mailId, setMailId] = useState("")
   const [paymentId, setPaymentId] = useState("")
   const [sharedId, setSharedId] = useState("")
+  const [secondTemplateId, setSecondTemplateId] = useState("")
   const [toAddress, setToAddress] = useState<Address | undefined>(undefined)
   const [toRepresentative, setToRepresentative] = useState<Representative | undefined>(undefined)
   const [isLocked, setIsLocked] = useState(false)
@@ -145,6 +140,22 @@ const WriteTemplate = (props: Props) => {
       if (timeoutId) clearTimeout(timeoutId)
     }
   }, [error])
+
+  /**
+   * Set template
+   */
+  useEffect(() => {
+    if (secondTemplateId) {
+      getTemplateById({ variables: { id: secondTemplateId } })
+    }
+  }, [templateId])
+  useEffect(() => {
+    const template = tem.data?.getTemplateById
+    if (template) {
+      const newState = convertFromRaw(template.content)
+      setEditorState(EditorState.createWithContent(newState))
+    }
+  }, [tem])
 
   /**
    * Load the template into the editor
@@ -325,7 +336,11 @@ const WriteTemplate = (props: Props) => {
           close={() => setChooseRepresentativeDialogIsOpen(false)}
         />
       )}
-      <RegistryDrawer close={() => setRegistryDrawerIsOpen(false)} isOpen={registryDrawerIsOpen} />
+      <RegistryDrawer
+        close={() => setRegistryDrawerIsOpen(false)}
+        isOpen={registryDrawerIsOpen}
+        callback={setSecondTemplateId}
+      />
       {mailDialogIsOpen && (
         <MailDialog
           close={() => setMailDialogIsOpen(false)}

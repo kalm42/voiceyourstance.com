@@ -64,6 +64,18 @@ export namespace GQL {
     updatedAt: string
   }
 
+  export interface PaginatedTemplates {
+    nodes: Template[]
+    meta: PaginatedTemplatesMeta
+  }
+
+  export interface PaginatedTemplatesMeta {
+    nodeCount: number
+    pageCount: number
+    pageCurrent: number
+    nodesPerPage: number
+  }
+
   export interface Address {
     id: string
     hash: string
@@ -256,4 +268,13 @@ export namespace GQL {
     getUsersTemplates: Template[]
   }
   export interface GetUsersTemplatesVars {}
+
+  // Search Templates
+  export interface SearchTemplatesData {
+    templates: PaginatedTemplates
+  }
+  export interface SearchTemplatesVars {
+    text: string
+    page: number
+  }
 }
