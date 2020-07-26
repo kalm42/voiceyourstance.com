@@ -18,7 +18,7 @@ export namespace GQL {
   export interface TemplateInput {
     title: string
     tags: string[]
-    content: object
+    content: RawDraftContentState
     isSearchable: boolean
   }
 

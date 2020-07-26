@@ -1,16 +1,27 @@
 import React, { useEffect, useState } from "react"
 import { RouteComponentProps } from "@reach/router"
 import SEO from "../../components/SEO"
-import { convertToRaw, Editor, EditorState, convertFromRaw } from "draft-js"
+import { convertToRaw, Editor, EditorState } from "draft-js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
 import { useAnalytics } from "../../context/Analytics"
 import { useMetaData } from "../../context/MetaData"
-import { useTemplate } from "../../context/TemplateContext"
 import ErrorMessage from "../../components/ErrorMessage"
 import Toggle from "../../components/Toggle"
 import { TextInput, PrimaryInputSubmit } from "../../components/elements"
+import { useMutation } from "@apollo/react-hooks"
+import { gql } from "apollo-boost"
+import { GQL } from "../../types"
+import { navigate } from "gatsby"
+
+const CREATE_TEMPLATE = gql`
+  mutation CreateTemplate($template: TemplateInput!) {
+    createTemplate(template: $template) {
+      id
+    }
+  }
+`
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -59,24 +70,17 @@ const EditorWrapper = styled.div`
   font-family: var(--formalFont);
 `
 
-interface Props extends RouteComponentProps {
-  templateId?: string
-}
-
-const EditTemplate = (props: Props) => {
-  const { templateId } = props
+const CreateTemplate = (props: RouteComponentProps) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
   const [characterCount, setCharacterCount] = useState(5000)
   const [error, setError] = useState<Error | undefined>(undefined)
   const [title, setTitle] = useState("")
   const [nextTag, setNextTag] = useState("")
   const [tags, setTags] = useState<string[]>([])
-  const [searchable, setSearchable] = useState<boolean | undefined>(undefined)
+  const [searchable, setSearchable] = useState<boolean>(false)
+  const [createTemplate] = useMutation<GQL.CreateTemplateData, GQL.CreateTemplateVars>(CREATE_TEMPLATE)
   const analytics = useAnalytics()
   const MetaData = useMetaData()
-  const templateCtrl = useTemplate()
-  const templateQuery = templateCtrl.getTemplateById(templateId)
-  const template = templateQuery?.data?.getTemplateById
 
   /**
    * set the title
@@ -116,22 +120,15 @@ const EditTemplate = (props: Props) => {
   }, [error])
 
   /**
-   * Update state with loaded template
+   * Set the template title
    */
-  useEffect(() => {
-    if (template) {
-      const newEditorState = EditorState.createWithContent(convertFromRaw(template.content))
-      setEditorState(newEditorState)
-      setTitle(template.title)
-      setTags(template.tags.split(" "))
-      setSearchable(template.isSearchable)
-    }
-  }, [template])
-
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
   }
 
+  /**
+   * Set template tags
+   */
   const handleTags = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!/^#/.test(event.target.value)) {
       // the string did not begin with a #
@@ -149,22 +146,32 @@ const EditTemplate = (props: Props) => {
     }
   }
 
+  /**
+   * Handle searchable toggle
+   */
   const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchable(event.target.checked)
   }
 
+  /**
+   * Save template
+   */
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const contentState = editorState.getCurrentContent()
     const content = convertToRaw(contentState)
-
-    if (templateCtrl && template && searchable !== undefined) {
-      templateCtrl.updateTemplateMutation(template.id, content, title, tags, searchable).catch(err => setError(err))
-    } else {
-      setError(new Error("Internal error on updating the template. Please refresh the page and try again."))
-    }
+    createTemplate({ variables: { template: { content, isSearchable: searchable, tags, title } } })
+      .then(res => {
+        navigate(`/registered-letters/${res.data?.createTemplate.id}`)
+      })
+      .catch(err => {
+        setError(err)
+      })
   }
 
+  /**
+   * Remove a tag
+   */
   const handleRemove = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const tagToRemove = event.currentTarget.dataset.tag
     if (tagToRemove) {
@@ -250,4 +257,4 @@ const EditTemplate = (props: Props) => {
   )
 }
 
-export default EditTemplate
+export default CreateTemplate
