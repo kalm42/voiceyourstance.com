@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { RouteComponentProps, navigate } from "@reach/router"
 import styled from "styled-components"
 import { Editor, EditorState, convertToRaw, convertFromRaw } from "draft-js"
@@ -16,6 +16,7 @@ import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
 import { useLazyQuery } from "@apollo/react-hooks"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
+import AddressSelection from "./AddressSelection"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -244,6 +245,13 @@ const BlankLetter = (props: RouteComponentProps) => {
     setMailDialogIsOpen(true)
   }
 
+  /**
+   * safe open dialog
+   */
+  const openRepresentativeDialog = useCallback(() => {
+    setChooseRepresentativeDialogIsOpen(true)
+  }, [])
+
   return (
     <Wrapper>
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
@@ -261,32 +269,7 @@ const BlankLetter = (props: RouteComponentProps) => {
           zip={zip}
           disabled={loading || isLocked}
         />
-        <ToWrapper selected={!!toRepresentative}>
-          {toAddress ? (
-            <div>
-              <h2>To</h2>
-              <p>
-                {toRepresentative?.name} <br /> {toRepresentative?.title}
-              </p>
-              <address>
-                {toAddress.locationName}
-                {toAddress.locationName && <br />}
-                {toAddress.line1}
-                {toAddress.line1 && <br />}
-                {toAddress.line2}
-                {toAddress.line2 && <br />}
-                {toAddress.line3}
-                {toAddress.line3 && <br />}
-                {toAddress.city}, {toAddress.state} {toAddress.zip}
-                <br />
-              </address>
-            </div>
-          ) : (
-            <PrimaryButton onClick={() => setChooseRepresentativeDialogIsOpen(true)}>
-              choose a representative
-            </PrimaryButton>
-          )}
-        </ToWrapper>
+        <AddressSelection address={toAddress} representative={toRepresentative} openDialog={openRepresentativeDialog} />
       </MetaWrapper>
       <TitleWrapper>
         <Title>What do you want to say?</Title>

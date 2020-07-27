@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { Link } from "@reach/router"
+import { Link as GLink } from "gatsby"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 export const Form = styled.form`
@@ -53,6 +54,23 @@ export const PrimaryLink = styled(Link)`
     transform: scale(0.9);
   }
 `
+export const PrimaryGatsbyLink = styled(GLink)`
+  padding: 1rem;
+  background: var(--main);
+  color: var(--background);
+  border: 0;
+  font-size: 1rem;
+  text-transform: lowercase;
+  text-decoration: none;
+  text-align: center;
+  transition: all 200ms ease;
+  &:hover {
+    background: var(--mainDark);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+`
 export const PrimaryInputSubmit = styled.input`
   padding: 1rem;
   background: var(--main);
@@ -83,6 +101,25 @@ export const SecondaryButton = styled.button`
     transform: scale(0.9);
   }
 `
+export const SecondaryGatsbyLink = styled(GLink)`
+  padding: 1rem;
+  font-size: 1rem;
+  background: var(--background);
+  border: 2px solid var(--main);
+  text-transform: lowercase;
+  text-decoration: none;
+  text-align: center;
+  color: var(--text);
+  transition: all 200ms ease;
+  &:hover {
+    background: var(--mainDark);
+    color: var(--background);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+`
+
 interface MenuProps {
   fullscreen?: boolean
 }

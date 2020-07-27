@@ -5,6 +5,7 @@
  */
 
 require("ts-node").register({ files: true })
+const path = require("path")
 
 /** @type { import("gatsby").GatsbyNode["createPages"] } */
 exports.onCreatePage = async ({ page, actions }) => {
@@ -23,4 +24,39 @@ exports.onCreatePage = async ({ page, actions }) => {
     page.matchPath = `/registered-letters/*`
     createPage(page)
   }
+}
+
+exports.createPages = async ({ graphql, actions, reporter }) => {
+  const { createPage } = actions
+  const templateResults = await graphql(`
+    query PublicTemplates {
+      vysapi {
+        publicTemplates {
+          id
+        }
+      }
+    }
+  `)
+  if (templateResults.error) {
+    reporter.panicOnBuild(`Error while running GraphQL query.`)
+  }
+
+  // Registry root
+  const registryRootTemplate = path.resolve(`src/views/RegistryIndex/RegistryIndex.tsx`)
+  createPage({
+    path: `/registry`,
+    component: registryRootTemplate,
+  })
+
+  // Registered letters
+  const letterTemplate = path.resolve(`src/views/ViewTemplate/ViewTemplate.tsx`)
+  templateResults.data.vysapi.publicTemplates.forEach(templateLetter => {
+    createPage({
+      path: `/registry/${templateLetter.id}`,
+      component: letterTemplate,
+      context: {
+        templateId: templateLetter.id,
+      },
+    })
+  })
 }

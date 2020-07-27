@@ -3,7 +3,7 @@ import styled from "styled-components"
 import CloseButton from "../CloseButton"
 import { TextInput, PrimaryInputSubmit } from "../elements"
 import { gql } from "apollo-boost"
-import { useQuery } from "@apollo/react-hooks"
+import { useLazyQuery } from "@apollo/react-hooks"
 import { GQL } from "../../types"
 import ErrorMessage from "../ErrorMessage"
 import PageControls from "./PageControls"
@@ -100,7 +100,7 @@ const RegistryDrawer = (props: Props) => {
   const [text, setText] = useState("")
   const [page, setPage] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
-  const { data, loading, error } = useQuery<GQL.SearchTemplatesData, GQL.SearchTemplatesVars>(SEARCH_TEMPLATES, {
+  const [search, { data, error }] = useLazyQuery<GQL.SearchTemplatesData, GQL.SearchTemplatesVars>(SEARCH_TEMPLATES, {
     variables: { text, page },
   })
 
@@ -126,6 +126,15 @@ const RegistryDrawer = (props: Props) => {
       document.removeEventListener("mousedown", handleClick, false)
     }
   }, [handleClick])
+
+  /**
+   * run query if registry is open
+   */
+  useEffect(() => {
+    if (isOpen) {
+      search()
+    }
+  }, [isOpen])
 
   const handleChoose = (id: string) => {
     callback(id)

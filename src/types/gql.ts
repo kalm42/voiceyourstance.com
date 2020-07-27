@@ -217,6 +217,14 @@ export namespace GQL {
     template: TemplateInput
     id: string
   }
+
+  // Increment template use
+  export interface IncrementTemplateUseData {
+    incrementTemplateUse: Template
+  }
+  export interface IncrementTemplateUseVars {
+    id: string
+  }
   /**
    * Queries
    */

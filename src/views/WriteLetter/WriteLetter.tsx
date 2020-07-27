@@ -20,6 +20,7 @@ import ErrorMessage from "../../components/ErrorMessage"
 import FromForm from "../../components/FromForm"
 import RegistryDrawer from "../../components/RegistryDrawer"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
+import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
 const SAVE_LETTER = gql`
   mutation SaveLetter($letter: LetterInput!) {
@@ -81,6 +82,9 @@ const WriteLetter = (props: Props) => {
   const analytics = useAnalytics()
   const MetaData = useMetaData()
   const user = useUser()
+  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
+    INCREMENT_TEMPLATE_USE,
+  )
   const [saveLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(SAVE_LETTER)
   const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { repid, addressid } = props
@@ -135,6 +139,7 @@ const WriteLetter = (props: Props) => {
     if (template) {
       const newState = convertFromRaw(template.content)
       setEditorState(EditorState.createWithContent(newState))
+      incrementTemplateUse({ variables: { id: template.id } })
     }
   }, [tem])
 

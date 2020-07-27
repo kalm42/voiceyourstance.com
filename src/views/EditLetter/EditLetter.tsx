@@ -16,6 +16,7 @@ import { GQL } from "../../types"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
+import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
 const UPDATE_LETTER = gql`
   mutation UpdateLetter($letterId: String!, $from: AddressInput, $content: Json!) {
@@ -94,6 +95,9 @@ interface Props extends RouteComponentProps {
 
 const EditLetter = (props: Props) => {
   const { letterId } = props
+  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
+    INCREMENT_TEMPLATE_USE,
+  )
   const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { data, loading, error } = useQuery<GQL.GetLetterByIdData, GQL.GetLetterByIdVars>(GET_LETTER_BY_ID, {
     variables: { id: letterId || "" },
@@ -167,6 +171,7 @@ const EditLetter = (props: Props) => {
     if (template) {
       const newState = convertFromRaw(template.content)
       setEditorState(EditorState.createWithContent(newState))
+      incrementTemplateUse({ variables: { id: template.id } })
     }
   }, [tem])
 

@@ -18,6 +18,14 @@ module.exports = {
         path: `${__dirname}/src/images`,
       },
     },
+    {
+      resolve: `gatsby-source-graphql`,
+      options: {
+        typeName: `VYSAPI`,
+        fieldName: `vysapi`,
+        url: `http://localhost:3000/graphql`,
+      },
+    },
     `gatsby-plugin-styled-components`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
@@ -38,12 +46,3 @@ module.exports = {
     // `gatsby-plugin-offline`,
   ],
 }
-
-// {
-//   resolve: `gatsby-source-graphql`,
-//   options: {
-//     typeName: `VYSAPI`,
-//     fieldName: `voiceYourStance`,
-//     url: `https://api.voiceyourstance.com`,
-//   },
-// },
