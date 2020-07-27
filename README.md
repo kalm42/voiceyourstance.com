@@ -91,6 +91,16 @@ Some settings include:
 - `title`
 - `tags` Allowing the user to add or remove tags
 
+### `/registry` Top 10 letters and complete list
+
+This page will show the 10 letters as of last build. It will also list out every
+public template in the registry with a link to see just that template.
+
+### `/registry/:templateId` Static View of a template letter
+
+This page will preview the public letter and will provide a link so that the user
+can use the letter if they wish.
+
 ## Available Scripts
 
 In the project directory, you can run:
