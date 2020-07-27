@@ -14,8 +14,9 @@ import { Address, Representative, GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
-import { useLazyQuery } from "@apollo/react-hooks"
+import { useLazyQuery, useMutation } from "@apollo/react-hooks"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
+import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -77,6 +78,9 @@ const BlankLetter = (props: RouteComponentProps) => {
   const [toRepresentative, setToRepresentative] = useState<Representative | undefined>(undefined)
   const [isLocked, setIsLocked] = useState(false)
   const ref = useRef<Editor | null>(null)
+  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
+    INCREMENT_TEMPLATE_USE,
+  )
   const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   // Dialogs and modals
   const [registryDrawerIsOpen, setRegistryDrawerIsOpen] = useState(false)
@@ -147,6 +151,7 @@ const BlankLetter = (props: RouteComponentProps) => {
     if (template) {
       const newState = convertFromRaw(template.content)
       setEditorState(EditorState.createWithContent(newState))
+      incrementTemplateUse({ variables: { id: template.id } })
     }
   }, [tem])
 

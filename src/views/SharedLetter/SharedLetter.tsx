@@ -11,10 +11,11 @@ import { useLetter } from "../../context/LetterContext"
 import MailDialog from "../../components/MailDialog"
 import { GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
-import { useQuery, useLazyQuery } from "@apollo/react-hooks"
+import { useQuery, useLazyQuery, useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
+import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
 const GET_TEMPLATE_BY_ID = gql`
   query GetTemplateById($id: String!) {
@@ -91,6 +92,9 @@ interface Props extends RouteComponentProps {
 
 const SharedLetter = (props: Props) => {
   const { templateId, toId } = props
+  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
+    INCREMENT_TEMPLATE_USE,
+  )
   const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { data: templateData, error: templateError, loading: templateLoading } = useQuery<
     GQL.GetTemplateByIdData,
@@ -181,6 +185,7 @@ const SharedLetter = (props: Props) => {
     if (template) {
       const newState = convertFromRaw(template.content)
       setEditorState(EditorState.createWithContent(newState))
+      incrementTemplateUse({ variables: { id: template.id } })
     }
   }, [tem])
 
