@@ -26,6 +26,13 @@ module.exports = {
         url: `http://localhost:3000/graphql`,
       },
     },
+    {
+      resolve: `gatsby-plugin-google-tagmanager`,
+      options: {
+        id: `GTM-N8KWLC9`,
+        includeInDevelopment: true,
+      },
+    },
     `gatsby-plugin-styled-components`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,

@@ -249,7 +249,9 @@ const IndexPage = () => {
         <ErrorMessage error={error} />
         <PageContent>
           <p>What is your voter registration address?</p>
-          <SecondaryButton onClick={getGeoLocation}>Use my current location</SecondaryButton>
+          <SecondaryButton onClick={getGeoLocation} id="browser-geolocation">
+            Use my current location
+          </SecondaryButton>
           <Form method="post" onSubmit={handleSubmit}>
             <Input
               type="text"
