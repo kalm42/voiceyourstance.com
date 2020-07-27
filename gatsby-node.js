@@ -51,7 +51,6 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   // Registered letters
   const letterTemplate = path.resolve(`src/views/ViewTemplate/ViewTemplate.tsx`)
   templateResults.data.vysapi.publicTemplates.forEach(templateLetter => {
-    console.log(`New Page: /registry/${templateLetter.id}`)
     createPage({
       path: `/registry/${templateLetter.id}`,
       component: letterTemplate,

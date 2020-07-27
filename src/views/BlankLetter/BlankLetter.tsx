@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { RouteComponentProps, navigate } from "@reach/router"
 import styled from "styled-components"
 import { Editor, EditorState, convertToRaw, convertFromRaw } from "draft-js"
@@ -14,9 +14,9 @@ import { Address, Representative, GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
-import { useLazyQuery, useMutation } from "@apollo/react-hooks"
+import { useLazyQuery } from "@apollo/react-hooks"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
-import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
+import AddressSelection from "./AddressSelection"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -78,9 +78,6 @@ const BlankLetter = (props: RouteComponentProps) => {
   const [toRepresentative, setToRepresentative] = useState<Representative | undefined>(undefined)
   const [isLocked, setIsLocked] = useState(false)
   const ref = useRef<Editor | null>(null)
-  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
-    INCREMENT_TEMPLATE_USE,
-  )
   const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   // Dialogs and modals
   const [registryDrawerIsOpen, setRegistryDrawerIsOpen] = useState(false)
@@ -151,7 +148,6 @@ const BlankLetter = (props: RouteComponentProps) => {
     if (template) {
       const newState = convertFromRaw(template.content)
       setEditorState(EditorState.createWithContent(newState))
-      incrementTemplateUse({ variables: { id: template.id } })
     }
   }, [tem])
 
@@ -249,6 +245,13 @@ const BlankLetter = (props: RouteComponentProps) => {
     setMailDialogIsOpen(true)
   }
 
+  /**
+   * safe open dialog
+   */
+  const openRepresentativeDialog = useCallback(() => {
+    setChooseRepresentativeDialogIsOpen(true)
+  }, [])
+
   return (
     <Wrapper>
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
@@ -266,32 +269,7 @@ const BlankLetter = (props: RouteComponentProps) => {
           zip={zip}
           disabled={loading || isLocked}
         />
-        <ToWrapper selected={!!toRepresentative}>
-          {toAddress ? (
-            <div>
-              <h2>To</h2>
-              <p>
-                {toRepresentative?.name} <br /> {toRepresentative?.title}
-              </p>
-              <address>
-                {toAddress.locationName}
-                {toAddress.locationName && <br />}
-                {toAddress.line1}
-                {toAddress.line1 && <br />}
-                {toAddress.line2}
-                {toAddress.line2 && <br />}
-                {toAddress.line3}
-                {toAddress.line3 && <br />}
-                {toAddress.city}, {toAddress.state} {toAddress.zip}
-                <br />
-              </address>
-            </div>
-          ) : (
-            <PrimaryButton onClick={() => setChooseRepresentativeDialogIsOpen(true)}>
-              choose a representative
-            </PrimaryButton>
-          )}
-        </ToWrapper>
+        <AddressSelection address={toAddress} representative={toRepresentative} openDialog={openRepresentativeDialog} />
       </MetaWrapper>
       <TitleWrapper>
         <Title>What do you want to say?</Title>
