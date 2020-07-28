@@ -23,7 +23,7 @@ module.exports = {
       options: {
         typeName: `VYSAPI`,
         fieldName: `vysapi`,
-        url: `http://localhost:3000/graphql`,
+        url: `${process.env.GATSBY_BACKEND}/graphql`,
       },
     },
     {
