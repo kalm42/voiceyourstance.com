@@ -481,7 +481,7 @@ const MailDialog = (props: Props) => {
       {!paymentId && (
         <PaymentWrapper>
           <Elements stripe={stripePromise}>
-            <CheckoutForm callback={setPaymentId} loading={loadingPayment} setLoading={setLoadingPayment} />
+            <CheckoutForm callback={setPaymentId} loading={loadingPayment} setLoading={setLoadingPayment} letterId={letterId} />
           </Elements>
         </PaymentWrapper>
       )}

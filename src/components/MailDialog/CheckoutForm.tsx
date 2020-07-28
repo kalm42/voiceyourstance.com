@@ -31,6 +31,7 @@ interface Props {
   callback: (id: string) => void
   loading: boolean
   setLoading: (b: boolean) => void
+  letterId: string | undefined
 }
 
 const CheckoutForm = (props: Props) => {
@@ -39,16 +40,24 @@ const CheckoutForm = (props: Props) => {
   const stripe = useStripe()
   const elements = useElements()
   const analytics = useAnalytics()
-  const { loading, setLoading } = props
+  const { loading, setLoading, letterId } = props
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     analytics?.event("MAIL", "Attempt payment", "PAYMENT_ATTEMPT")
-    if (!stripe || !elements) return
+    if (!stripe || !elements || !letterId) return
     setLoading(true)
 
+    const body = JSON.stringify({ letterId })
     const uri = process.env.GATSBY_BACKEND
-    const clientSecret = await fetch(`${uri}/secret`)
+    const clientSecret = await fetch(`${uri}/secret`, {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    })
       .then(response => response.json())
       .then(json => json.client_secret)
       .catch(() => {
