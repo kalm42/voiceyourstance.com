@@ -15,6 +15,7 @@ interface Props {
   lang?: string
   meta?: React.DetailedHTMLProps<React.MetaHTMLAttributes<HTMLMetaElement>, HTMLMetaElement>[]
   title?: string
+  image?: string
 }
 
 function SEO(props: Props) {
@@ -23,6 +24,7 @@ function SEO(props: Props) {
     lang = "en",
     meta = [],
     title = "Voice Your Stance",
+    image = "",
   } = props
   const { site } = useStaticQuery(
     graphql`
@@ -32,6 +34,7 @@ function SEO(props: Props) {
             title
             description
             author
+            image
           }
         }
       }
@@ -44,6 +47,10 @@ function SEO(props: Props) {
     {
       name: `description`,
       content: metaDescription,
+    },
+    {
+      property: `og:image`,
+      content: image,
     },
     {
       property: `og:title`,
