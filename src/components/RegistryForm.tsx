@@ -47,7 +47,7 @@ interface Props {
   letterContent: RawDraftContentState
   close: () => void
   templateId: string | undefined
-  setTemplateId: (id: string) => void
+  setTemplateId?: (id: string) => void
 }
 
 const RegistryForm = (props: Props) => {
@@ -97,7 +97,7 @@ const RegistryForm = (props: Props) => {
     }
     createTemplate({ variables: { template: { content: props.letterContent, tags, title } } })
       .then(response => {
-        if (response.data?.createTemplate.id) {
+        if (response.data?.createTemplate.id && props.setTemplateId) {
           props.setTemplateId(response.data.createTemplate.id)
         }
         props.close()

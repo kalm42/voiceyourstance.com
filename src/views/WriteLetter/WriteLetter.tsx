@@ -4,7 +4,6 @@ import { useMutation, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { Editor, EditorState, convertToRaw, convertFromRaw } from "draft-js"
 import styled from "styled-components"
-import { useAnalytics } from "../../context/Analytics"
 import { useMetaData } from "../../context/MetaData"
 import { useRepresentatives } from "../../context/Representatives"
 import { useUser } from "../../context/UserContext"
@@ -78,7 +77,6 @@ const WriteLetter = (props: Props) => {
   const [sharedId, setSharedId] = useState<string | undefined>(undefined)
   const [templateId, setTemplateId] = useState<string | undefined>(undefined)
   const representativeContext = useRepresentatives()
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
   const user = useUser()
   const [saveLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(SAVE_LETTER)
@@ -91,13 +89,6 @@ const WriteLetter = (props: Props) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Write a letter")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * On state change calcuate the number of characters remaining.

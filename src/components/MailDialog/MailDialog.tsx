@@ -12,21 +12,8 @@ import ErrorMessage from "../../components/ErrorMessage"
 import RegistryForm from "../../components/RegistryForm"
 import { Address, GQL } from "../../types"
 import { Input, PrimaryButton, SecondaryButton } from "../../components/elements"
-import { useAnalytics } from "../../context/Analytics"
 import lzString from "../../components/lzString"
-import {
-  Wrapper,
-  H1,
-  PaymentWrapper,
-  StepsList,
-  Step,
-  StepIcon,
-  Spinner,
-  GoldIcon,
-  CodeWrapper,
-  Code,
-} from "./MailDialogStyledComponents"
-import reportError from "../../components/reportError"
+import { Wrapper, H1, PaymentWrapper, StepsList, Step, StepIcon, Spinner, GoldIcon } from "./MailDialogStyledComponents"
 import { useLocation } from "@reach/router"
 import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
@@ -148,7 +135,6 @@ const MailDialog = (props: Props) => {
   const [state, setState] = useState("")
   const [zip, setZip] = useState("")
   const [shareString, setShareString] = useState("")
-  const [cpyMsg, setCpyMsg] = useState("")
   const [registryDialogIsOpen, setRegistryDialogIsOpen] = useState(false)
   const [loadingSaveLetter, setLoadingSaveLetter] = useState(false)
   const [loadingPayment, setLoadingPayment] = useState(false)
@@ -161,7 +147,6 @@ const MailDialog = (props: Props) => {
   const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
     INCREMENT_TEMPLATE_USE,
   )
-  const analytics = useAnalytics()
   const location = useLocation()
   const {
     editorState,
@@ -179,13 +164,6 @@ const MailDialog = (props: Props) => {
     templateId,
     setTemplateId,
   } = props
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.modalView("mail letter modal")
-  }, [analytics])
 
   /**
    * Close on outside click
@@ -257,7 +235,6 @@ const MailDialog = (props: Props) => {
         .then(res => {
           setLoadingMail(false)
           if (res?.data?.mailLetter?.id) {
-            analytics?.event("MAIL", "Letter mailed", "MAIL_LETTER", true)
             setMailId(res.data.mailLetter.id)
             setMailDate(res.data.mailLetter.expectedDeliveryDate)
           } else {
@@ -275,7 +252,7 @@ const MailDialog = (props: Props) => {
         incrementTemplateUse({ variables: { id: templateId } })
       }
     }
-  }, [analytics, letterId, mailLetter, paymentId])
+  }, [letterId, mailLetter, paymentId])
 
   /**
    * Save the letter
@@ -304,7 +281,6 @@ const MailDialog = (props: Props) => {
       .then(res => {
         setLoadingSaveLetter(false)
         if (res.data?.createLetter?.id && setLetterId) {
-          analytics?.event("MAIL", "Save letter", "SAVE_LETTER", true)
           setLetterId(res.data.createLetter.id)
         } else {
           setError(new Error("failed to create letter"))
@@ -315,7 +291,6 @@ const MailDialog = (props: Props) => {
         setError(err)
       })
   }, [
-    analytics,
     createLetter,
     editorState,
     from.city,

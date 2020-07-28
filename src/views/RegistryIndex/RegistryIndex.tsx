@@ -1,7 +1,6 @@
 import React, { useEffect } from "react"
 import { graphql, Link } from "gatsby"
 import styled from "styled-components"
-import { useAnalytics } from "../../context/Analytics"
 import SEO from "../../components/SEO"
 import { useMetaData } from "../../context/MetaData"
 import Layout from "../../components/Layout"
@@ -59,7 +58,6 @@ interface Props {
 
 const RegistryIndex = (props: Props) => {
   const { data } = props
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -68,13 +66,6 @@ const RegistryIndex = (props: Props) => {
   if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle("Top Letters")
   }
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   const top10 = data.vysapi.publicTemplates.slice(0, 9)
 

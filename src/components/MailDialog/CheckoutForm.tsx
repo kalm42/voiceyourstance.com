@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js"
 import styled from "styled-components"
 import { StripeError } from "@stripe/stripe-js"
-import { useAnalytics } from "../../context/Analytics"
 import ErrorMessage from "../../components/ErrorMessage"
 import { Input } from "../../components/elements"
 import CardSection from "./CardSection"
@@ -39,12 +38,10 @@ const CheckoutForm = (props: Props) => {
   const [name, setName] = useState("")
   const stripe = useStripe()
   const elements = useElements()
-  const analytics = useAnalytics()
   const { loading, setLoading, letterId } = props
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    analytics?.event("MAIL", "Attempt payment", "PAYMENT_ATTEMPT")
     if (!stripe || !elements || !letterId) return
     setLoading(true)
 
@@ -89,7 +86,6 @@ const CheckoutForm = (props: Props) => {
     } else {
       if (result.paymentIntent && result.paymentIntent.status === "succeeded") {
         props.callback(result.paymentIntent.id)
-        analytics?.event("MAIL", "Payment successful", "PAYMENT_SUCCESS")
       }
       setLoading(false)
     }

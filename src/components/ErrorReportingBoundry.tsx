@@ -1,7 +1,5 @@
 import React, { Component } from "react"
 import * as Sentry from "@sentry/browser"
-import ReactGA from "react-ga"
-const ANALYTICS_KEY = process.env.GATSBY_ANALYTICS_KEY
 
 type AcceptableError = Error
 
@@ -24,17 +22,6 @@ export default class ErrorReportingBoundry extends Component {
       const eventId = Sentry.captureException(error)
       this.setState({ eventId, errorInfo })
     })
-    ReactGA.exception({
-      description: error.message,
-      fatal: true,
-    })
-  }
-
-  componentDidMount() {
-    if (!ANALYTICS_KEY) {
-      throw new Error("No analytics key!")
-    }
-    ReactGA.initialize(ANALYTICS_KEY)
   }
 
   render() {

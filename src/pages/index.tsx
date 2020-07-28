@@ -4,7 +4,6 @@ import { navigate } from "gatsby"
 import { GeocodeResult } from "../types"
 import { useRepresentatives } from "../context/Representatives"
 import ErrorMessage from "../components/ErrorMessage"
-import { useAnalytics } from "../context/Analytics"
 import ErrorReportingBoundry from "../components/ErrorReportingBoundry"
 import { useMetaData } from "../context/MetaData"
 import { Form, Input, PrimaryInputSubmit, SecondaryButton } from "../components/elements"
@@ -30,7 +29,6 @@ const IndexPage = () => {
   const [disabled, setDisabled] = useState(false)
   const [error, setError] = useState<AcceptableErrors | undefined>(undefined)
   const reps = useRepresentatives()
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
   const location = useLocation()
 
@@ -231,13 +229,6 @@ const IndexPage = () => {
   useEffect(() => {
     checkForError()
   }, [checkForError])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   return (
     <Layout>

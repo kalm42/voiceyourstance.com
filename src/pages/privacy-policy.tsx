@@ -1,6 +1,5 @@
 import React, { useEffect } from "react"
 import styled from "styled-components"
-import { useAnalytics } from "../context/Analytics"
 import ErrorReportingBoundry from "../components/ErrorReportingBoundry"
 import SEO from "../components/SEO"
 import { useMetaData } from "../context/MetaData"
@@ -13,7 +12,6 @@ const Section = styled.section`
 `
 
 const PrivacyPolicyPage = () => {
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -22,13 +20,6 @@ const PrivacyPolicyPage = () => {
   if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle("Privacy Policy")
   }
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   return (
     <Layout>

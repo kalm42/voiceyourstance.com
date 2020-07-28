@@ -14,7 +14,6 @@ import { useQuery, useMutation, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { GQL } from "../../types"
 import { useMetaData } from "../../context/MetaData"
-import { useAnalytics } from "../../context/Analytics"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
 
 const UPDATE_LETTER = gql`
@@ -123,7 +122,6 @@ const EditLetter = (props: Props) => {
   const user = useUser()
   const letterContext = useLetter()
   const MetaData = useMetaData()
-  const analytics = useAnalytics()
 
   const from = { city, line1, name, state, zip }
 
@@ -133,13 +131,6 @@ const EditLetter = (props: Props) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Drafts")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * Clear error after some time

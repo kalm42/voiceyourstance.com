@@ -14,7 +14,6 @@ import ErrorMessage from "../../components/ErrorMessage"
 import { useQuery, useLazyQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { useMetaData } from "../../context/MetaData"
-import { useAnalytics } from "../../context/Analytics"
 
 const GET_TEMPLATE_BY_ID = gql`
   query GetTemplateById($id: String!) {
@@ -129,7 +128,6 @@ const SharedLetter = (props: Props) => {
   const user = useUser()
   const letterContext = useLetter()
   const MetaData = useMetaData()
-  const analytics = useAnalytics()
 
   const from = { city, line1, name, state, zip }
   const to = {
@@ -147,13 +145,6 @@ const SharedLetter = (props: Props) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Write a letter")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * Clear error after some time

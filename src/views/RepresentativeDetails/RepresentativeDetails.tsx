@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
 import { useRepresentatives } from "../../context/Representatives"
-import { useAnalytics } from "../../context/Analytics"
 import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
 import SEO from "../../components/SEO"
 import { useMetaData } from "../../context/MetaData"
@@ -53,7 +52,6 @@ interface Props extends RouteComponentProps {
 const RepresentativeDetails = (props: Props) => {
   const { repid } = props
   const representativeContext = useRepresentatives()
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -66,13 +64,6 @@ const RepresentativeDetails = (props: Props) => {
   const rep = useMemo(() => {
     return representativeContext && representativeContext.getRepresentativeById((repid as unknown) as number)
   }, [representativeContext])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   if (!rep) {
     return (
