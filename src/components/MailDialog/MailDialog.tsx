@@ -28,6 +28,7 @@ import {
 } from "./MailDialogStyledComponents"
 import reportError from "../../components/reportError"
 import { useLocation } from "@reach/router"
+import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
 interface RegistryDialogProps {
   open: boolean
@@ -157,6 +158,9 @@ const MailDialog = (props: Props) => {
   const [createLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(CREATE_LETTER)
   const [mailLetter] = useMutation<GQL.MailLetterData, GQL.MailLetterVars>(MAIL_LETTER)
   const [updateLetter] = useMutation<GQL.UpdateLetterData, GQL.UpdateLetterVars>(UPDATE_LETTER)
+  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
+    INCREMENT_TEMPLATE_USE,
+  )
   const analytics = useAnalytics()
   const location = useLocation()
   const {
@@ -267,6 +271,9 @@ const MailDialog = (props: Props) => {
             setWrongAddress(true)
           }
         })
+      if (templateId) {
+        incrementTemplateUse({ variables: { id: templateId } })
+      }
     }
   }, [analytics, letterId, mailLetter, paymentId])
 
@@ -296,7 +303,7 @@ const MailDialog = (props: Props) => {
     createLetter({ variables: { letter } })
       .then(res => {
         setLoadingSaveLetter(false)
-        if (res.data?.createLetter?.id) {
+        if (res.data?.createLetter?.id && setLetterId) {
           analytics?.event("MAIL", "Save letter", "SAVE_LETTER", true)
           setLetterId(res.data.createLetter.id)
         } else {
@@ -357,27 +364,6 @@ const MailDialog = (props: Props) => {
     const f = lz.compressToEncodedURIComponent(JSON.stringify(letterTemplate))
     setShareString(f)
   }, [props.editorState, props.to])
-
-  const copyToClipboard = () => {
-    // select the text
-    const range = document.createRange()
-    if (shareUrlRef.current) {
-      range.selectNode(shareUrlRef.current)
-      const selection = window.getSelection()
-      if (selection) {
-        selection.addRange(range)
-        try {
-          // Now that we've selected the anchor text, execute the copy command
-          var successful = document.execCommand("copy")
-          var msg = successful ? "successful" : "unsuccessful"
-          setCpyMsg("Copy email command was " + msg)
-        } catch (error) {
-          setCpyMsg("Oops, unable to copy")
-        }
-        selection.removeAllRanges()
-      }
-    }
-  }
 
   return (
     <Wrapper ref={ref}>
@@ -481,7 +467,12 @@ const MailDialog = (props: Props) => {
       {!paymentId && (
         <PaymentWrapper>
           <Elements stripe={stripePromise}>
-            <CheckoutForm callback={setPaymentId} loading={loadingPayment} setLoading={setLoadingPayment} letterId={letterId} />
+            <CheckoutForm
+              callback={setPaymentId}
+              loading={loadingPayment}
+              setLoading={setLoadingPayment}
+              letterId={letterId}
+            />
           </Elements>
         </PaymentWrapper>
       )}

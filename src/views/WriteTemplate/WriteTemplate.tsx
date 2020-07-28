@@ -12,12 +12,10 @@ import MailDialog from "../../components/MailDialog"
 import ChooseRepresentative from "../../components/ChooseRepresentative"
 import { Address, Representative, GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
-import { useQuery, useLazyQuery, useMutation } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
+import { useQuery, useLazyQuery } from "@apollo/react-hooks"
 import { useMetaData } from "../../context/MetaData"
 import { useAnalytics } from "../../context/Analytics"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
-import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -72,9 +70,6 @@ interface Props extends RouteComponentProps {
 
 const WriteTemplate = (props: Props) => {
   const { templateId } = props
-  const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
-    INCREMENT_TEMPLATE_USE,
-  )
   const [getTemplateById, tem] = useLazyQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID)
   const { data, error, loading } = useQuery<GQL.GetTemplateByIdData, GQL.GetTemplateByIdVars>(GET_TEMPLATE_BY_ID, {
     variables: { id: templateId || "" },
@@ -158,7 +153,6 @@ const WriteTemplate = (props: Props) => {
     if (template) {
       const newState = convertFromRaw(template.content)
       setEditorState(EditorState.createWithContent(newState))
-      incrementTemplateUse({ variables: { id: template.id } })
     }
   }, [tem])
 
