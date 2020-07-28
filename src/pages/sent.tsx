@@ -3,7 +3,6 @@ import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
 import { format } from "date-fns"
 import { useMetaData } from "../context/MetaData"
-import { useAnalytics } from "../context/Analytics"
 import { useLetter } from "../context/LetterContext"
 import { useUser } from "../context/UserContext"
 import ErrorMessage from "../components/ErrorMessage"
@@ -38,7 +37,6 @@ const LetterPreview = styled.div`
 const SentLetters = (props: RouteComponentProps) => {
   const [localError, setLocalError] = useState<Error | undefined>(undefined)
   const MetaData = useMetaData()
-  const analytics = useAnalytics()
   const user = useUser()
   const letter = useLetter()
 
@@ -48,13 +46,6 @@ const SentLetters = (props: RouteComponentProps) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Drafts")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * Clear error after some time
@@ -86,7 +77,7 @@ const SentLetters = (props: RouteComponentProps) => {
               <DraftWrapper key={sent.id}>
                 <div>
                   <h3>Expected Delivery Date:</h3>
-                  <p>{format(new Date(sent.mail.expectedDeliveryDate), "MM/dd/yy hh:mm:ss a")}</p>
+                  <p>{format(new Date(sent.mail?.expectedDeliveryDate || ""), "MM/dd/yy hh:mm:ss a")}</p>
                 </div>
                 <DraftDetailsWrapper>
                   <div>

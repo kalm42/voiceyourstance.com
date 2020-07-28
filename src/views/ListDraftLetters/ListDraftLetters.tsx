@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
 import { useMetaData } from "../../context/MetaData"
-import { useAnalytics } from "../../context/Analytics"
 import ErrorMessage from "../../components/ErrorMessage"
 import { useQuery } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
@@ -60,7 +59,6 @@ const GET_DRAFT_LETTERS = gql`
 const ListDraftLetters = (props: RouteComponentProps) => {
   const [localError, setLocalError] = useState<Error | undefined>(undefined)
   const MetaData = useMetaData()
-  const analytics = useAnalytics()
   const { data, error } = useQuery<GQL.GetDraftLettersData, GQL.GetDraftLettersVars>(GET_DRAFT_LETTERS)
 
   /**
@@ -69,13 +67,6 @@ const ListDraftLetters = (props: RouteComponentProps) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Drafts")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * Clear error after some time

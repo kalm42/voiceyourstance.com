@@ -13,7 +13,6 @@ import ChooseRepresentative from "../../components/ChooseRepresentative"
 import { Address, Representative, GQL } from "../../types"
 import ErrorMessage from "../../components/ErrorMessage"
 import { useMetaData } from "../../context/MetaData"
-import { useAnalytics } from "../../context/Analytics"
 import { useLazyQuery } from "@apollo/react-hooks"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
 import AddressSelection from "./AddressSelection"
@@ -39,10 +38,6 @@ const MetaWrapper = styled.div`
 interface ToWrapperProps {
   selected: boolean
 }
-const ToWrapper = styled.div`
-  justify-self: center;
-  ${(props: ToWrapperProps) => props.selected && "align-self: start;"}
-`
 interface EditorWrapperProps {
   disabled: boolean
 }
@@ -96,7 +91,6 @@ const BlankLetter = (props: RouteComponentProps) => {
   const user = useUser()
   const letterContext = useLetter()
   const MetaData = useMetaData()
-  const analytics = useAnalytics()
 
   const from = { city, line1, name, state, zip }
   const to = {
@@ -114,13 +108,6 @@ const BlankLetter = (props: RouteComponentProps) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Write a letter")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * Clear error after some time

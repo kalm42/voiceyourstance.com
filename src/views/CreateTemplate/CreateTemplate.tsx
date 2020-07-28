@@ -5,7 +5,6 @@ import { convertToRaw, Editor, EditorState } from "draft-js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
-import { useAnalytics } from "../../context/Analytics"
 import { useMetaData } from "../../context/MetaData"
 import ErrorMessage from "../../components/ErrorMessage"
 import Toggle from "../../components/Toggle"
@@ -79,7 +78,6 @@ const CreateTemplate = (props: RouteComponentProps) => {
   const [tags, setTags] = useState<string[]>([])
   const [searchable, setSearchable] = useState<boolean>(false)
   const [createTemplate] = useMutation<GQL.CreateTemplateData, GQL.CreateTemplateVars>(CREATE_TEMPLATE)
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -88,13 +86,6 @@ const CreateTemplate = (props: RouteComponentProps) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Write a letter")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * On state change calcuate the number of characters remaining.

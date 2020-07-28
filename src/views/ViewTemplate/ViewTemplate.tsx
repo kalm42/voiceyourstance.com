@@ -2,7 +2,6 @@ import React, { useEffect } from "react"
 import { graphql, Link } from "gatsby"
 import { RawDraftContentState } from "draft-js"
 import styled from "styled-components"
-import { useAnalytics } from "../../context/Analytics"
 import SEO from "../../components/SEO"
 import { useMetaData } from "../../context/MetaData"
 import Layout from "../../components/Layout"
@@ -65,7 +64,6 @@ interface Props {
 
 const ViewTemplate = (props: Props) => {
   const { data } = props
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -74,13 +72,6 @@ const ViewTemplate = (props: Props) => {
   if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle(data.vysapi.getTemplateById.title)
   }
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   return (
     <Layout>

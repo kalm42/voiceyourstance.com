@@ -1,6 +1,5 @@
 import React, { useEffect } from "react"
 import styled from "styled-components"
-import { useAnalytics } from "../context/Analytics"
 import { useMetaData } from "../context/MetaData"
 import ErrorReportingBoundry from "../components/ErrorReportingBoundry"
 import SEO from "../components/SEO"
@@ -13,7 +12,6 @@ const Wrapper = styled.div`
 `
 
 const ContactUsPage = () => {
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -22,13 +20,6 @@ const ContactUsPage = () => {
   if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle("Contact Us")
   }
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   return (
     <Layout>

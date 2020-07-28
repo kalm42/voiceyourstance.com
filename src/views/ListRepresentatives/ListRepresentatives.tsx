@@ -2,7 +2,6 @@ import React, { useEffect } from "react"
 import styled from "styled-components"
 import { RouteComponentProps } from "@reach/router"
 import { useRepresentatives } from "../../context/Representatives"
-import { useAnalytics } from "../../context/Analytics"
 import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
 import ErrorMessage from "../../components/ErrorMessage"
 import SEO from "../../components/SEO"
@@ -21,7 +20,6 @@ interface Props extends RouteComponentProps {}
 
 const ListRepresentatives = (props: Props) => {
   const representativeContext = useRepresentatives()
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
 
   /**
@@ -30,13 +28,6 @@ const ListRepresentatives = (props: Props) => {
   if (MetaData && MetaData.safeSetTitle) {
     MetaData.safeSetTitle("Representatives")
   }
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   const rgbd = representativeContext?.getRepresentativesGroupedByDivision()
   if (!rgbd || !rgbd.length) {

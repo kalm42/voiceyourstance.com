@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react"
 import { RouteComponentProps } from "@reach/router"
 import styled from "styled-components"
 import { useMetaData } from "../../context/MetaData"
-import { useAnalytics } from "../../context/Analytics"
 import { useTemplate } from "../../context/TemplateContext"
 import ErrorMessage from "../../components/ErrorMessage"
 import Layout from "../../components/Layout"
@@ -65,7 +64,6 @@ const TemplatePreview = styled.div`
 const ListTemplateLetters = (props: RouteComponentProps) => {
   const [localError, setLocalError] = useState<Error | undefined>(undefined)
   const MetaData = useMetaData()
-  const analytics = useAnalytics()
   const template = useTemplate()
 
   /**
@@ -74,13 +72,6 @@ const ListTemplateLetters = (props: RouteComponentProps) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Registry")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * Clear error after some time

@@ -4,28 +4,25 @@ import { AuthenticationProvider } from "./Authentication"
 import { RepresentativeProvider } from "./Representatives"
 import { UserProvider } from "./UserContext"
 import ApolloContext from "./ApolloContext"
-import { AnalyticsProvider } from "./Analytics"
 import { MetaDataProvider } from "./MetaData"
 import { LetterProvider } from "./LetterContext"
 import { TemplateProvider } from "./TemplateContext"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
-    <AnalyticsProvider>
-      <ApolloContext>
-        <AuthenticationProvider>
-          <UserProvider>
-            <MetaDataProvider>
-              <LetterProvider>
-                <TemplateProvider>
-                  <RepresentativeProvider>{children}</RepresentativeProvider>
-                </TemplateProvider>
-              </LetterProvider>
-            </MetaDataProvider>
-          </UserProvider>
-        </AuthenticationProvider>
-      </ApolloContext>
-    </AnalyticsProvider>
+    <ApolloContext>
+      <AuthenticationProvider>
+        <UserProvider>
+          <MetaDataProvider>
+            <LetterProvider>
+              <TemplateProvider>
+                <RepresentativeProvider>{children}</RepresentativeProvider>
+              </TemplateProvider>
+            </LetterProvider>
+          </MetaDataProvider>
+        </UserProvider>
+      </AuthenticationProvider>
+    </ApolloContext>
   )
 }
 

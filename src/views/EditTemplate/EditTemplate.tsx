@@ -5,7 +5,6 @@ import { convertToRaw, Editor, EditorState, convertFromRaw } from "draft-js"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
-import { useAnalytics } from "../../context/Analytics"
 import { useMetaData } from "../../context/MetaData"
 import { useTemplate } from "../../context/TemplateContext"
 import ErrorMessage from "../../components/ErrorMessage"
@@ -72,10 +71,9 @@ const EditTemplate = (props: Props) => {
   const [nextTag, setNextTag] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [searchable, setSearchable] = useState<boolean | undefined>(undefined)
-  const analytics = useAnalytics()
   const MetaData = useMetaData()
   const templateCtrl = useTemplate()
-  const templateQuery = templateCtrl.getTemplateById(templateId)
+  const templateQuery = templateCtrl?.getTemplateById(templateId || "")
   const template = templateQuery?.data?.getTemplateById
 
   /**
@@ -84,13 +82,6 @@ const EditTemplate = (props: Props) => {
   useEffect(() => {
     MetaData?.safeSetTitle("Write a letter")
   }, [MetaData])
-
-  /**
-   * Analytics Report Page View
-   */
-  useEffect(() => {
-    analytics?.pageView()
-  }, [analytics])
 
   /**
    * On state change calcuate the number of characters remaining.
