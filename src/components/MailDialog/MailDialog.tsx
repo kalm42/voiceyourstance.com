@@ -360,7 +360,7 @@ const MailDialog = (props: Props) => {
         <Step>
           <StepIcon>
             {paymentId ? (
-              <GoldIcon icon={faVoteYea} />
+              <GoldIcon icon={faVoteYea} id="mail-dialog--paid" />
             ) : loadingPayment ? (
               <Spinner icon={faSpinner} />
             ) : (
