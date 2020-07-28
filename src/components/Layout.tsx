@@ -168,8 +168,18 @@ const Layout: FunctionComponent = ({ children }) => {
               </MenuItem>
             </li>
             <li>
+              <MenuItem to="/write" onClick={handleMenuClick}>
+                Write a letter <GoldIcon icon={faCaretRight} />
+              </MenuItem>
+            </li>
+            <li>
               <MenuItem to="/reps" onClick={handleMenuClick}>
                 Your Representatives <GoldIcon icon={faCaretRight} />
+              </MenuItem>
+            </li>
+            <li>
+              <MenuItem to="/registry" onClick={handleMenuClick}>
+                Letter Registry <GoldIcon icon={faCaretRight} />
               </MenuItem>
             </li>
             <li>
