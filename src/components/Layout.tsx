@@ -201,17 +201,17 @@ const Layout: FunctionComponent = ({ children }) => {
         <FooterSocial>
           <SocialNav>
             <li>
-              <FacebookLink href="http://facebook.com">
+              <FacebookLink href="https://www.facebook.com/voiceyourstance">
                 <FontAwesomeIcon icon={faFacebookF} />
               </FacebookLink>
             </li>
             <li>
-              <TwitterLink href="https://twitter.com">
+              <TwitterLink href="https://twitter.com/VoiceYourStance">
                 <FontAwesomeIcon icon={faTwitter} />
               </TwitterLink>
             </li>
             <li>
-              <EmailLink href="mailto:someone@somewhere.com">
+              <EmailLink href="mailto:me@kylemelton.com">
                 <FontAwesomeIcon icon={faEnvelope} />
               </EmailLink>
             </li>
