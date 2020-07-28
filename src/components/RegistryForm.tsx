@@ -8,6 +8,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { GQL } from "../types"
 import ErrorMessage from "./ErrorMessage"
+import { useUser } from "../context/UserContext"
 
 const CREATE_TEMPLATE = gql`
   mutation CreateTemplate($template: TemplateInput!) {
@@ -56,6 +57,7 @@ const RegistryForm = (props: Props) => {
   const [tags, setTags] = useState<string[]>([])
   const [error, setError] = useState<GQL.GQLError | Error | undefined>(undefined)
   const [createTemplate] = useMutation<GQL.CreateTemplateData, GQL.CreateTemplateVars>(CREATE_TEMPLATE)
+  const user = useUser()
 
   const handleAddTag = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!/^#/.test(event.target.value)) {
@@ -95,7 +97,11 @@ const RegistryForm = (props: Props) => {
       setError(new Error("You must have more than one line in your letter."))
       return
     }
-    createTemplate({ variables: { template: { content: props.letterContent, tags, title } } })
+    if (!user) {
+      setError(new Error("You must be logged in to add a letter to the registry."))
+      return
+    }
+    createTemplate({ variables: { template: { content: props.letterContent, tags, title, isSearchable: false } } })
       .then(response => {
         if (response.data?.createTemplate.id && props.setTemplateId) {
           props.setTemplateId(response.data.createTemplate.id)

@@ -168,8 +168,18 @@ const Layout: FunctionComponent = ({ children }) => {
               </MenuItem>
             </li>
             <li>
+              <MenuItem to="/write" onClick={handleMenuClick}>
+                Write a letter <GoldIcon icon={faCaretRight} />
+              </MenuItem>
+            </li>
+            <li>
               <MenuItem to="/reps" onClick={handleMenuClick}>
                 Your Representatives <GoldIcon icon={faCaretRight} />
+              </MenuItem>
+            </li>
+            <li>
+              <MenuItem to="/registry" onClick={handleMenuClick}>
+                Letter Registry <GoldIcon icon={faCaretRight} />
               </MenuItem>
             </li>
             <li>
@@ -201,17 +211,17 @@ const Layout: FunctionComponent = ({ children }) => {
         <FooterSocial>
           <SocialNav>
             <li>
-              <FacebookLink href="http://facebook.com">
+              <FacebookLink href="https://www.facebook.com/voiceyourstance">
                 <FontAwesomeIcon icon={faFacebookF} />
               </FacebookLink>
             </li>
             <li>
-              <TwitterLink href="https://twitter.com">
+              <TwitterLink href="https://twitter.com/VoiceYourStance">
                 <FontAwesomeIcon icon={faTwitter} />
               </TwitterLink>
             </li>
             <li>
-              <EmailLink href="mailto:someone@somewhere.com">
+              <EmailLink href="mailto:me@kylemelton.com">
                 <FontAwesomeIcon icon={faEnvelope} />
               </EmailLink>
             </li>

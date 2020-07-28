@@ -91,6 +91,7 @@ const BlankLetter = (props: RouteComponentProps) => {
   const user = useUser()
   const letterContext = useLetter()
   const MetaData = useMetaData()
+  const hasReps = localStorage.getItem("vys-representatives")
 
   const from = { city, line1, name, state, zip }
   const to = {
@@ -147,6 +148,20 @@ const BlankLetter = (props: RouteComponentProps) => {
     const charCount = content.blocks.reduce((acc, val) => acc + val.text.length, 0)
     setCharacterCount(5000 - charCount)
   }, [editorState])
+
+  /**
+   * Check that user has located reps
+   */
+  useEffect(() => {
+    if (!hasReps) {
+      navigate(
+        `/?error=${encodeURIComponent("You must find your representatives before you can write a letter to them.")}`,
+      )
+    }
+  }, [])
+  if (!hasReps) {
+    return null
+  }
 
   /**
    * Handle editor state change
