@@ -91,7 +91,7 @@ const BlankLetter = (props: RouteComponentProps) => {
   const user = useUser()
   const letterContext = useLetter()
   const MetaData = useMetaData()
-  const hasReps = localStorage.getItem("vys-representatives")
+  const [hasReps, setHasReps] = useState(false)
 
   const from = { city, line1, name, state, zip }
   const to = {
@@ -153,10 +153,13 @@ const BlankLetter = (props: RouteComponentProps) => {
    * Check that user has located reps
    */
   useEffect(() => {
-    if (!hasReps) {
+    const repCheck = localStorage.getItem("vys-representatives")
+    if (!repCheck) {
       navigate(
         `/?error=${encodeURIComponent("You must find your representatives before you can write a letter to them.")}`,
       )
+    } else {
+      setHasReps(true)
     }
   }, [])
   if (!hasReps) {
