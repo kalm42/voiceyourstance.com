@@ -121,7 +121,7 @@ const RepresentativeDetails = (props: Props) => {
                     case "Facebook":
                       url = "https://facebook.com/"
                       break
-                    case "Youtube":
+                    case "YouTube":
                       url = "https://youtube.com/"
                       break
                     case "Twitter":
