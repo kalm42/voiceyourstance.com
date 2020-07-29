@@ -7,3 +7,11 @@ export const INCREMENT_TEMPLATE_USE = gql`
     }
   }
 `
+
+export const CREATE_TEMPLATE = gql`
+  mutation CreateTemplate($template: TemplateInput!) {
+    createTemplate(template: $template) {
+      id
+    }
+  }
+`
