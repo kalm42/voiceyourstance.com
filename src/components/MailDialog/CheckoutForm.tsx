@@ -91,7 +91,7 @@ const CheckoutForm = (props: Props) => {
     }
   }
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} id="checkout-form">
       <ErrorMessage error={error} />
       <Input
         placeholder="Your name"
