@@ -12,14 +12,14 @@ import ErrorMessage from "../../components/ErrorMessage"
 import RegistryForm from "../../components/RegistryForm"
 import { Address, GQL } from "../../types"
 import { Input, PrimaryButton, SecondaryButton } from "../../components/elements"
-import lzString from "../../components/lzString"
 import { Wrapper, H1, PaymentWrapper, StepsList, Step, StepIcon, Spinner, GoldIcon } from "./MailDialogStyledComponents"
 import { useLocation } from "@reach/router"
-import { INCREMENT_TEMPLATE_USE } from "../../gql/mutations"
+import { INCREMENT_TEMPLATE_USE, CREATE_TEMPLATE } from "../../gql/mutations"
 
 interface RegistryDialogProps {
   open: boolean
 }
+
 const RegistryDialog = styled.div`
   position: fixed;
   top: 10vh;
@@ -66,6 +66,12 @@ const IconButton = styled.button`
     width: 1rem !important;
   }
 `
+const ShareUrl = styled.p`
+  background: var(--mainDark);
+  color: white;
+  padding: 0.875rem;
+  transform: scale(0.9);
+`
 
 /**
  * GraphQL
@@ -74,6 +80,9 @@ const CREATE_LETTER = gql`
   mutation CreateLetter($letter: LetterInput!) {
     createLetter(letter: $letter) {
       id
+      toAddress {
+        id
+      }
     }
   }
 `
@@ -92,6 +101,7 @@ const UPDATE_LETTER = gql`
     }
   }
 `
+
 /**
  * Stripe Setup
  */
@@ -135,10 +145,12 @@ const MailDialog = (props: Props) => {
   const [state, setState] = useState("")
   const [zip, setZip] = useState("")
   const [shareString, setShareString] = useState("")
+  const [toId, setToId] = useState("")
   const [registryDialogIsOpen, setRegistryDialogIsOpen] = useState(false)
   const [loadingSaveLetter, setLoadingSaveLetter] = useState(false)
   const [loadingPayment, setLoadingPayment] = useState(false)
   const [loadingMail, setLoadingMail] = useState(false)
+  const [didCopy, setDidCopy] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const shareUrlRef = useRef<HTMLDivElement>(null)
   const [createLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(CREATE_LETTER)
@@ -147,6 +159,7 @@ const MailDialog = (props: Props) => {
   const [incrementTemplateUse] = useMutation<GQL.IncrementTemplateUseData, GQL.IncrementTemplateUseVars>(
     INCREMENT_TEMPLATE_USE,
   )
+  const [createTemplate] = useMutation<GQL.CreateTemplateData, GQL.CreateTemplateVars>(CREATE_TEMPLATE)
   const location = useLocation()
   const {
     editorState,
@@ -282,6 +295,7 @@ const MailDialog = (props: Props) => {
         setLoadingSaveLetter(false)
         if (res.data?.createLetter?.id && setLetterId) {
           setLetterId(res.data.createLetter.id)
+          setToId(res.data.createLetter.toAddress.id)
         } else {
           setError(new Error("failed to create letter"))
         }
@@ -307,6 +321,57 @@ const MailDialog = (props: Props) => {
   ])
 
   /**
+   * Share the letter
+   */
+  const share = async () => {
+    if (!letterId) {
+      setError(new Error("Letter data not available for sharing."))
+      return
+    }
+    const letterState = editorState.getCurrentContent()
+    const letterJson = convertToRaw(letterState)
+    const templateResponse = await createTemplate({
+      variables: {
+        template: {
+          content: letterJson,
+          isSearchable: false,
+          tags: ["#shared"],
+          title: `Shared letter on ${format(new Date(), "MM-dd-yyyy HH:mm:ss")}`,
+        },
+      },
+    })
+    return `https://voiceyourstance.com/write/${templateResponse.data?.createTemplate.id}/${toId}`
+  }
+
+  const handleShare = async () => {
+    const url = await share()
+    if (!url) {
+      setError(new Error("Share failed. Please try again."))
+      return
+    }
+
+    setShareString(url)
+  }
+
+  /**
+   * Copy url
+   */
+  const copyShareUrl = () => {
+    const range = document.createRange()
+    const shareUrlNode = shareUrlRef.current
+    if (shareUrlNode) {
+      range.selectNode(shareUrlNode)
+      window.getSelection()?.addRange(range)
+      try {
+        const success = document.execCommand("copy")
+        setDidCopy(success)
+      } catch (err) {
+        setError(new Error("Failed to copy url"))
+      }
+    }
+  }
+
+  /**
    * If the letter id has not been set then the letter has not been saved.
    * So save the letter.
    */
@@ -324,21 +389,6 @@ const MailDialog = (props: Props) => {
       mailTheLetter()
     }
   }, [mailId, paymentId, mailTheLetter])
-
-  /**
-   * Prepare the share query string
-   */
-  useEffect(() => {
-    const letterState = props.editorState.getCurrentContent()
-    const letterJson = convertToRaw(letterState)
-    const lz = new lzString()
-    const letterTemplate = {
-      editorState: letterJson,
-      to: props.to,
-    }
-    const f = lz.compressToEncodedURIComponent(JSON.stringify(letterTemplate))
-    setShareString(f)
-  }, [props.editorState, props.to])
 
   return (
     <Wrapper ref={ref}>
@@ -453,9 +503,17 @@ const MailDialog = (props: Props) => {
       )}
       {paymentId && mailId && letterId && (
         <ShareWrapper>
-          <SecondaryButton>Share</SecondaryButton>
+          <SecondaryButton onClick={handleShare}>Share</SecondaryButton>
           <PrimaryButton onClick={() => setRegistryDialogIsOpen(true)}>add to the registry</PrimaryButton>
         </ShareWrapper>
+      )}
+      {shareString && (
+        <div>
+          <p>Use this url to share your letters with friends and family.</p>
+          <ShareUrl ref={shareUrlRef}>{shareString}</ShareUrl>
+          <PrimaryButton onClick={copyShareUrl}>Click to copy</PrimaryButton>
+          {didCopy && <p>Copied!</p>}
+        </div>
       )}
       <RegistryDialog open={registryDialogIsOpen}>
         <RegistryDialogTitle>

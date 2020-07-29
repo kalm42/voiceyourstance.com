@@ -285,4 +285,12 @@ export namespace GQL {
     text: string
     page: number
   }
+
+  // Get To Id
+  export interface GetToIdData {
+    getLetterById: Letter
+  }
+  export interface GetToIdVars {
+    id: string
+  }
 }

@@ -13,14 +13,7 @@ import { useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { GQL } from "../../types"
 import { navigate } from "gatsby"
-
-const CREATE_TEMPLATE = gql`
-  mutation CreateTemplate($template: TemplateInput!) {
-    createTemplate(template: $template) {
-      id
-    }
-  }
-`
+import { CREATE_TEMPLATE } from "../../gql/mutations"
 
 const Wrapper = styled.div`
   padding: 2rem;
