@@ -297,7 +297,7 @@ const WriteTemplate = (props: Props) => {
       </MetaWrapper>
       <TitleWrapper>
         <Title>What do you want to say?</Title>
-        <SecondaryButton style={{ flex: 1 }} onClick={() => setRegistryDrawerIsOpen(true)}>
+        <SecondaryButton style={{ flex: 1 }} onClick={() => setRegistryDrawerIsOpen(true)} id="open-registry-button">
           Use a letter from the registry
         </SecondaryButton>
       </TitleWrapper>

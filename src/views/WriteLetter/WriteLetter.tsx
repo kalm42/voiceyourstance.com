@@ -248,7 +248,7 @@ const WriteLetter = (props: Props) => {
         <ErrorMessage error={error} />
         <TitleWrapper>
           <Title>Write your letter here</Title>
-          <SecondaryButton style={{ flex: 1 }} onClick={() => setRegistryIsOpen(true)}>
+          <SecondaryButton style={{ flex: 1 }} onClick={() => setRegistryIsOpen(true)} id="open-registry-button">
             Use a letter from the registry
           </SecondaryButton>
         </TitleWrapper>
