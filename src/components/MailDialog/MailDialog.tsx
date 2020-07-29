@@ -3,7 +3,7 @@ import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
 import styled from "styled-components"
 import { EditorState, convertToRaw } from "draft-js"
-import { useMutation, useLazyQuery } from "@apollo/react-hooks"
+import { useMutation } from "@apollo/react-hooks"
 import { gql } from "apollo-boost"
 import { format } from "date-fns"
 import { faSpinner, faVoteYea, faHandPointRight, faTimes } from "@fortawesome/free-solid-svg-icons"
@@ -12,7 +12,6 @@ import ErrorMessage from "../../components/ErrorMessage"
 import RegistryForm from "../../components/RegistryForm"
 import { Address, GQL } from "../../types"
 import { Input, PrimaryButton, SecondaryButton } from "../../components/elements"
-import lzString from "../../components/lzString"
 import { Wrapper, H1, PaymentWrapper, StepsList, Step, StepIcon, Spinner, GoldIcon } from "./MailDialogStyledComponents"
 import { useLocation } from "@reach/router"
 import { INCREMENT_TEMPLATE_USE, CREATE_TEMPLATE } from "../../gql/mutations"
@@ -20,6 +19,7 @@ import { INCREMENT_TEMPLATE_USE, CREATE_TEMPLATE } from "../../gql/mutations"
 interface RegistryDialogProps {
   open: boolean
 }
+
 const RegistryDialog = styled.div`
   position: fixed;
   top: 10vh;
@@ -80,6 +80,9 @@ const CREATE_LETTER = gql`
   mutation CreateLetter($letter: LetterInput!) {
     createLetter(letter: $letter) {
       id
+      toAddress {
+        id
+      }
     }
   }
 `
@@ -95,15 +98,6 @@ const UPDATE_LETTER = gql`
   mutation UpdateLetter($letterId: String!, $from: AddressInput!) {
     updateLetter(letterId: $letterId, from: $from) {
       id
-    }
-  }
-`
-const GET_TO_ID = gql`
-  query GetToId($id: String!) {
-    getLetterById(id: $id) {
-      toAddress {
-        id
-      }
     }
   }
 `
@@ -151,6 +145,7 @@ const MailDialog = (props: Props) => {
   const [state, setState] = useState("")
   const [zip, setZip] = useState("")
   const [shareString, setShareString] = useState("")
+  const [toId, setToId] = useState("")
   const [registryDialogIsOpen, setRegistryDialogIsOpen] = useState(false)
   const [loadingSaveLetter, setLoadingSaveLetter] = useState(false)
   const [loadingPayment, setLoadingPayment] = useState(false)
@@ -158,7 +153,6 @@ const MailDialog = (props: Props) => {
   const [didCopy, setDidCopy] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const shareUrlRef = useRef<HTMLDivElement>(null)
-  const [getToId, toData] = useLazyQuery<GQL.GetToIdData, GQL.GetToIdVars>(GET_TO_ID)
   const [createLetter] = useMutation<GQL.CreateLetterData, GQL.CreateLetterVars>(CREATE_LETTER)
   const [mailLetter] = useMutation<GQL.MailLetterData, GQL.MailLetterVars>(MAIL_LETTER)
   const [updateLetter] = useMutation<GQL.UpdateLetterData, GQL.UpdateLetterVars>(UPDATE_LETTER)
@@ -301,6 +295,7 @@ const MailDialog = (props: Props) => {
         setLoadingSaveLetter(false)
         if (res.data?.createLetter?.id && setLetterId) {
           setLetterId(res.data.createLetter.id)
+          setToId(res.data.createLetter.toAddress.id)
         } else {
           setError(new Error("failed to create letter"))
         }
@@ -328,21 +323,11 @@ const MailDialog = (props: Props) => {
   /**
    * Share the letter
    */
-  useEffect(() => {
-    if (letterId) {
-      getToId({ variables: { id: letterId } })
-    }
-  }, [letterId])
-
   const share = async () => {
-    if (!letterId || !toData) {
+    if (!letterId) {
       setError(new Error("Letter data not available for sharing."))
       return
     }
-    // the share url is `/write/:templateId/:toId`
-    // get a toId
-    const toId = toData.data?.getLetterById.toAddress.id
-    // get a templateId
     const letterState = editorState.getCurrentContent()
     const letterJson = convertToRaw(letterState)
     const templateResponse = await createTemplate({
