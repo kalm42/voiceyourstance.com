@@ -3,26 +3,26 @@ import PropTypes from "prop-types"
 import { AuthenticationProvider } from "./Authentication"
 import { RepresentativeProvider } from "./Representatives"
 import { UserProvider } from "./UserContext"
-import { VoiceYourStanceThemeProvider } from "./ThemeContext"
 import ApolloContext from "./ApolloContext"
-import { AnalyticsProvider } from "./Analytics"
 import { MetaDataProvider } from "./MetaData"
+import { LetterProvider } from "./LetterContext"
+import { TemplateProvider } from "./TemplateContext"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
-    <AnalyticsProvider>
-      <VoiceYourStanceThemeProvider>
-        <ApolloContext>
-          <AuthenticationProvider>
-            <UserProvider>
-              <MetaDataProvider>
+    <ApolloContext>
+      <AuthenticationProvider>
+        <UserProvider>
+          <MetaDataProvider>
+            <LetterProvider>
+              <TemplateProvider>
                 <RepresentativeProvider>{children}</RepresentativeProvider>
-              </MetaDataProvider>
-            </UserProvider>
-          </AuthenticationProvider>
-        </ApolloContext>
-      </VoiceYourStanceThemeProvider>
-    </AnalyticsProvider>
+              </TemplateProvider>
+            </LetterProvider>
+          </MetaDataProvider>
+        </UserProvider>
+      </AuthenticationProvider>
+    </ApolloContext>
   )
 }
 

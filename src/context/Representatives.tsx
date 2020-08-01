@@ -1,54 +1,20 @@
 import React, { useState, useEffect } from "react"
-import { Address } from "../types"
+import {
+  Address,
+  CivicInfo,
+  RepresentativesGroupedByDivision,
+  Representative,
+  DivisionWithRepresentatives,
+} from "../types"
 
 const LOCAL_STORAGE_KEY = "vys-representatives"
 
 interface RepresentativeContextInterface {
   civicInfo: CivicInfo | null
-  getRepresentativesByAddress: (address: Address) => Promise<Response>
-}
-
-export interface CivicInfo {
-  kind: string
-  normalizedInput: Address
-  divisions: {
-    [x: string]: {
-      name: string
-      officeIndices: number[]
-    }
-  }
-  offices: Office[]
-  officials: Representative[]
-}
-
-interface Office {
-  name: string
-  divisionId: string
-  levels: string[]
-  roles: string[]
-  sources: OfficeSource[]
-  officialIndices: number[]
-}
-
-interface OfficeSource {
-  name: string
-  official: boolean
-}
-
-interface Representative {
-  name: string
-  address: Address[]
-  party: string
-  phones: string[]
-  urls: string[]
-  photoUrl: string
-  emails: string[]
-  channels: SocialMediaChannel[]
-}
-
-interface SocialMediaChannel {
-  type: string
-  id: string
+  fetchRepresentativesByAddress: (address: Address) => Promise<Response>
+  getRepresentatives: () => Representative[]
+  getRepresentativeById: (id: number) => Representative | null
+  getRepresentativesGroupedByDivision: () => RepresentativesGroupedByDivision
 }
 
 function addressToString(address: Address) {
@@ -96,14 +62,14 @@ function RepresentativeProvider(props: Props) {
     }
   }, [civicInfo])
 
-  const getRepresentativesByAddress = (address: Address) => {
+  const fetchRepresentativesByAddress = (address: Address) => {
     const addr = encodeURIComponent(addressToString(address))
-    const key = process.env.NEXT_PUBLIC_GOOGLE_API_KEY_CIVIC
+    const key = process.env.GATSBY_GOOGLE_API_KEY_CIVIC
     const url = `https://www.googleapis.com/civicinfo/v2/representatives?key=${key}&address=${addr}`
 
     return fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
+      .then(response => response.json())
+      .then(data => {
         if (data.error) {
           throw new Error(data.error.message)
         }
@@ -114,7 +80,72 @@ function RepresentativeProvider(props: Props) {
       })
   }
 
-  return <RepresentativeContext.Provider value={{ civicInfo, getRepresentativesByAddress }} {...props} />
+  const getRepresentativesGroupedByDivision = () => {
+    const rgbd: RepresentativesGroupedByDivision = []
+    if (!civicInfo) return rgbd
+
+    for (const divisionId in civicInfo.divisions) {
+      if (civicInfo.divisions.hasOwnProperty(divisionId)) {
+        const division = civicInfo.divisions[divisionId]
+        const reps: Representative[] = []
+
+        if (division.officeIndices) {
+          division.officeIndices.forEach(officeIndex => {
+            const office = civicInfo.offices[officeIndex]
+            const title = office.name
+
+            for (const index of office.officialIndices) {
+              const official = civicInfo.officials[index]
+              reps.push({ ...official, title, index })
+            }
+          })
+
+          const department: DivisionWithRepresentatives = {
+            id: divisionId,
+            name: division.name,
+            reps,
+          }
+          rgbd.push(department)
+        }
+      }
+    }
+
+    return rgbd
+  }
+
+  const getRepresentatives = () => {
+    return civicInfo ? civicInfo.officials : ([] as Representative[])
+  }
+
+  const getRepresentativeById = (id: number) => {
+    // Add their title, aka the related office name
+    const reps: Representative[] = []
+    if (!civicInfo) return null
+
+    for (const office of civicInfo.offices) {
+      const title = office.name
+
+      for (const index of office.officialIndices) {
+        const official = civicInfo.officials[index]
+        reps.push({ ...official, title, index: id })
+      }
+    }
+
+    return reps[id]
+  }
+
+  return (
+    <RepresentativeContext.Provider
+      value={{
+        civicInfo,
+        fetchRepresentativesByAddress,
+        getRepresentativesGroupedByDivision,
+        getRepresentatives,
+        getRepresentativeById,
+      }}
+      {...props}
+    />
+  )
 }
 
 const useRepresentatives = () => React.useContext(RepresentativeContext)
