@@ -24,7 +24,7 @@ module.exports = {
       options: {
         typeName: `VYSAPI`,
         fieldName: `vysapi`,
-        url: `https://api.voiceyourstance.com/graphql`,
+        url: `https://vys-backend-prod.herokuapp.com/graphql`,
       },
     },
     {
