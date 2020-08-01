@@ -24,7 +24,7 @@ module.exports = {
       options: {
         typeName: `VYSAPI`,
         fieldName: `vysapi`,
-        url: `${process.env.GATSBY_BACKEND}/graphql`,
+        url: `https://api.voiceyourstance.com/graphql`,
       },
     },
     {
