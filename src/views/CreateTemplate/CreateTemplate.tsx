@@ -76,9 +76,9 @@ const CreateTemplate = (props: RouteComponentProps) => {
   /**
    * set the title
    */
-  useEffect(() => {
-    MetaData?.safeSetTitle("Write a letter")
-  }, [MetaData])
+  // useEffect(() => {
+  //   MetaData?.safeSetTitle("Write a letter")
+  // }, [MetaData])
 
   /**
    * On state change calcuate the number of characters remaining.

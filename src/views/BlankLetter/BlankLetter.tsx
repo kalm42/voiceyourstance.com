@@ -106,9 +106,9 @@ const BlankLetter = (props: RouteComponentProps) => {
   /**
    * set the title
    */
-  useEffect(() => {
-    MetaData?.safeSetTitle("Write a letter")
-  }, [MetaData])
+  // useEffect(() => {
+  //   MetaData?.safeSetTitle("Write a letter")
+  // }, [MetaData])
 
   /**
    * Clear error after some time
