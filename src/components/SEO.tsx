@@ -9,6 +9,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import { Helmet } from "react-helmet"
 import { useStaticQuery, graphql } from "gatsby"
+import { useLocation } from "@reach/router"
 
 interface Props {
   description?: string
@@ -19,6 +20,7 @@ interface Props {
 }
 
 function SEO(props: Props) {
+  const { pathname } = useLocation()
   const {
     description = "The easiest way to find and contact your elected representatives.",
     lang = "en",
@@ -34,6 +36,8 @@ function SEO(props: Props) {
             title
             description
             author
+            url
+            twitterUsername
             image
           }
         }
@@ -49,8 +53,12 @@ function SEO(props: Props) {
       content: metaDescription,
     },
     {
+      property: `og:url`,
+      content: `${site.siteMetadata.url}${pathname}`,
+    },
+    {
       property: `og:image`,
-      content: image,
+      content: `${site.siteMetadata.url}${site.siteMetadata.image}`,
     },
     {
       property: `og:title`,
@@ -66,11 +74,11 @@ function SEO(props: Props) {
     },
     {
       name: `twitter:card`,
-      content: `summary`,
+      content: `summary_large_image`,
     },
     {
       name: `twitter:creator`,
-      content: site.siteMetadata.author,
+      content: site.siteMetadata.twitterUsername,
     },
     {
       name: `twitter:title`,

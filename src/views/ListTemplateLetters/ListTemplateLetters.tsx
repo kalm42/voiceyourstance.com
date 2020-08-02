@@ -69,9 +69,9 @@ const ListTemplateLetters = (props: RouteComponentProps) => {
   /**
    * set the title
    */
-  useEffect(() => {
-    MetaData?.safeSetTitle("Registry")
-  }, [MetaData])
+  // useEffect(() => {
+  //   MetaData?.safeSetTitle("Registry")
+  // }, [MetaData])
 
   /**
    * Clear error after some time
