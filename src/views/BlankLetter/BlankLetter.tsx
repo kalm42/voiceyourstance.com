@@ -250,13 +250,6 @@ const BlankLetter = (props: RouteComponentProps) => {
     setMailDialogIsOpen(true)
   }
 
-  /**
-   * safe open dialog
-   */
-  const openRepresentativeDialog = useCallback(() => {
-    setChooseRepresentativeDialogIsOpen(true)
-  }, [])
-
   return (
     <Wrapper>
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
@@ -274,7 +267,11 @@ const BlankLetter = (props: RouteComponentProps) => {
           zip={zip}
           disabled={loading || isLocked}
         />
-        <AddressSelection address={toAddress} representative={toRepresentative} openDialog={openRepresentativeDialog} />
+        <AddressSelection
+          address={toAddress}
+          representative={toRepresentative}
+          openDialog={() => setChooseRepresentativeDialogIsOpen(true)}
+        />
       </MetaWrapper>
       <TitleWrapper>
         <Title>What do you want to say?</Title>
