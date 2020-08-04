@@ -64,9 +64,9 @@ const ListDraftLetters = (props: RouteComponentProps) => {
   /**
    * set the title
    */
-  useEffect(() => {
-    MetaData?.safeSetTitle("Drafts")
-  }, [MetaData])
+  // useEffect(() => {
+  //   MetaData?.safeSetTitle("Drafts")
+  // }, [MetaData])
 
   /**
    * Clear error after some time

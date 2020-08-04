@@ -8,7 +8,9 @@ module.exports = {
     title: `Voice Your Stance`,
     description: `The easiest way to find and contact your representatives about the issues that you care about.`,
     author: `@kalm42`,
-    image: `src/images/social-card.png`,
+    url: `https://voiceyourstance.com`,
+    twitterUsername: `@VoiceYourStance`,
+    image: `/social-card.png`,
   },
   plugins: [
     `gatsby-plugin-react-helmet`,
@@ -24,7 +26,7 @@ module.exports = {
       options: {
         typeName: `VYSAPI`,
         fieldName: `vysapi`,
-        url: `${process.env.GATSBY_BACKEND}/graphql`,
+        url: `https://api.voiceyourstance.com/graphql`,
       },
     },
     {
