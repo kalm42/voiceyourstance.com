@@ -108,7 +108,6 @@ const ListTemplateLetters = (props: RouteComponentProps) => {
                 <TemplatePanel>
                   <TemplateControls>
                     <PrimaryLink to={`/registered-letters/${t.id}`}>Edit</PrimaryLink>
-                    <SecondaryButton>Delete</SecondaryButton>
                   </TemplateControls>
                   <TemplateDetails>
                     <h3>{t.title}</h3>
