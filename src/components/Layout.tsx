@@ -49,6 +49,7 @@ const Nav = styled.nav`
   height: 100vh;
   background: white;
   padding: 20px;
+  z-index: 100;
 `
 const Main = styled.main`
   min-height: calc(100vh - 222px - 60px);
@@ -125,6 +126,7 @@ const AuthenticationMenu = styled.div`
   background: var(--background);
   border: 1px solid var(--accent);
   transition: all 200ms ease;
+  z-index: 100;
 `
 
 const Layout: FunctionComponent = ({ children }) => {

@@ -47,6 +47,7 @@ export const PrimaryLink = styled(Link)`
   text-transform: lowercase;
   transition: all 200ms ease;
   text-decoration: none;
+  text-align: center;
   &:hover {
     background: var(--mainDark);
   }
