@@ -4,10 +4,9 @@ import styled from "styled-components"
 import { useMetaData } from "../../context/MetaData"
 import { useTemplate } from "../../context/TemplateContext"
 import ErrorMessage from "../../components/ErrorMessage"
-import Layout from "../../components/Layout"
 import SEO from "../../components/SEO"
 import { format } from "date-fns"
-import { PrimaryButton, SecondaryButton } from "../../components/elements"
+import { SecondaryButton, PrimaryLink } from "../../components/elements"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -108,8 +107,7 @@ const ListTemplateLetters = (props: RouteComponentProps) => {
                 </TemplateDate>
                 <TemplatePanel>
                   <TemplateControls>
-                    <PrimaryButton>Edit</PrimaryButton>
-                    <SecondaryButton>Delete</SecondaryButton>
+                    <PrimaryLink to={`/registered-letters/${t.id}`}>Edit</PrimaryLink>
                   </TemplateControls>
                   <TemplateDetails>
                     <h3>{t.title}</h3>
