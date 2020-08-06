@@ -44,13 +44,16 @@ const SignIn = (props: Props) => {
       <Form method="post" onSubmit={handleSubmit}>
         <TextInputs>
           <TextInput
-            type="text"
+            type="email"
             name="email"
             id="email"
             placeholder="your@email.address"
             value={email}
             onChange={event => setEmail(event.target.value)}
             disabled={isLoading}
+            autoComplete="email"
+            aria-label="email"
+            required
           />
           <TextInput
             type="password"
@@ -60,6 +63,9 @@ const SignIn = (props: Props) => {
             value={password}
             onChange={event => setPassword(event.target.value)}
             disabled={isLoading}
+            autoComplete="current-password"
+            aria-label="password"
+            required
           />
         </TextInputs>
         <PrimaryInputSubmit type="submit" value="Sign In" disabled={isLoading} />
