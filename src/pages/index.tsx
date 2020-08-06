@@ -35,9 +35,11 @@ const IndexPage = () => {
   /**
    * set the title
    */
-  if (MetaData && MetaData.safeSetTitle) {
-    MetaData.safeSetTitle("Find my representatives")
-  }
+  useEffect(() => {
+    if (MetaData && MetaData.safeSetTitle) {
+      MetaData.safeSetTitle("Find my representatives")
+    }
+  }, [])
 
   /**
    * If the page changes during the fetch this will abort the fetch request
