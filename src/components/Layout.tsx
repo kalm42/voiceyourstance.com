@@ -147,11 +147,11 @@ const Layout: FunctionComponent = ({ children }) => {
   return (
     <div>
       <Header>
-        <Button onClick={handleMenuClick} style={{ justifySelf: "start" }}>
+        <Button onClick={handleMenuClick} style={{ justifySelf: "start" }} aria-label="main menu">
           <MenuButton icon={faBars} />
         </Button>
         <Title>{t}</Title>
-        <Button style={{ justifySelf: "end" }} onClick={toggleAuthMenu}>
+        <Button style={{ justifySelf: "end" }} onClick={toggleAuthMenu} aria-label="user menu">
           <MenuButton icon={faEllipsisV} />
         </Button>
         <AuthenticationMenu open={authIsOpen}>
