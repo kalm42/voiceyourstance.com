@@ -63,6 +63,9 @@ const SignUp = (props: Props) => {
             value={email}
             onChange={event => setEmail(event.target.value)}
             disabled={isLoading}
+            autoComplete="email"
+            aria-label="email"
+            required
           />
           <TextInput
             type="password"
@@ -72,6 +75,9 @@ const SignUp = (props: Props) => {
             value={password}
             onChange={event => setPassword(event.target.value)}
             disabled={isLoading}
+            autoComplete="new-password"
+            aria-label="password"
+            required
           />
         </TextInputs>
         <PrimaryInputSubmit type="submit" value="Sign Up" disabled={isLoading} />
