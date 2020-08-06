@@ -147,11 +147,11 @@ const Layout: FunctionComponent = ({ children }) => {
   return (
     <div>
       <Header>
-        <Button onClick={handleMenuClick} style={{ justifySelf: "start" }}>
+        <Button onClick={handleMenuClick} style={{ justifySelf: "start" }} aria-label="main menu">
           <MenuButton icon={faBars} />
         </Button>
         <Title>{t}</Title>
-        <Button style={{ justifySelf: "end" }} onClick={toggleAuthMenu}>
+        <Button style={{ justifySelf: "end" }} onClick={toggleAuthMenu} aria-label="user menu">
           <MenuButton icon={faEllipsisV} />
         </Button>
         <AuthenticationMenu open={authIsOpen}>
@@ -214,17 +214,17 @@ const Layout: FunctionComponent = ({ children }) => {
           <SocialNav>
             <li>
               <FacebookLink href="https://www.facebook.com/voiceyourstance">
-                <FontAwesomeIcon icon={faFacebookF} />
+                <FontAwesomeIcon icon={faFacebookF} role="img" title="Facebook" />
               </FacebookLink>
             </li>
             <li>
               <TwitterLink href="https://twitter.com/VoiceYourStance">
-                <FontAwesomeIcon icon={faTwitter} />
+                <FontAwesomeIcon icon={faTwitter} role="img" title="Twitter" />
               </TwitterLink>
             </li>
             <li>
               <EmailLink href="mailto:me@kylemelton.com">
-                <FontAwesomeIcon icon={faEnvelope} />
+                <FontAwesomeIcon icon={faEnvelope} role="img" title="email" />
               </EmailLink>
             </li>
           </SocialNav>

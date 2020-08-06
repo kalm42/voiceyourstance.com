@@ -46,6 +46,9 @@ const ForgotPassword = (props: Props) => {
             placeholder="your@email.address"
             value={email}
             onChange={event => setEmail(event.target.value)}
+            autoComplete="email"
+            aria-label="email"
+            required
           />
           <PrimaryInputSubmit type="submit" value="Request a password reset" />
         </Form>
