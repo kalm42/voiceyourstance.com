@@ -15,9 +15,9 @@ const TagCollection = styled.ul`
   margin: 1rem 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  grid-gap: 0.875rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
 `
 const Tag = styled.li`
   background: var(--main);
