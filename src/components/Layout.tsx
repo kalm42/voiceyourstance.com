@@ -10,6 +10,7 @@ import AuthenticationForms from "./AuthenticationForms"
 import { useUser } from "../context/UserContext"
 import { Menu, MenuItem, GoldIcon } from "./elements"
 import UserMenu from "./UserMenu"
+import Notification from "../components/Notification"
 
 const Title = styled.h1`
   padding: 0;
@@ -230,6 +231,7 @@ const Layout: FunctionComponent = ({ children }) => {
           </SocialNav>
         </FooterSocial>
       </Footer>
+      <Notification />
     </div>
   )
 }

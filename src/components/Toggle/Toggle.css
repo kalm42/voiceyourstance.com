@@ -65,8 +65,8 @@
 
 .toggles [type="checkbox"]:checked + label::after {
   left: 1.6em;
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--success);
+  color: var(--success);
 }
 
 .toggles [type="checkbox"]:indeterminate + label::after {
@@ -78,8 +78,8 @@
 }
 
 .toggles [type="checkbox"]:checked + label::before {
-  background-color: var(--accent);
-  border-color: var(--accent);
+  background-color: var(--success);
+  border-color: var(--success);
 }
 
 .toggles [type="checkbox"][disabled] + label::before {

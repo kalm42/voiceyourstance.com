@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
 import { useMetaData } from "../../context/MetaData"
+import { useNotifications } from "../../context/Notifications"
 import ErrorMessage from "../../components/ErrorMessage"
 import Toggle from "../../components/Toggle"
 import { TextInput, PrimaryInputSubmit } from "../../components/elements"
 import { useMutation } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
 import { GQL } from "../../types"
 import { navigate } from "gatsby"
 import { CREATE_TEMPLATE } from "../../gql/mutations"
@@ -61,6 +61,10 @@ const EditorWrapper = styled.div`
   padding: 1rem;
   font-family: var(--formalFont);
 `
+const Warn = styled.div`
+  background: var(--warn);
+  padding: 1rem;
+`
 
 const CreateTemplate = (props: RouteComponentProps) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
@@ -72,6 +76,7 @@ const CreateTemplate = (props: RouteComponentProps) => {
   const [searchable, setSearchable] = useState<boolean>(false)
   const [createTemplate] = useMutation<GQL.CreateTemplateData, GQL.CreateTemplateVars>(CREATE_TEMPLATE)
   const MetaData = useMetaData()
+  const { addNotification } = useNotifications()
 
   /**
    * set the title
@@ -146,6 +151,7 @@ const CreateTemplate = (props: RouteComponentProps) => {
     const content = convertToRaw(contentState)
     createTemplate({ variables: { template: { content, isSearchable: searchable, tags, title } } })
       .then(res => {
+        addNotification("Saved successfully")
         navigate(`/registered-letters/${res.data?.createTemplate.id}`)
       })
       .catch(err => {
@@ -168,9 +174,9 @@ const CreateTemplate = (props: RouteComponentProps) => {
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
       <form method="post" onSubmit={handleSubmit}>
         {characterCount < 100 && (
-          <div>
+          <Warn>
             <p>You have {characterCount} characters left. There is a 5,000 character limit.</p>
-          </div>
+          </Warn>
         )}
         <ErrorMessage error={error} />
         <h2>Registered letter details</h2>

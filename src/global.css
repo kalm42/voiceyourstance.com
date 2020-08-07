@@ -7,10 +7,14 @@
   --red: rgb(226, 0, 32);
   --white: rgb(255, 255, 255);
   --black: rgb(50, 58, 69);
+  --green: rgb(90, 196, 90);
+  --orange: rgb(255, 187, 79);
   --main: var(--blue);
   --mainDark: var(--darkBlue);
   --accent: var(--gold);
   --error: var(--red);
+  --warn: var(--orange);
+  --success: var(--green);
   --background: var(--white);
   --text: var(--black);
   --formalFont: "Playfair Display", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;

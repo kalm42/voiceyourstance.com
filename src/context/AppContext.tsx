@@ -7,6 +7,7 @@ import ApolloContext from "./ApolloContext"
 import { MetaDataProvider } from "./MetaData"
 import { LetterProvider } from "./LetterContext"
 import { TemplateProvider } from "./TemplateContext"
+import { NotificationsProvider } from "./Notifications"
 
 const AppContext: FunctionComponent = ({ children }) => {
   return (
@@ -16,7 +17,9 @@ const AppContext: FunctionComponent = ({ children }) => {
           <MetaDataProvider>
             <LetterProvider>
               <TemplateProvider>
-                <RepresentativeProvider>{children}</RepresentativeProvider>
+                <RepresentativeProvider>
+                  <NotificationsProvider>{children}</NotificationsProvider>
+                </RepresentativeProvider>
               </TemplateProvider>
             </LetterProvider>
           </MetaDataProvider>

@@ -10,6 +10,7 @@ import { useTemplate } from "../../context/TemplateContext"
 import ErrorMessage from "../../components/ErrorMessage"
 import Toggle from "../../components/Toggle"
 import { TextInput, PrimaryInputSubmit } from "../../components/elements"
+import { useNotifications } from "../../context/Notifications"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -75,6 +76,7 @@ const EditTemplate = (props: Props) => {
   const templateCtrl = useTemplate()
   const templateQuery = templateCtrl?.getTemplateById(templateId || "")
   const template = templateQuery?.data?.getTemplateById
+  const { addNotification } = useNotifications()
 
   /**
    * set the title
@@ -150,7 +152,12 @@ const EditTemplate = (props: Props) => {
     const content = convertToRaw(contentState)
 
     if (templateCtrl && template && searchable !== undefined) {
-      templateCtrl.updateTemplateMutation(template.id, content, title, tags, searchable).catch(err => setError(err))
+      templateCtrl
+        .updateTemplateMutation(template.id, content, title, tags, searchable)
+        .then(() => {
+          addNotification("Saved successfully.")
+        })
+        .catch(err => setError(err))
     } else {
       setError(new Error("Internal error on updating the template. Please refresh the page and try again."))
     }
