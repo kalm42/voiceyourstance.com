@@ -61,6 +61,10 @@ const EditorWrapper = styled.div`
   padding: 1rem;
   font-family: var(--formalFont);
 `
+const Warn = styled.div`
+  background: var(--warn);
+  padding: 1rem;
+`
 
 const CreateTemplate = (props: RouteComponentProps) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty())
@@ -168,9 +172,9 @@ const CreateTemplate = (props: RouteComponentProps) => {
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
       <form method="post" onSubmit={handleSubmit}>
         {characterCount < 100 && (
-          <div>
+          <Warn>
             <p>You have {characterCount} characters left. There is a 5,000 character limit.</p>
-          </div>
+          </Warn>
         )}
         <ErrorMessage error={error} />
         <h2>Registered letter details</h2>
