@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faTimes } from "@fortawesome/free-solid-svg-icons"
 import styled from "styled-components"
 import { useMetaData } from "../../context/MetaData"
+import { useNotifications } from "../../context/Notifications"
 import ErrorMessage from "../../components/ErrorMessage"
 import Toggle from "../../components/Toggle"
 import { TextInput, PrimaryInputSubmit } from "../../components/elements"
 import { useMutation } from "@apollo/react-hooks"
-import { gql } from "apollo-boost"
 import { GQL } from "../../types"
 import { navigate } from "gatsby"
 import { CREATE_TEMPLATE } from "../../gql/mutations"
@@ -76,6 +76,7 @@ const CreateTemplate = (props: RouteComponentProps) => {
   const [searchable, setSearchable] = useState<boolean>(false)
   const [createTemplate] = useMutation<GQL.CreateTemplateData, GQL.CreateTemplateVars>(CREATE_TEMPLATE)
   const MetaData = useMetaData()
+  const { addNotification } = useNotifications()
 
   /**
    * set the title
@@ -150,6 +151,7 @@ const CreateTemplate = (props: RouteComponentProps) => {
     const content = convertToRaw(contentState)
     createTemplate({ variables: { template: { content, isSearchable: searchable, tags, title } } })
       .then(res => {
+        addNotification("Saved successfully")
         navigate(`/registered-letters/${res.data?.createTemplate.id}`)
       })
       .catch(err => {
