@@ -37,7 +37,7 @@ interface Props {
 const SocialMediaChannelLink = (props: Props) => {
   const { url, channel } = props
   return (
-    <SocialMediaLink href={`${url}${channel.id}`}>
+    <SocialMediaLink href={`${url}${channel.id}`} id={`social-media-chanel-link-${channel.type}`}>
       <SocialMedia>
         {channel.type === "Facebook" && <SocialMediaIcon icon={faFacebookF} />}
         {channel.type === "Twitter" && <SocialMediaIcon icon={faTwitter} />}
