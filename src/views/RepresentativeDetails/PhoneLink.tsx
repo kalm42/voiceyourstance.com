@@ -34,7 +34,7 @@ interface Props {
 const PhoneLink = (props: Props) => {
   const { phone } = props
   return (
-    <PLink href={`tel:${phone}`}>
+    <PLink href={`tel:${phone}`} id="phone-link">
       <PhoneDetails>
         <PhoneIcon icon={faPhoneAlt} />
         <p>{phone}</p>
