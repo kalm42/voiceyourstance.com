@@ -15,6 +15,7 @@ import ErrorMessage from "../../components/ErrorMessage"
 import { useQuery, useLazyQuery } from "@apollo/react-hooks"
 import { useMetaData } from "../../context/MetaData"
 import { GET_TEMPLATE_BY_ID } from "../../gql/queries"
+import ErrorReportingBoundry from "../../components/ErrorReportingBoundry"
 
 const Wrapper = styled.div`
   padding: 2rem;
@@ -255,19 +256,21 @@ const WriteTemplate = (props: Props) => {
     <Wrapper>
       <SEO title="Mail a letter to your representative" description="Write and mail a letter to your representative." />
       <MetaWrapper>
-        <FromForm
-          city={city}
-          line1={line1}
-          name={name}
-          setCity={setCity}
-          setLine1={setLine1}
-          setName={setName}
-          setState={setState}
-          setZip={setZip}
-          state={state}
-          zip={zip}
-          disabled={loading || isLocked}
-        />
+        <ErrorReportingBoundry>
+          <FromForm
+            city={city}
+            line1={line1}
+            name={name}
+            setCity={setCity}
+            setLine1={setLine1}
+            setName={setName}
+            setState={setState}
+            setZip={setZip}
+            state={state}
+            zip={zip}
+            disabled={loading || isLocked}
+            />
+        </ErrorReportingBoundry>
         <ToWrapper selected={!!toRepresentative}>
           {toAddress ? (
             <div>
