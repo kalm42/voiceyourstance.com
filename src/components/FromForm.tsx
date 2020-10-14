@@ -28,12 +28,15 @@ const FromForm = (props: Props) => {
    * Load civic response and pull out address info from it
    */
   useEffect(() => {
-    const civic = JSON.parse(localStorage.getItem("vys-representatives") || "")
-    if (civic) {
-      setLine1(civic.normalizedInput.line1)
-      setCity(civic.normalizedInput.city)
-      setState(civic.normalizedInput.state)
-      setZip(civic.normalizedInput.zip)
+    const storage = localStorage.getItem("vys-representatives")
+    if (storage) {
+      const civic = JSON.parse(storage)
+      if (civic) {
+        setLine1(civic.normalizedInput.line1)
+        setCity(civic.normalizedInput.city)
+        setState(civic.normalizedInput.state)
+        setZip(civic.normalizedInput.zip)
+      }
     }
   }, [])
 
